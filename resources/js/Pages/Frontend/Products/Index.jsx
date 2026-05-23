@@ -1,0 +1,121 @@
+import React, { useState, useEffect } from 'react';
+import { Head, router } from '@inertiajs/react';
+import FrontendLayout from '@/Layouts/FrontendLayout';
+
+// Partials
+import ProductSidebar from './Partials/ProductSidebar';
+import CategoryHeader from './Partials/CategoryHeader';
+import IndexToolbar from './Partials/IndexToolbar';
+import ProductGrid from './Partials/ProductGrid';
+import Pagination from './Partials/Pagination';
+
+/**
+ * Product Index Page (Frontend)
+ * 
+ * Orchestrates the product listing view with filtering, sorting, and layout management.
+ * Performance Strategy: Minimizes state lifting by using the URL as the single source of truth 
+ * for filters, while using Inertia router events for localized loading states.
+ * 
+ * @param {Object} props - Inherited from Laravel ProductController
+ */
+const Index = ({
+    category,
+    brand,
+    products,
+    filters,
+    priceRange,
+    availableVariants,
+    breadcrumbs,
+    relevantBrands = [],
+    subcategories = []
+}) => {
+    // Localized loading state for granular UI feedback during navigation
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        // Global router listeners to manage the loading overlay (only on GET requests to prevent wishlist/cart actions from showing skeletons)
+        const removeStartListener = router.on('start', (event) => {
+            if (event.detail.visit.method.toLowerCase() === 'get' && !event.detail.visit.prefetch) {
+                setIsLoading(true);
+            }
+        });
+        const removeFinishListener = router.on('finish', () => setIsLoading(false));
+
+        return () => {
+            removeStartListener();
+            removeFinishListener();
+        };
+    }, []);
+
+    // Optimized page metadata
+    const title = brand ? brand.name : (category ? category.name : 'Products');
+
+    return (
+        <>
+            <Head title={`${title} - Star Tech`} />
+
+            <div className="bg-[#f2f4f8] min-h-screen pb-8">
+
+                {/* 1. Category/Brand Header Section */}
+                <CategoryHeader
+                    category={category}
+                    brand={brand}
+                    breadcrumbs={breadcrumbs}
+                    priceRange={priceRange}
+                    subcategories={subcategories}
+                    relevantBrands={relevantBrands}
+                />
+
+                <div className="container mx-auto px-4">
+                    <div className="flex flex-col lg:flex-row gap-8">
+
+                        {/* 2. Filter Sidebar Section */}
+                        <aside className="w-full lg:w-[280px] shrink-0">
+                            <ProductSidebar
+                                category={category}
+                                brand={brand}
+                                filters={filters}
+                                priceRange={priceRange}
+                                availableVariants={availableVariants}
+                                relevantBrands={relevantBrands}
+                                subcategories={subcategories}
+                            />
+                        </aside>
+
+                        {/* 3. Main Product Listing Area */}
+                        <main className="flex-1 relative min-h-[800px]">
+                            {/* 3.1 Toolbar: Sorting & Limit */}
+                            <IndexToolbar
+                                title={title}
+                                filters={filters}
+                                category={category}
+                                brand={brand}
+                            />
+
+                            {/* 3.2 Product Grid with Empty State */}
+                            <ProductGrid products={products?.data || []} isLoading={isLoading || !products} />
+
+                            {/* 3.3 Pagination Section */}
+                            <div className={`transition-all duration-300 ${(!products || isLoading) ? 'min-h-[80px]' : ''}`}>
+                                <Pagination
+                                    meta={products?.meta || {
+                                        total: products?.total || 0,
+                                        from: products?.from || 0,
+                                        to: products?.to || 0,
+                                        last_page: products?.last_page || 1
+                                    }}
+                                    links={products?.links || []}
+                                />
+                            </div>
+                        </main>
+
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+Index.layout = page => <FrontendLayout children={page} categories={page.props.categories} brands={page.props.brands} />;
+
+export default Index;

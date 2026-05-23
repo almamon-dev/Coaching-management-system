@@ -1,0 +1,41 @@
+services:
+  app:
+    build: .
+    container_name: gadget-app
+    working_dir: /app
+    volumes:
+      - ./:/app
+    ports:
+      - "8000:8000"
+      - "5173:5173"
+    command: bash -c "composer install && php artisan serve --host=0.0.0.0 --port=8000"
+
+  mysql:
+    image: mysql:8
+    container_name: gadget-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gadget_management
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: gadget-pma
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+
+  redis:
+    image: redis:alpine
+    container_name: gadget-redis
+    restart: always
+    ports:
+      - "6379:6379"

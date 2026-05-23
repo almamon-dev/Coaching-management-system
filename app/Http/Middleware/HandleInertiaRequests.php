@@ -1,0 +1,85 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Illuminate\Http\Request;
+use Inertia\Middleware;
+
+class HandleInertiaRequests extends Middleware
+{
+    /**
+     * The root template that is loaded on the first page visit.
+     *
+     * @var string
+     */
+    protected $rootView = 'app';
+
+    /**
+     * Determine the current asset version.
+     */
+    public function version(Request $request): ?string
+    {
+        return parent::version($request);
+    }
+
+    /**
+     * Define the props that are shared by default.
+     *
+     * @return array<string, mixed>
+     */
+    public function share(Request $request): array
+    {
+        $isAdmin = $request->is('admin*') || $request->is('api/admin*');
+
+        return [
+            ...parent::share($request),
+            'auth' => [
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'user_type' => $request->user()->user_type,
+                    'designation' => $request->user()->designation,
+                    'phone' => $request->user()->phone,
+                    'wishlist_ids' => ($request->user() && !$isAdmin) 
+                        ? \Illuminate\Support\Facades\Cache::remember("user_wishlist_{$request->user()->id}", 60, function () use ($request) {
+                            return $request->user()->wishlists()->pluck('product_id')->toArray();
+                        }) 
+                        : [],
+                    'profile_picture' => \App\Support\Media\FileUrlGenerator::generate($request->user()->profile_picture),
+                    'notifications' => \Illuminate\Support\Facades\Cache::remember("user_notifications_{$request->user()->id}", 15, function () use ($request) {
+                        return $request->user()->unreadNotifications()->limit(10)->get();
+                    }),
+                    'unread_notifications_count' => \Illuminate\Support\Facades\Cache::remember("user_notifications_count_{$request->user()->id}", 15, function () use ($request) {
+                        return $request->user()->unreadNotifications()->count();
+                    }),
+                    'roles' => \Illuminate\Support\Facades\Cache::remember("user_roles_{$request->user()->id}", 300, function () use ($request) {
+                        return $request->user()->roles->pluck('name')->toArray();
+                    }),
+                    'permissions' => \Illuminate\Support\Facades\Cache::remember("user_permissions_{$request->user()->id}", 300, function () use ($request) {
+                        return $request->user()->getAllPermissions()->pluck('name')->toArray();
+                    }),
+                    'open_tickets_count' => $request->user()->user_type === 'admin'
+                        ? \Illuminate\Support\Facades\Cache::remember("open_tickets_count", 60, function () {
+                            return \App\Models\Ticket::whereIn('status', ['open', 'in_progress'])->count();
+                        })
+                        : 0,
+                ] : null,
+            ],
+            'settings' => [
+                'site_name' => config('app.name', 'Admin Panel'),
+            ],
+            'categories' => $isAdmin ? [] : app(\App\Caches\Admin\Category\CategoryCache::class)->getNavbarCategoriesTree(),
+            'brands' => $isAdmin ? [] : \Illuminate\Support\Facades\Cache::remember('global_brands_list', 3600, function () {
+                return \App\Models\Brand::select('id', 'name', 'slug', 'logo as image')->where('status', 1)->get();
+            }),
+            'pages' => $isAdmin ? [] : \Illuminate\Support\Facades\Cache::remember('global_pages_list', 3600, function () {
+                return \App\Models\Page::select('id', 'title', 'slug')->where('is_active', true)->get();
+            }),
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+            ],
+        ];
+    }
+}

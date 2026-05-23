@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "eloquent-best-practices": {
+      "source": "iserter/laravel-claude-agents",
+      "sourceType": "github",
+      "skillPath": "skills/eloquent-best-practices/SKILL.md",
+      "computedHash": "9ac1268798ae480224524bd7541de58d9bed5f0d5e2c8914f4a61dee23e5f244"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "516bd2154eb843a8240e43d5b285229129853114ad7075a5e141e1c08e408c84"
+    },
+    "laravel-inertia-react": {
+      "source": "asyrafhussin/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/laravel-inertia-react/SKILL.md",
+      "computedHash": "48153a3ab923ee477416dad35ee8cf814b2cb324829d140098a092f4e33dd2c6"
+    },
+    "laravel-specialist": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/laravel-specialist/SKILL.md",
+      "computedHash": "805be17bd59f759e2f2f2dcbd6bd205ca6678420a87b21da1c16e0793093615c"
+    },
+    "tailwindcss-development": {
+      "source": "laravel/boost",
+      "sourceType": "github",
+      "skillPath": ".ai/tailwindcss/3/skill/tailwindcss-development/SKILL.md",
+      "computedHash": "9f8d2d6571d0f1890fed1771ce0a58b87368098d0703c8e546a79ce20893df9b"
+    }
+  }
+}
