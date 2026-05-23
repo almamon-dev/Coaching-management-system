@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-import App\Models\Category;
-import App\Models\Product;
-import App\Models\ProductImage;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\ProductImage;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;

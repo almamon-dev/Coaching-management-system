@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    container_name: gadget-app
+    container_name: shop-app
     working_dir: /app
     volumes:
       - ./:/app
@@ -12,30 +12,30 @@ services:
 
   mysql:
     image: mysql:8
-    container_name: gadget-db
+    container_name: shop-db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: gadget_management
+      MYSQL_DATABASE: shop_management
     ports:
-      - "3306:3306"
+      - "3308:3306"
 
   phpmyadmin:
     image: phpmyadmin:latest
-    container_name: gadget-pma
+    container_name: shop-pma
     restart: always
     environment:
       PMA_HOST: mysql
       PMA_USER: root
       PMA_PASSWORD: root
     ports:
-      - "8080:80"
+      - "8082:80"
     depends_on:
       - mysql
 
   redis:
     image: redis:alpine
-    container_name: gadget-redis
+    container_name: shop-redis
     restart: always
     ports:
-      - "6379:6379"
+      - "6382:6379"
