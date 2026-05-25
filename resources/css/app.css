@@ -60,6 +60,12 @@
   }
 }
 
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white rounded-[4px] font-bold text-[14px] transition-all shadow-sm;
+  }
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -185,4 +191,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 .animate-progress-shrink {
   animation: progress-shrink 5s linear forwards;
+}
+
+@keyframes marching-ants {
+  to { stroke-dashoffset: -20; }
+}
+
+.animate-marching-ants {
+  animation: marching-ants 2.5s linear infinite;
 }

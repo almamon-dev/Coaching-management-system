@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             BrandSeeder::class,
             CategorySeeder::class,
             GlobalVariantSeeder::class,
+           ProductSeeder::class,
             // AttributePresetSeeder::class,
             // ProductSeeder::class,
             // OrderSeeder::class,
@@ -24,7 +25,7 @@ class DatabaseSeeder extends Seeder
             // MarketingCampaignSeeder::class,
             // WarehouseSeeder::class,
             // OfferSeeder::class,
-            // ShippingMethodSeeder::class,
+            ShippingMethodSeeder::class,
             // OrderReturnSeeder::class,
             PageSeeder::class,
             

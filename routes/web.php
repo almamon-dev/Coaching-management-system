@@ -7,6 +7,14 @@ use Inertia\Inertia;
 
 Route::get('/', [\App\Http\Controllers\Frontend\HomeController::class, 'index'])->name('home');
 
+// Language Switcher
+Route::get('/language/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'bn'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('language.switch');
+
 // Staff Invitation acceptance routes
 Route::get('invitations/accept/{user}', [\App\Http\Controllers\Admin\Users\UserController::class, 'showAcceptInvitation'])
     ->name('admin.invitations.accept');

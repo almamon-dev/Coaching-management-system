@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Support\Media;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 final class FileUploader
 {
     /**
-     * Upload an UploadedFile to public/uploads/{folder}.
+     * Upload an UploadedFile to the default storage disk.
      */
     public static function upload(string $folder, ?UploadedFile $file): ?string
     {
@@ -21,14 +21,15 @@ final class FileUploader
 
         $basePath = "uploads/{$folder}";
         $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+        $path = "{$basePath}/{$filename}";
 
-        $file->move(public_path($basePath), $filename);
+        Storage::putFileAs($basePath, $file, $filename);
 
-        return "{$basePath}/{$filename}";
+        return $path;
     }
 
     /**
-     * Copy a file from a temporary local path to public/uploads/{folder}.
+     * Copy a file from a temporary local path to the default storage disk.
      */
     public static function saveFromPath(string $folder, string $filePath): ?string
     {
@@ -37,16 +38,12 @@ final class FileUploader
         }
 
         $basePath = "uploads/{$folder}";
-        $fullPath = public_path($basePath);
-        File::ensureDirectoryExists($fullPath);
-
         $extension = pathinfo($filePath, PATHINFO_EXTENSION);
         $filename = time() . '_' . Str::random(8) . '.' . $extension;
+        $path = "{$basePath}/{$filename}";
 
-        if (copy($filePath, "{$fullPath}/{$filename}")) {
-            return "{$basePath}/{$filename}";
-        }
+        Storage::put($path, file_get_contents($filePath));
 
-        return null;
+        return $path;
     }
 }

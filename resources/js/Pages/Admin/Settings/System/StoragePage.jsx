@@ -76,8 +76,13 @@ export default function StoragePage({ settings }) {
                                     <Server size={18} />
                                 </div>
                                 <div>
-                                    <p className="text-[13px] font-bold text-[#202223]">Local Server</p>
-                                    <p className="text-[11px] text-slate-500">Files stored on this server</p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-[13px] font-bold text-[#202223]">Local Server</p>
+                                        {settings.storage_driver === 'local' && (
+                                            <span className="bg-[#008060]/10 text-[#008060] text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Active Now</span>
+                                        )}
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 mt-0.5">Files stored on this server</p>
                                 </div>
                                 {data.storage_driver === 'local' && <CheckCircle2 size={16} className="ml-auto text-[#008060]" />}
                             </button>
@@ -96,8 +101,13 @@ export default function StoragePage({ settings }) {
                                     <Cloud size={18} />
                                 </div>
                                 <div>
-                                    <p className="text-[13px] font-bold text-[#202223]">Cloudflare R2</p>
-                                    <p className="text-[11px] text-slate-500">Free 10GB · No egress fees</p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-[13px] font-bold text-[#202223]">Cloudflare R2</p>
+                                        {settings.storage_driver === 'r2' && (
+                                            <span className="bg-[#F48120]/10 text-[#F48120] text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Active Now</span>
+                                        )}
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 mt-0.5">Free 10GB · No egress fees</p>
                                 </div>
                                 {data.storage_driver === 'r2' && <CheckCircle2 size={16} className="ml-auto text-[#008060]" />}
                             </button>
@@ -126,70 +136,83 @@ export default function StoragePage({ settings }) {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 {/* Account ID */}
                                 <div className="md:col-span-2 space-y-1.5">
-                                    <label className="text-[12px] font-bold text-slate-700 flex items-center gap-1.5">
-                                        <Globe size={13} /> Account ID
-                                    </label>
-                                    <TextInput
-                                        value={data.r2_account_id}
-                                        onChange={e => setData('r2_account_id', e.target.value)}
-                                        placeholder="e.g. a1b2c3d4e5f6..."
-                                        className="rounded-[4px] font-mono text-[12px]"
-                                    />
-                                    <p className="text-[11px] text-slate-400">Found in Cloudflare → Workers & Pages → Overview (right sidebar)</p>
+                                    <label className="text-[13px] font-bold text-slate-700">Account ID</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 z-10">
+                                            <Globe size={16} />
+                                        </div>
+                                        <TextInput
+                                            value={data.r2_account_id}
+                                            onChange={e => setData('r2_account_id', e.target.value)}
+                                            placeholder="e.g. a1b2c3d4e5f6..."
+                                            className="pl-10 rounded-[4px] font-mono text-[12px]"
+                                        />
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 mt-1">Found in Cloudflare → Workers & Pages → Overview (right sidebar)</p>
                                 </div>
 
                                 {/* Bucket Name */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[12px] font-bold text-slate-700 flex items-center gap-1.5">
-                                        <Folder size={13} /> Bucket Name
-                                    </label>
-                                    <TextInput
-                                        value={data.r2_bucket}
-                                        onChange={e => setData('r2_bucket', e.target.value)}
-                                        placeholder="e.g. gadget-media"
-                                        className="rounded-[4px] font-mono text-[12px]"
-                                    />
+                                    <label className="text-[13px] font-bold text-slate-700">Bucket Name</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 z-10">
+                                            <Folder size={16} />
+                                        </div>
+                                        <TextInput
+                                            value={data.r2_bucket}
+                                            onChange={e => setData('r2_bucket', e.target.value)}
+                                            placeholder="e.g. gadget-media"
+                                            className="pl-10 rounded-[4px] font-mono text-[12px]"
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Public URL */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[12px] font-bold text-slate-700 flex items-center gap-1.5">
-                                        <Globe size={13} /> Public URL
-                                    </label>
-                                    <TextInput
-                                        value={data.r2_url}
-                                        onChange={e => setData('r2_url', e.target.value)}
-                                        placeholder="https://pub-xxxx.r2.dev"
-                                        className="rounded-[4px] font-mono text-[12px]"
-                                    />
-                                    <p className="text-[11px] text-slate-400">Enable public access on the R2 bucket first</p>
+                                    <label className="text-[13px] font-bold text-slate-700">Public URL</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 z-10">
+                                            <Globe size={16} />
+                                        </div>
+                                        <TextInput
+                                            value={data.r2_url}
+                                            onChange={e => setData('r2_url', e.target.value)}
+                                            placeholder="https://pub-xxxx.r2.dev"
+                                            className="pl-10 rounded-[4px] font-mono text-[12px]"
+                                        />
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 mt-1">Enable public access on the R2 bucket first</p>
                                 </div>
 
                                 {/* Access Key */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[12px] font-bold text-slate-700 flex items-center gap-1.5">
-                                        <Key size={13} /> Access Key ID
-                                    </label>
-                                    <TextInput
-                                        value={data.r2_access_key_id}
-                                        onChange={e => setData('r2_access_key_id', e.target.value)}
-                                        placeholder="R2 Access Key ID"
-                                        className="rounded-[4px] font-mono text-[12px]"
-                                    />
+                                    <label className="text-[13px] font-bold text-slate-700">Access Key ID</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 z-10">
+                                            <Key size={16} />
+                                        </div>
+                                        <TextInput
+                                            value={data.r2_access_key_id}
+                                            onChange={e => setData('r2_access_key_id', e.target.value)}
+                                            placeholder="R2 Access Key ID"
+                                            className="pl-10 rounded-[4px] font-mono text-[12px]"
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Secret Key */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[12px] font-bold text-slate-700 flex items-center gap-1.5">
-                                        <Key size={13} /> Secret Access Key
-                                    </label>
+                                    <label className="text-[13px] font-bold text-slate-700">Secret Access Key</label>
                                     <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 z-10">
+                                            <Key size={16} />
+                                        </div>
                                         <TextInput
                                             type={showSecret ? 'text' : 'password'}
                                             value={data.r2_secret_access_key}
                                             onChange={e => setData('r2_secret_access_key', e.target.value)}
                                             placeholder="••••••••••••••••"
-                                            className="pr-10 rounded-[4px] font-mono text-[12px]"
+                                            className="pl-10 pr-10 rounded-[4px] font-mono text-[12px]"
                                         />
                                         <button
                                             type="button"

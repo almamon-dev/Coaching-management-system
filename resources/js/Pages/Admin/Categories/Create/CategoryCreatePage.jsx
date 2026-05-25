@@ -23,7 +23,10 @@ import Notify from '@/Utils/Notify';
 
 const CategoryCreatePage = ({ auth, categories }) => {
     const { data, setData, post, processing, errors } = useForm({
-        name: "",
+        name: {
+            en: "",
+            bn: ""
+        },
         slug: "",
         parent_id: "",
         is_active: true,
@@ -32,14 +35,14 @@ const CategoryCreatePage = ({ auth, categories }) => {
 
     const [preview, setPreview] = useState(null);
 
-    // Auto-generate slug from name
+    // Auto-generate slug from English name
     useEffect(() => {
-        const slug = data.name
+        const slug = data.name.en
             .toLowerCase()
             .replace(/[^\w ]+/g, "")
             .replace(/ +/g, "-");
         setData("slug", slug);
-    }, [data.name]);
+    }, [data.name.en]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -102,15 +105,27 @@ const CategoryCreatePage = ({ auth, categories }) => {
                             <div className="p-6 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-1">
-                                        <InputLabel value="Category Name" />
+                                        <InputLabel value="Category Name (English)" />
                                         <TextInput
                                             type="text"
-                                            value={data.name}
-                                            onChange={(e) => setData("name", e.target.value)}
+                                            value={data.name.en}
+                                            onChange={(e) => setData("name", { ...data.name, en: e.target.value })}
                                             className="w-full"
                                             placeholder="e.g. Electronics, Fashion"
                                         />
-                                        <InputError message={errors.name} />
+                                        <InputError message={errors['name.en']} />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <InputLabel value="Category Name (Bangla)" />
+                                        <TextInput
+                                            type="text"
+                                            value={data.name.bn}
+                                            onChange={(e) => setData("name", { ...data.name, bn: e.target.value })}
+                                            className="w-full"
+                                            placeholder="উদা: ইলেকট্রনিক্স"
+                                        />
+                                        <InputError message={errors['name.bn']} />
                                     </div>
 
                                     <div className="space-y-1">

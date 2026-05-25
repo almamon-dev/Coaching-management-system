@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Support\Media;
 
+use Illuminate\Support\Facades\Storage;
+
 final class FileRemover
 {
     /**
-     * Delete a file from public path.
+     * Delete a file from the default storage disk.
      */
     public static function delete(?string $filePath): bool
     {
@@ -15,8 +17,16 @@ final class FileRemover
             return false;
         }
 
-        $fullPath = public_path($filePath);
+        // Clean up path
+        $filePath = ltrim($filePath, '/');
+        if (str_starts_with($filePath, 'storage/')) {
+            $filePath = substr($filePath, 8);
+        }
 
-        return (file_exists($fullPath) && is_file($fullPath)) && @unlink($fullPath);
+        if (Storage::exists($filePath)) {
+            return Storage::delete($filePath);
+        }
+
+        return false;
     }
 }

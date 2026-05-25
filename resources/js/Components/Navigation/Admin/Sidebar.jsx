@@ -127,8 +127,12 @@ const RAW_MENU_GROUPS = [
                     { label: "Email Settings", getPath: () => route('admin.settings.system.email') },
                     { label: "Payment Gateways", getPath: () => route('admin.settings.financial.gateway') },
                     { label: "Shipping & Delivery", getPath: () => route('admin.logistics.configuration.index') },
+                    { label: "Localization", getPath: () => route('admin.settings.website.localization') },
+                    { label: "Appearance", getPath: () => route('admin.settings.website.appearance') },
+                    { label: "Prefixes", getPath: () => route('admin.settings.website.prefixes') },
                     { label: "Admin Profile", getPath: () => route('admin.settings.general.profile') },
                     { label: "Security", getPath: () => route('admin.settings.general.security') },
+                    { label: "Storage", getPath: () => route('admin.settings.system.storage') },
                 ],
             },
             {
@@ -249,7 +253,7 @@ const NavItem = React.memo(({ item, isCollapsed, currentPath, openTicketsCount }
                     </div>
 
                     {!isCollapsed && (
-                        <div className="max-h-0 overflow-hidden peer-checked:max-h-60 peer-checked:mt-0.5 ml-5 space-y-0.5 will-change-[max-height]">
+                        <div className="max-h-0 overflow-hidden peer-checked:max-h-[800px] peer-checked:mt-0.5 ml-5 space-y-0.5 transition-all duration-300 ease-in-out will-change-[max-height]">
                             {item.children.map((child) => (
                                 <SubMenuItem key={child.label} child={child} currentPath={currentPath} />
                             ))}

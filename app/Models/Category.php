@@ -7,10 +7,13 @@ use App\Support\Cache\CacheManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public $translatable = ['name'];
 
     protected $guarded = ['id'];
 
@@ -141,5 +144,21 @@ class Category extends Model
 
             return $ids;
         });
+    }
+
+    /**
+     * Override toArray to ensure translatable fields are returned as strings by default,
+     * while providing the full translations array in a separate key for forms.
+     */
+    public function toArray()
+    {
+        $attributes = parent::toArray();
+        
+        foreach ($this->getTranslatableAttributes() as $field) {
+            $attributes[$field] = $this->getTranslation($field, app()->getLocale());
+            $attributes[$field.'_translations'] = $this->getTranslations($field);
+        }
+        
+        return $attributes;
     }
 }

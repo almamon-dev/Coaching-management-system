@@ -69,6 +69,11 @@ class HandleInertiaRequests extends Middleware
             'settings' => [
                 'site_name' => config('app.name', 'Admin Panel'),
             ],
+            'locale' => app()->getLocale(),
+            'translations' => \Illuminate\Support\Facades\Cache::remember('lang_' . app()->getLocale(), 600, function () {
+                $path = base_path('lang/' . app()->getLocale() . '.json');
+                return file_exists($path) ? json_decode(file_get_contents($path), true) : [];
+            }),
             'categories' => $isAdmin ? [] : app(\App\Caches\Admin\Category\CategoryCache::class)->getNavbarCategoriesTree(),
             'brands' => $isAdmin ? [] : \Illuminate\Support\Facades\Cache::remember('global_brands_list', 3600, function () {
                 return \App\Models\Brand::select('id', 'name', 'slug', 'logo as image')->where('status', 1)->get();

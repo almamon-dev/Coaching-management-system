@@ -23,7 +23,10 @@ import Notify from '@/Utils/Notify';
 
 const CategoryEditPage = ({ auth, category, categories }) => {
     const { data, setData, post, processing, errors } = useForm({
-        name: category.name || "",
+        name: {
+            en: category?.name_translations?.en || category?.name || "",
+            bn: category?.name_translations?.bn || ""
+        },
         slug: category.slug || "",
         parent_id: category.parent_id || "",
         is_active: Boolean(category.status),
@@ -96,15 +99,27 @@ const CategoryEditPage = ({ auth, category, categories }) => {
                             <div className="p-6 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-1">
-                                        <InputLabel value="Category Name" />
+                                        <InputLabel value="Category Name (English)" />
                                         <TextInput
                                             type="text"
-                                            value={data.name}
-                                            onChange={(e) => setData("name", e.target.value)}
+                                            value={data.name.en}
+                                            onChange={(e) => setData("name", { ...data.name, en: e.target.value })}
                                             className="w-full"
                                             placeholder="Enter category name"
                                         />
-                                        <InputError message={errors.name} />
+                                        <InputError message={errors['name.en']} />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <InputLabel value="Category Name (Bangla)" />
+                                        <TextInput
+                                            type="text"
+                                            value={data.name.bn}
+                                            onChange={(e) => setData("name", { ...data.name, bn: e.target.value })}
+                                            className="w-full"
+                                            placeholder="উদা: ইলেকট্রনিক্স"
+                                        />
+                                        <InputError message={errors['name.bn']} />
                                     </div>
 
                                     <div className="space-y-1">

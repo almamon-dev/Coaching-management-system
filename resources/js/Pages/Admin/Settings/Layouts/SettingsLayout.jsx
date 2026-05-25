@@ -14,7 +14,8 @@ import {
     ChevronRight,
     Settings,
     Shield,
-    HardDrive
+    HardDrive,
+    Truck
 } from 'lucide-react';
 
 export default function SettingsLayout({ title, subtitle, children, processing = false, onSave = null }) {
@@ -83,6 +84,13 @@ export default function SettingsLayout({ title, subtitle, children, processing =
             icon: HardDrive,
             href: route('admin.settings.system.storage'),
             active: url.includes('/settings/system/storage')
+        },
+        {
+            id: 'shipping',
+            label: 'Shipping & Delivery',
+            icon: Truck,
+            href: route('admin.logistics.configuration.index'),
+            active: url.includes('/logistics/configuration')
         },
     ];
 

@@ -61,7 +61,7 @@ const ProductGallery = memo(({ product }) => {
                 >
                     <img
                         src={selectedImage}
-                        className="max-w-full max-h-full object-contain mix-blend-multiply transition-transform duration-700 ease-in-out group-hover:scale-105"
+                        className="max-w-full max-h-full object-contain mix-blend-multiply contrast-[1.1] brightness-[1.05] transition-transform duration-700 ease-in-out group-hover:scale-105"
                         alt={product.name}
                         fetchpriority="high"
                         decoding="async"

@@ -43,7 +43,7 @@ const CartModal = memo(({ isOpen, onClose, product, quantity = 1 }) => {
                 {/* Executive Close Interface */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-[#4f46e5] hover:rotate-90 transition-all duration-300 p-1 z-10"
+                    className="absolute top-4 right-4 text-slate-400 hover:text-[#10b981] hover:rotate-90 transition-all duration-300 p-1 z-10"
                     aria-label="Close modal"
                 >
                     <X size={20} strokeWidth={2.5} />
@@ -57,7 +57,7 @@ const CartModal = memo(({ isOpen, onClose, product, quantity = 1 }) => {
                                 <CheckCircle2 className="text-white" size={20} strokeWidth={2.5} />
                             </div>
                             <div className="text-[15px] text-[#081621] leading-relaxed font-medium">
-                                Successfully added <span className="text-[#4f46e5] font-black underline underline-offset-4 decoration-2">"{product.name}"</span> to your shopping cart!
+                                Successfully added <span className="text-[#10b981] font-black underline underline-offset-4 decoration-2">"{product.name}"</span> to your shopping cart!
                             </div>
                         </div>
 
@@ -69,7 +69,7 @@ const CartModal = memo(({ isOpen, onClose, product, quantity = 1 }) => {
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-[12px] text-slate-500 font-medium">Cart Total:</span>
-                                <span className="text-[18px] font-black text-[#4f46e5]">৳{parseFloat(currentPrice * quantity).toLocaleString()}</span>
+                                <span className="text-[18px] font-black text-[#10b981]">৳{parseFloat(currentPrice * quantity).toLocaleString()}</span>
                             </div>
                         </div>
                     </div>
@@ -78,14 +78,14 @@ const CartModal = memo(({ isOpen, onClose, product, quantity = 1 }) => {
                     <div className="flex flex-wrap gap-3 mt-8">
                         <button
                             onClick={handleViewCart}
-                            className="flex-1 md:flex-none px-8 py-2.5 bg-[#3749bb] text-white font-bold rounded-sm hover:bg-[#2e3d9e] transition-all text-[14px] shadow-md active:scale-95"
+                            className="flex-1 md:flex-none px-8 py-2.5 bg-[#10b981] text-white font-bold rounded-sm hover:bg-[#059669] transition-all text-[14px] shadow-md active:scale-95"
                         >
                             View Cart
                         </button>
                         <Link
                             href={route('checkout')}
                             onClick={onClose}
-                            className="flex-1 md:flex-none px-8 py-2.5 border border-[#3749bb] text-[#3749bb] font-bold rounded-sm hover:bg-[#3749bb] hover:text-white transition-all text-[14px] active:scale-95 text-center"
+                            className="flex-1 md:flex-none px-8 py-2.5 border border-[#10b981] text-[#10b981] font-bold rounded-sm hover:bg-[#10b981] hover:text-white transition-all text-[14px] active:scale-95 text-center"
                         >
                             Confirm Order
                         </Link>

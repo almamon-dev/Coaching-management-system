@@ -191,8 +191,8 @@ const ProductSidebar = memo(({
                 <div key={cat.id} className="flex flex-col">
                     <div
                         className={`flex items-center justify-between text-[12.5px] font-semibold py-1.5 px-3 rounded-[2px] transition-all group ${isActive
-                            ? "bg-[#4f46e5]/5 text-[#4f46e5]"
-                            : "text-slate-600 hover:text-[#4f46e5] hover:bg-slate-50"
+                            ? "bg-[#10b981]/5 text-[#10b981]"
+                            : "text-slate-600 hover:text-[#10b981] hover:bg-slate-50"
                             }`}
                         style={{ paddingLeft: `${Math.max(12, level * 12)}px` }}
                     >
@@ -200,9 +200,9 @@ const ProductSidebar = memo(({
                             onClick={() => router.get(route('frontend.url', cat.path || cat.slug))}
                             className="flex-1 text-left flex items-center gap-2 group/btn"
                         >
-                            <div className={`w-1 h-1 rounded-full transition-colors ${isActive ? "bg-[#4f46e5]" : "bg-slate-300 group-hover:bg-[#4f46e5]"
+                            <div className={`w-1 h-1 rounded-full transition-colors ${isActive ? "bg-[#10b981]" : "bg-slate-300 group-hover:bg-[#10b981]"
                                 }`} />
-                            <span className={isActive ? "font-bold text-[#4f46e5]" : ""}>{cat.name}</span>
+                            <span className={isActive ? "font-bold text-[#10b981]" : ""}>{cat.name}</span>
                         </button>
                         {hasChildren && (
                             <button
@@ -240,7 +240,7 @@ const ProductSidebar = memo(({
                         <div className="px-2">
                             <div className="relative h-2 w-full bg-slate-100 rounded-full">
                                 <div
-                                    className="absolute h-full bg-[#4f46e5] rounded-full"
+                                    className="absolute h-full bg-[#10b981] rounded-full"
                                     style={{
                                         left: `${(((localPrices.min || 0) - safePriceRange.min) / (Math.max(1, safePriceRange.max - safePriceRange.min))) * 100}%`,
                                         right: `${100 - (((localPrices.max || safePriceRange.max) - safePriceRange.min) / (Math.max(1, safePriceRange.max - safePriceRange.min))) * 100}%`
@@ -275,16 +275,16 @@ const ProductSidebar = memo(({
                                 />
 
                                 <div
-                                    className="absolute w-5 h-5 bg-white border-2 border-[#4f46e5] rounded-full shadow-sm flex items-center justify-center -top-1.5 -translate-x-1/2 z-30 pointer-events-none"
+                                    className="absolute w-5 h-5 bg-white border-2 border-[#10b981] rounded-full shadow-sm flex items-center justify-center -top-1.5 -translate-x-1/2 z-30 pointer-events-none"
                                     style={{ left: `${(((localPrices.min || 0) - safePriceRange.min) / (Math.max(1, safePriceRange.max - safePriceRange.min))) * 100}%` }}
                                 >
-                                    <div className="w-1.5 h-1.5 bg-[#4f46e5] rounded-full" />
+                                    <div className="w-1.5 h-1.5 bg-[#10b981] rounded-full" />
                                 </div>
                                 <div
-                                    className="absolute w-5 h-5 bg-white border-2 border-[#4f46e5] rounded-full shadow-sm flex items-center justify-center -top-1.5 -translate-x-1/2 z-30 pointer-events-none"
+                                    className="absolute w-5 h-5 bg-white border-2 border-[#10b981] rounded-full shadow-sm flex items-center justify-center -top-1.5 -translate-x-1/2 z-30 pointer-events-none"
                                     style={{ left: `${(((localPrices.max || safePriceRange.max) - safePriceRange.min) / (Math.max(1, safePriceRange.max - safePriceRange.min))) * 100}%` }}
                                 >
-                                    <div className="w-1.5 h-1.5 bg-[#4f46e5] rounded-full" />
+                                    <div className="w-1.5 h-1.5 bg-[#10b981] rounded-full" />
                                 </div>
                             </div>
                         </div>
@@ -299,14 +299,14 @@ const ProductSidebar = memo(({
                             <TextInput
                                 type="number"
                                 value={localPrices.min}
-                                className="w-[47%] h-9 border border-slate-200 text-[13px] font-medium text-[#081621] focus:border-[#4f46e5] outline-none text-center bg-white rounded-[1px] px-2"
+                                className="w-[47%] h-9 border border-slate-200 text-[13px] font-medium text-[#081621] focus:border-[#10b981] outline-none text-center bg-white rounded-[1px] px-2"
                                 onChange={(e) => setLocalPrices(prev => ({ ...prev, min: Number(e.target.value) }))}
                                 onBlur={() => applyPriceFilter(localPrices.min, undefined)}
                             />
                             <TextInput
                                 type="number"
                                 value={localPrices.max}
-                                className="w-[47%] h-9 border border-slate-200 text-[13px] font-medium text-[#081621] focus:border-[#4f46e5] outline-none text-center bg-white rounded-[1px] px-2"
+                                className="w-[47%] h-9 border border-slate-200 text-[13px] font-medium text-[#081621] focus:border-[#10b981] outline-none text-center bg-white rounded-[1px] px-2"
                                 onChange={(e) => setLocalPrices(prev => ({ ...prev, max: Number(e.target.value) }))}
                                 onBlur={() => applyPriceFilter(undefined, localPrices.max)}
                             />
@@ -333,14 +333,14 @@ const ProductSidebar = memo(({
                         ].map((item) => (
                             <label
                                 key={item.value}
-                                className="flex items-center gap-2 py-1.5 px-2 cursor-pointer group hover:bg-slate-50/80 rounded-[2px] transition-all duration-200 border-l-2 border-transparent hover:border-[#4f46e5]/30"
+                                className="flex items-center gap-2 py-1.5 px-2 cursor-pointer group hover:bg-slate-50/80 rounded-[2px] transition-all duration-200 border-l-2 border-transparent hover:border-[#10b981]/30"
                             >
                                 <div className="relative flex items-center">
                                     <input
                                         type="checkbox"
                                         checked={localFilters.status?.split(',').includes(item.value)}
                                         onChange={() => handleFilterChange('status', item.value)}
-                                        className="w-[15px] h-[15px] rounded-[2px] border-slate-300 text-[#4f46e5] focus:ring-0 focus:ring-offset-0 cursor-pointer transition-colors"
+                                        className="w-[15px] h-[15px] rounded-[2px] border-slate-300 text-[#10b981] focus:ring-0 focus:ring-offset-0 cursor-pointer transition-colors"
                                     />
                                 </div>
                                 <span className="text-[12.5px] font-semibold text-slate-600 group-hover:text-[#081621] transition-colors tracking-tight">{item.label}</span>
@@ -375,7 +375,7 @@ const ProductSidebar = memo(({
                                             placeholder={`Search ${variant.name}...`}
                                             value={variantSearch}
                                             onChange={(e) => setVariantSearches(prev => ({ ...prev, [variant.id]: e.target.value }))}
-                                            className="w-full h-7 px-2 border border-slate-100 rounded-[1px] text-[11px] font-medium placeholder:text-slate-400 bg-slate-50/50 focus:border-[#4f46e5] focus:ring-0 outline-none transition-all"
+                                            className="w-full h-7 px-2 border border-slate-100 rounded-[1px] text-[11px] font-medium placeholder:text-slate-400 bg-slate-50/50 focus:border-[#10b981] focus:ring-0 outline-none transition-all"
                                         />
                                     </div>
                                 )}
@@ -383,14 +383,14 @@ const ProductSidebar = memo(({
                                 {filteredValues.map((val) => (
                                     <label
                                         key={val}
-                                        className="flex items-center gap-2 py-1.5 px-2 cursor-pointer group hover:bg-slate-50/80 rounded-[2px] transition-all duration-200 border-l-2 border-transparent hover:border-[#4f46e5]/30"
+                                        className="flex items-center gap-2 py-1.5 px-2 cursor-pointer group hover:bg-slate-50/80 rounded-[2px] transition-all duration-200 border-l-2 border-transparent hover:border-[#10b981]/30"
                                     >
                                         <div className="relative flex items-center">
                                             <input
                                                 type="checkbox"
                                                 checked={localFilters.variants?.[variant.id]?.split(',').includes(val)}
                                                 onChange={() => handleFilterChange('variant', val, variant.id)}
-                                                className="w-[15px] h-[15px] rounded-[2px] border-slate-300 text-[#4f46e5] focus:ring-0 focus:ring-offset-0 cursor-pointer transition-colors"
+                                                className="w-[15px] h-[15px] rounded-[2px] border-slate-300 text-[#10b981] focus:ring-0 focus:ring-offset-0 cursor-pointer transition-colors"
                                             />
                                         </div>
                                         <span className="text-[12.5px] font-semibold text-slate-600 group-hover:text-[#081621] transition-colors tracking-tight">{val}</span>

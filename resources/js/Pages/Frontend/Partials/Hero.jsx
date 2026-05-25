@@ -5,6 +5,7 @@ import {
     BookOpen, Smartphone, Home, Gamepad2, Grid, Sparkles,
     CreditCard, Tag, ShieldCheck, Truck
 } from 'lucide-react';
+import { useTranslation } from '@/Hooks/useTranslation';
 
 const ICON_MAP = [
     { key: 'food', icon: <Apple size={18} strokeWidth={1.5} />, skipIf: 'baby' },
@@ -47,6 +48,7 @@ const SLIDES = [
 ];
 
 export default function Hero({ categories = [] }) {
+    const { t } = useTranslation();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [hoveredCatId, setHoveredCatId] = useState(null);
     const [hoveredSubCatId, setHoveredSubCatId] = useState(null);
@@ -247,8 +249,8 @@ export default function Hero({ categories = [] }) {
                         <CreditCard size={24} strokeWidth={1.5} />
                     </div>
                     <div>
-                        <h4 className="font-bold text-slate-800 text-[14px]">Payment only online</h4>
-                        <p className="text-[12px] text-slate-500 mt-0.5 leading-tight">Tasigförsamhet beteendedesign. Mobile checkout.</p>
+                        <h4 className="font-bold text-slate-800 text-[14px]">{t('Payment only online')}</h4>
+                        <p className="text-[12px] text-slate-500 mt-0.5 leading-tight">{t('payment_desc')}</p>
                     </div>
                 </div>
 
@@ -257,8 +259,8 @@ export default function Hero({ categories = [] }) {
                         <Tag size={24} strokeWidth={1.5} />
                     </div>
                     <div>
-                        <h4 className="font-bold text-slate-800 text-[14px]">New stocks and sales</h4>
-                        <p className="text-[12px] text-slate-500 mt-0.5 leading-tight">Tasigförsamhet beteendedesign. Mobile checkout.</p>
+                        <h4 className="font-bold text-slate-800 text-[14px]">{t('New stocks and sales')}</h4>
+                        <p className="text-[12px] text-slate-500 mt-0.5 leading-tight">{t('stocks_desc')}</p>
                     </div>
                 </div>
 
@@ -267,8 +269,8 @@ export default function Hero({ categories = [] }) {
                         <ShieldCheck size={24} strokeWidth={1.5} />
                     </div>
                     <div>
-                        <h4 className="font-bold text-slate-800 text-[14px]">Quality assurance</h4>
-                        <p className="text-[12px] text-slate-500 mt-0.5 leading-tight">Tasigförsamhet beteendedesign. Mobile checkout.</p>
+                        <h4 className="font-bold text-slate-800 text-[14px]">{t('Quality assurance')}</h4>
+                        <p className="text-[12px] text-slate-500 mt-0.5 leading-tight">{t('quality_desc')}</p>
                     </div>
                 </div>
 
@@ -277,8 +279,8 @@ export default function Hero({ categories = [] }) {
                         <Truck size={24} strokeWidth={1.5} />
                     </div>
                     <div>
-                        <h4 className="font-bold text-slate-800 text-[14px]">Delivery from 1 hour</h4>
-                        <p className="text-[12px] text-slate-500 mt-0.5 leading-tight">Tasigförsamhet beteendedesign. Mobile checkout.</p>
+                        <h4 className="font-bold text-slate-800 text-[14px]">{t('Delivery from 1 hour')}</h4>
+                        <p className="text-[12px] text-slate-500 mt-0.5 leading-tight">{t('delivery_desc')}</p>
                     </div>
                 </div>
             </div>

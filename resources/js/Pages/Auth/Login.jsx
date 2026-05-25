@@ -6,8 +6,10 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
+import { useTranslation } from '@/Hooks/useTranslation';
 
 export default function Login({ status, canResetPassword, isAdmin }) {
+    const { t } = useTranslation();
     const { categories, brands } = usePage().props;
     const [copied, setCopied] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -43,15 +45,15 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
                     </Link>
                     <ChevronRight size={14} className="text-gray-300" />
-                    <Link href="#" className="text-gray-600 hover:text-[#ef4a23]">Account</Link>
+                    <Link href="#" className="text-gray-600 hover:text-[#ef4a23]">{t('Account')}</Link>
                     <ChevronRight size={14} className="text-gray-300" />
-                    <span className="text-gray-400">Login</span>
+                    <span className="text-gray-400">{t('Login')}</span>
                 </div>
             </div>
 
             <div className="max-w-[400px] mx-auto px-4 pt-5 pb-20">
                 <div className="mb-6 text-center">
-                    <h1 className="text-[22px] font-bold text-[#081621]">{isAdmin ? 'Admin Login' : 'Account Login'}</h1>
+                    <h1 className="text-[22px] font-bold text-[#081621]">{isAdmin ? 'Admin Login' : t('Account Login')}</h1>
                 </div>
 
                 {status && (
@@ -62,7 +64,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
 
                 <form onSubmit={submit} className="space-y-4">
                     <div className="space-y-2">
-                        <InputLabel htmlFor="email" value="Phone / E-Mail" className="text-[14px] font-semibold text-[#081621]" />
+                        <InputLabel htmlFor="email" value={t('Phone / E-Mail')} className="text-[14px] font-semibold text-[#081621]" />
                         <div className="relative">
                             <TextInput
                                 id="email"
@@ -71,7 +73,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                                 value={data.email}
                                 className="w-full h-[45px] border-gray-200 focus:border-[#3749bb] focus:ring-0 rounded-[4px] text-[14px] placeholder-gray-300"
                                 onChange={(e) => setData('email', e.target.value)}
-                                placeholder="Phone / E-Mail"
+                                placeholder={t('Phone / E-Mail')}
                                 required
                             />
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500">
@@ -83,13 +85,13 @@ export default function Login({ status, canResetPassword, isAdmin }) {
 
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <InputLabel htmlFor="password" value="Password" className="text-[14px] font-semibold text-[#081621]" />
+                            <InputLabel htmlFor="password" value={t('Password')} className="text-[14px] font-semibold text-[#081621]" />
                             {!isAdmin && canResetPassword && (
                                 <Link
                                     href={route('password.request')}
                                     className="text-[13px] text-[#ef4a23] hover:underline"
                                 >
-                                    Forgotten Password?
+                                    {t('Forgotten Password?')}
                                 </Link>
                             )}
                         </div>
@@ -100,7 +102,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                             value={data.password}
                             className="w-full h-[45px] border-gray-200 focus:border-[#3749bb] focus:ring-0 rounded-[4px] text-[14px] placeholder-gray-300"
                             onChange={(e) => setData('password', e.target.value)}
-                            placeholder="Password"
+                            placeholder={t('Password')}
                             required
                         />
                         <InputError message={errors.password} />
@@ -111,7 +113,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                         className="w-full h-[45px] bg-[#3749bb] hover:bg-[#2c3a96] text-white font-semibold text-[13px] rounded-[4px] transition-colors uppercase mt-2"
                         disabled={processing}
                     >
-                        Login
+                        {t('Login')}
                     </button>
 
                     {!isAdmin && (
@@ -121,7 +123,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                                     <div className="w-full border-t border-gray-100"></div>
                                 </div>
                                 <div className="relative flex justify-center text-[13px]">
-                                    <span className="px-4 bg-white text-gray-500 font-medium">Don't have an account?</span>
+                                    <span className="px-4 bg-white text-gray-500 font-medium">{t("Don't have an account?")}</span>
                                 </div>
                             </div>
 
@@ -129,13 +131,13 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                                 href={route('register')}
                                 className="w-full h-[45px] flex items-center justify-center border border-[#3749bb] text-[#3749bb] hover:bg-[#3749bb] hover:text-white font-semibold text-[13px] rounded-[4px] transition-all uppercase"
                             >
-                                Create Your Account
+                                {t('Create Your Account')}
                             </Link>
 
                             <div className="mt-8 p-4 bg-slate-50 border border-slate-100 rounded-[8px] border-dashed">
                                 <div className="flex items-center gap-2 mb-3">
 
-                                    <p className="text-[11px] font-bold text-slate-500">Test Credentials</p>
+                                    <p className="text-[11px] font-bold text-slate-500">{t('Test Credentials')}</p>
                                 </div>
                                 <div className="space-y-3">
                                     <button
@@ -145,11 +147,11 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                                     >
                                         <div className="text-left">
                                             <p className="text-[13px] font-bold text-[#081621] group-hover:text-[#3749bb]">mamon193p@gmail.com</p>
-                                            <p className="text-[11px] text-slate-400 font-medium">Password: user123</p>
+                                            <p className="text-[11px] text-slate-400 font-medium">{t('Password')}: user123</p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span className={`text-[10px] font-bold transition-all ${copied ? 'text-emerald-500 opacity-100' : 'text-[#3749bb] opacity-0 group-hover:opacity-100'}`}>
-                                                {copied ? 'COPIED!' : 'COPY & FILL'}
+                                                {copied ? t('COPIED!') : t('COPY & FILL')}
                                             </span>
                                             <svg className={`w-4 h-4 transition-colors ${copied ? 'text-emerald-500' : 'text-slate-300 group-hover:text-[#3749bb]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
                                         </div>
@@ -175,7 +177,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                 <div className="w-full max-w-[370px] relative z-10">
                     {/* Compact Login Card */}
                     <div className="bg-[#0b0f19]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-indigo-500/40 before:to-transparent">
-                        
+
                         {/* Header Inside Card to save space */}
                         <div className="flex items-center gap-3 mb-6">
                             <div className="inline-flex items-center justify-center w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-lg shadow-[0_0_15px_rgba(99,102,241,0.15)] flex-shrink-0">

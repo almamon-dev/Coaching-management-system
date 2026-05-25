@@ -287,6 +287,7 @@ class SettingController extends Controller
             $content = file_get_contents($path);
 
             foreach ($data as $key => $value) {
+                $value = (string) $value;
                 // If value has spaces or special chars, wrap in quotes
                 $safeValue = (strpos($value, ' ') !== false || strpos($value, '€') !== false) ? "\"$value\"" : $value;
                 
