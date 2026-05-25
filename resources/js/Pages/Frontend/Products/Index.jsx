@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
+import { Home, ChevronRight } from 'lucide-react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 
 // Partials
@@ -54,19 +55,29 @@ const Index = ({
         <>
             <Head title={`${title} - Star Tech`} />
 
-            <div className="bg-[#f2f4f8] min-h-screen pb-8">
-
-                {/* 1. Category/Brand Header Section */}
-                <CategoryHeader
-                    category={category}
-                    brand={brand}
-                    breadcrumbs={breadcrumbs}
-                    priceRange={priceRange}
-                    subcategories={subcategories}
-                    relevantBrands={relevantBrands}
-                />
+            <div className="bg-[#f2f4f8] min-h-screen pt-8 pb-8">
 
                 <div className="container mx-auto px-4">
+                    {/* Breadcrumbs */}
+                    {breadcrumbs && breadcrumbs.length > 0 && (
+                        <nav className="flex items-center gap-2 text-[13px] text-slate-500 mb-6">
+                            <Link href="/" className="hover:text-[#5c319e] flex items-center gap-1 transition-colors">
+                                <Home size={14} />
+                            </Link>
+                            {breadcrumbs.map((crumb, idx) => (
+                                <React.Fragment key={idx}>
+                                    <ChevronRight size={12} className="text-slate-400" />
+                                    <Link
+                                        href={crumb.type === 'brand_category' ? `/${crumb.slug}` : route('frontend.url', crumb.slug)}
+                                        className={`transition-colors ${idx === breadcrumbs.length - 1 ? 'font-bold text-[#081621]' : 'hover:text-[#5c319e]'}`}
+                                    >
+                                        {crumb.name}
+                                    </Link>
+                                </React.Fragment>
+                            ))}
+                        </nav>
+                    )}
+
                     <div className="flex flex-col lg:flex-row gap-8">
 
                         {/* 2. Filter Sidebar Section */}

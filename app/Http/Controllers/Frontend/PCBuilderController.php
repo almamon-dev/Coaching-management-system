@@ -67,7 +67,7 @@ class PCBuilderController extends Controller
                     ->from('product_categories')
                     ->whereIn('category_id', $categoryIds);
             })
-            ->with(['brand', 'primaryImage', 'features', 'techSpecs']);
+            ->with(['brand', 'primaryImage']);
 
         // ── COMPATIBILITY ENGINE ──
         // 1. Processor & Motherboard Compatibility (Socket match)
@@ -78,9 +78,7 @@ class PCBuilderController extends Controller
                 if ($cpuSocket) {
                     $query->where(function ($q) use ($cpuSocket) {
                         $q->where('name', 'like', "%{$cpuSocket}%")
-                          ->orWhereHas('techSpecs', function ($sub) use ($cpuSocket) {
-                              $sub->where('spec_value', 'like', "%{$cpuSocket}%");
-                          });
+                          ->orWhere('description', 'like', "%{$cpuSocket}%");
                     });
                 }
             }
@@ -93,9 +91,7 @@ class PCBuilderController extends Controller
                 if ($mbSocket) {
                     $query->where(function ($q) use ($mbSocket) {
                         $q->where('name', 'like', "%{$mbSocket}%")
-                          ->orWhereHas('techSpecs', function ($sub) use ($mbSocket) {
-                              $sub->where('spec_value', 'like', "%{$mbSocket}%");
-                          });
+                          ->orWhere('description', 'like', "%{$mbSocket}%");
                     });
                 }
             }
@@ -109,9 +105,7 @@ class PCBuilderController extends Controller
                 if ($ramType) {
                     $query->where(function ($q) use ($ramType) {
                         $q->where('name', 'like', "%{$ramType}%")
-                          ->orWhereHas('techSpecs', function ($sub) use ($ramType) {
-                              $sub->where('spec_value', 'like', "%{$ramType}%");
-                          });
+                          ->orWhere('description', 'like', "%{$ramType}%");
                     });
                 }
             }
@@ -124,9 +118,7 @@ class PCBuilderController extends Controller
                 if ($ramType) {
                     $query->where(function ($q) use ($ramType) {
                         $q->where('name', 'like', "%{$ramType}%")
-                          ->orWhereHas('techSpecs', function ($sub) use ($ramType) {
-                              $sub->where('spec_value', 'like', "%{$ramType}%");
-                          });
+                          ->orWhere('description', 'like', "%{$ramType}%");
                     });
                 }
             }
@@ -375,10 +367,7 @@ class PCBuilderController extends Controller
      */
     private function detectSocket(Product $product): ?string
     {
-        $haystack = strtolower($product->name . ' ' . $product->description);
-        foreach ($product->techSpecs as $spec) {
-            $haystack .= ' ' . strtolower($spec->spec_value);
-        }
+        $haystack = strtolower($product->name . ' ' . ($product->description ?? ''));
 
         if (Str::contains($haystack, 'lga1700')) return 'LGA1700';
         if (Str::contains($haystack, 'lga1200')) return 'LGA1200';
@@ -394,10 +383,7 @@ class PCBuilderController extends Controller
      */
     private function detectRamType(Product $product): ?string
     {
-        $haystack = strtolower($product->name . ' ' . $product->description);
-        foreach ($product->techSpecs as $spec) {
-            $haystack .= ' ' . strtolower($spec->spec_value);
-        }
+        $haystack = strtolower($product->name . ' ' . ($product->description ?? ''));
 
         if (Str::contains($haystack, 'ddr5')) return 'DDR5';
         if (Str::contains($haystack, 'ddr4')) return 'DDR4';

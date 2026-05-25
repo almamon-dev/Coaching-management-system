@@ -46,7 +46,6 @@ export const useProductForm = (initialBrands, initialCategories, warehouses) => 
         benefits: '',
         side_effects: '',
         formula: '',
-        attributes: [],
         meta_title: '',
         meta_description: '',
         tags: '',
@@ -113,31 +112,7 @@ export const useProductForm = (initialBrands, initialCategories, warehouses) => 
         return () => clearTimeout(timeout);
     }, [data]);
 
-    // Attribute Fetching - Optimized with useCallback
-    const fetchAttributes = useCallback(async () => {
-        const deepestCategoryId = data.sub_sub_category_id || data.sub_category_id || data.category_id;
-        if (!deepestCategoryId) return;
 
-        try {
-            const response = await axios.get(route('admin.categories.attributes'), {
-                params: { category_ids: [deepestCategoryId] }
-            });
-            const attributes = response.data;
-            const newAttrs = attributes.map(attr => {
-                const existing = data.attributes.find(a => a.id === attr.id);
-                return {
-                    id: attr.id, name: attr.name, type: attr.type, is_required: attr.is_required,
-                    value: existing ? existing.value : '', options: attr.values || [],
-                    unit: attr.unit || '', placeholder: attr.placeholder || ''
-                };
-            });
-            setData('attributes', newAttrs);
-        } catch (err) {
-            console.error('Attr error', err);
-        }
-    }, [data.category_id, data.sub_category_id, data.sub_sub_category_id]);
-
-    useEffect(() => { fetchAttributes(); }, [data.category_id, data.sub_category_id, data.sub_sub_category_id]);
 
     // Media Logic
     const handleThumbnailChange = useCallback((e) => {
@@ -149,6 +124,11 @@ export const useProductForm = (initialBrands, initialCategories, warehouses) => 
             reader.onloadend = () => setPreviews(prev => ({ ...prev, thumbnail: reader.result }));
             reader.readAsDataURL(file);
         }
+    }, [setData]);
+
+    const removeThumbnail = useCallback(() => {
+        setData("thumbnail", null);
+        setPreviews(prev => ({ ...prev, thumbnail: null }));
     }, [setData]);
 
     const handleGalleryChange = useCallback((e) => {
@@ -169,15 +149,7 @@ export const useProductForm = (initialBrands, initialCategories, warehouses) => 
     // Form Validation - Optimized
     const isFormValid = useMemo(() => {
         const requiredFields = ['name', 'slug', 'sku', 'category_id', 'price'];
-        const hasBaseFields = requiredFields.every(field => !!data[field]);
-        const hasRequiredAttributes = data.attributes.every(attr => {
-            if (attr.is_required) {
-                if (Array.isArray(attr.value)) return attr.value.length > 0;
-                return !!attr.value;
-            }
-            return true;
-        });
-        return hasBaseFields && hasRequiredAttributes;
+        return requiredFields.every(field => !!data[field]);
     }, [data]);
 
     // Quick Add
@@ -216,8 +188,8 @@ export const useProductForm = (initialBrands, initialCategories, warehouses) => 
         newCategoryName, setNewCategoryName,
         parentCategoryId, setParentCategoryId,
         isSavingQuick, previews,
-        handleThumbnailChange, handleGalleryChange, removeGalleryImage,
-        handleQuickAddBrand, generateSKU, fetchAttributes,
+        handleThumbnailChange, removeThumbnail, handleGalleryChange, removeGalleryImage,
+        handleQuickAddBrand, generateSKU,
         canPublish: isFormValid, handleSubmit
     };
 };

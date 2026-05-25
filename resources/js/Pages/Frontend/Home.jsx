@@ -2,7 +2,6 @@ import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import Hero from './Partials/Hero';
-import FeatureLinks from './Partials/FeatureLinks';
 import CategoryGrid from './Partials/CategoryGrid';
 import ProductCard from '@/Components/Frontend/ProductCard';
 import { MapPin, ChevronRight } from 'lucide-react';
@@ -13,10 +12,7 @@ export default function Home({ categories = [], featuredProducts = [], specialOf
             <Head title="DailyFresh Super Shop - Fresh Groceries Online in Bangladesh" />
 
             {/* Main Carousel & Banners */}
-            <Hero />
-
-            {/* Feature Bullet Links */}
-            <FeatureLinks />
+            <Hero categories={categories} />
 
             {/* Grid of Categories */}
             <CategoryGrid categories={categories} />

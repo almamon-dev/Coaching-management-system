@@ -115,6 +115,7 @@ const ProductEditPage = ({ auth, product, categories: initialCategories, brands:
                                     <MediaTab
                                         data={data} setData={setData} previews={form.previews}
                                         handleThumbnailChange={form.handleThumbnailChange}
+                                        removeThumbnail={form.removeThumbnail}
                                         handleGalleryChange={form.handleGalleryChange}
                                         removeGalleryImage={form.removeGalleryImage}
                                     />

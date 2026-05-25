@@ -39,7 +39,6 @@ export const useProductEdit = (product, initialBrands, initialCategories, wareho
         benefits: product.detail?.benefits || '',
         side_effects: product.detail?.side_effects || '',
         formula: product.detail?.formula || '',
-        attributes: [],
         meta_title: product.seo?.meta_title || '',
         meta_description: product.seo?.meta_description || '',
         tags: product.seo?.tags || '',
@@ -61,37 +60,6 @@ export const useProductEdit = (product, initialBrands, initialCategories, wareho
         gallery: galleryImages?.map(img => img.full_url) || []
     });
 
-    const fetchAttributes = () => {
-        const deepestCategoryId = data.sub_sub_category_id || data.sub_category_id || data.category_id;
-        if (!deepestCategoryId) return;
-
-        axios.get(route('admin.categories.attributes'), {
-            params: { category_ids: [deepestCategoryId] }
-        }).then(response => {
-            const attributes = response.data;
-            const newAttrs = attributes.map(attr => {
-                const pav = product.attribute_values?.find(v => v.attribute_id === attr.id);
-                let existingValue = '';
-                if (pav) {
-                    existingValue = pav.attribute_value ? pav.attribute_value.value : pav.value_text;
-                }
-                return {
-                    id: attr.id,
-                    name: attr.name,
-                    type: attr.type,
-                    value: existingValue || '',
-                    options: attr.values || [],
-                    unit: attr.unit || '',
-                    placeholder: attr.placeholder || ''
-                };
-            });
-            setData('attributes', newAttrs);
-        }).catch(err => {
-            console.error('Error fetching attributes:', err);
-        });
-    };
-
-    useEffect(() => { fetchAttributes(); }, [data.category_id, data.sub_category_id, data.sub_sub_category_id]);
 
     useEffect(() => {
         if (data.name !== product.name) {
@@ -112,6 +80,11 @@ export const useProductEdit = (product, initialBrands, initialCategories, wareho
             reader.onloadend = () => setPreviews(prev => ({ ...prev, thumbnail: reader.result }));
             reader.readAsDataURL(file);
         }
+    };
+
+    const removeThumbnail = () => {
+        setData("thumbnail", null);
+        setPreviews(prev => ({ ...prev, thumbnail: null }));
     };
 
     const handleGalleryChange = (e) => {
@@ -197,8 +170,8 @@ export const useProductEdit = (product, initialBrands, initialCategories, wareho
         newCategoryName, setNewCategoryName,
         parentCategoryId, setParentCategoryId,
         isSavingQuick,
-        previews, handleThumbnailChange, handleGalleryChange, removeGalleryImage,
+        previews, handleThumbnailChange, removeThumbnail, handleGalleryChange, removeGalleryImage,
         handleQuickAddBrand, handleQuickAddCategory,
-        fetchAttributes, handleSubmit
+        handleSubmit
     };
 };

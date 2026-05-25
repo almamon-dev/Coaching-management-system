@@ -79,8 +79,6 @@ class ProductController extends Controller
                 'brand',
                 'categories.parent.parent',
                 'images',
-                'techSpecs',
-                'features',
                 'reviews' => fn ($q) => $q->where('status', 1)->with('user')->latest(),
                 'questions' => fn ($q) => $q->with('user')->latest(),
             ])

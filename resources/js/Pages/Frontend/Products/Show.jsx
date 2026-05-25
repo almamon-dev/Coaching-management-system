@@ -12,6 +12,7 @@ import ProductPaymentOptions from './Partials/ProductPaymentOptions';
 import ProductActions from './Partials/ProductActions';
 import ProductTabs from './Partials/ProductTabs';
 import RelatedProducts from './Partials/RelatedProducts';
+import RecentlyViewed from './Partials/RecentlyViewed';
 import ProductPriceSummary from './Partials/ProductPriceSummary';
 import QuestionModal from '@/Components/Frontend/QuestionModal';
 import ReviewModal from '@/Components/Frontend/ReviewModal';
@@ -75,37 +76,35 @@ const Show = ({ product, breadcrumbs, relatedProducts }) => {
     return (
         <>
             <Head title={`${product.name} - Star Tech`} />
-            <div className="bg-[#f2f4f8] min-h-screen py-5">
+            <div className="bg-white min-h-screen py-5">
                 <div className="container mx-auto px-4">
                     {/* Contextual Navigation */}
                     <ProductBreadcrumbs breadcrumbs={breadcrumbs} />
 
                     {/* Primary Product Information Grid */}
-                    <div className="bg-white rounded-[2px] shadow-[0_1px_1px_rgba(0,0,0,0.1)] p-5 md:p-8 mb-8">
-                        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
-                            <ProductGallery product={product} />
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-10">
+                        <div className="lg:col-span-5 relative">
+                                <ProductGallery product={product} />
+                            </div>
                             
-                            <div className="flex-1 flex flex-col justify-between">
+                            <div className="lg:col-span-7 flex flex-col justify-start">
                                 <ProductInfo product={product} onViewMore={scrollToTabs} />
-                                
-                                <div className="mt-8">
-                                    <ProductPaymentOptions product={product} />
+                                <div className="mt-5">
                                     <ProductActions
                                         quantity={quantity}
                                         setQuantity={setQuantity}
                                         onAddToCart={handleAddToCart}
                                         onBuyNow={handleBuyNow}
-                                        isInWishlist={isInWishlist}
-                                        onToggleWishlist={handleToggleWishlist}
-                                    />
+                                    >
+                                        <ProductPaymentOptions product={product} />
+                                    </ProductActions>
                                 </div>
                             </div>
-                        </div>
                     </div>
 
                     {/* Secondary Content Sections (Specs, Reviews, Related Items) */}
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="flex-1">
+                    <div className="flex flex-col gap-8">
+                        <div>
                             <ProductTabs
                                 product={product}
                                 onAskQuestion={handleAskQuestion}
@@ -113,18 +112,23 @@ const Show = ({ product, breadcrumbs, relatedProducts }) => {
                             />
                         </div>
                         
-                        <aside className="w-full lg:w-[320px] shrink-0">
+                        <div>
                             {/* Performance optimization: Deferred loading for non-critical related items */}
                             <Deferred data="relatedProducts" fallback={
                                 <div className="animate-pulse space-y-4">
-                                    <div className="h-8 bg-slate-200 rounded w-1/2"></div>
-                                    <div className="h-24 bg-slate-200 rounded"></div>
-                                    <div className="h-24 bg-slate-200 rounded"></div>
+                                    <div className="h-8 bg-slate-200 rounded w-1/4"></div>
+                                    <div className="flex gap-4">
+                                        <div className="h-64 bg-slate-200 rounded w-1/4"></div>
+                                        <div className="h-64 bg-slate-200 rounded w-1/4"></div>
+                                        <div className="h-64 bg-slate-200 rounded w-1/4"></div>
+                                        <div className="h-64 bg-slate-200 rounded w-1/4"></div>
+                                    </div>
                                 </div>
                             }>
+                                <RecentlyViewed relatedProducts={relatedProducts} />
                                 <RelatedProducts relatedProducts={relatedProducts} />
                             </Deferred>
-                        </aside>
+                        </div>
                     </div>
 
                     {/* Bottom Sticky Price Summary (Mobile focused) */}

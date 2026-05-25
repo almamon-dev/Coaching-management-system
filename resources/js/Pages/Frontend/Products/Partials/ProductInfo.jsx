@@ -12,55 +12,66 @@ import React, { memo } from 'react';
 const ProductInfo = memo(({ product, onViewMore }) => {
     return (
         <div className="flex-1">
-            <h1 className="text-2xl font-bold text-[#081621] mb-6 leading-tight tracking-tight">{product.name}</h1>
+            <h1 className="text-[32px] lg:text-[36px] font-bold text-[#081621] leading-tight mb-4 tracking-tight">
+                {product.name}
+            </h1>
 
-            {/* Status & Metadata Pills Grid (StarTech High-Density Style) */}
-            <div className="flex flex-wrap gap-2 mb-8">
-                <div className="bg-[#f2f4f8] px-3.5 py-1.5 rounded-full text-[12px] text-slate-500 font-medium border border-slate-100/50">
-                    Price: <span className="text-[#4f46e5] font-bold">৳{parseFloat(product.discount_price || product.price).toLocaleString()}</span>
-                </div>
-                <div className="bg-[#f2f4f8] px-3.5 py-1.5 rounded-full text-[12px] text-slate-500 font-medium border border-slate-100/50">
-                    Regular Price: <span className="text-[#081621] font-bold">৳{parseFloat(product.price).toLocaleString()}</span>
-                </div>
-                <div className="bg-[#f2f4f8] px-3.5 py-1.5 rounded-full text-[12px] text-slate-500 font-medium border border-slate-100/50">
-                    Status: <span className={`${product.status == 1 ? 'text-[#081621]' : 'text-red-500'} font-bold`}>{product.status == 1 ? "In Stock" : "Out of Stock"}</span>
-                </div>
-                <div className="bg-[#f2f4f8] px-3.5 py-1.5 rounded-full text-[12px] text-slate-500 font-medium border border-slate-100/50">
-                    Product Code: <span className="text-[#081621] font-bold">{product.sku}</span>
-                </div>
-                {product.brand?.name && (
-                    <div className="bg-[#f2f4f8] px-3.5 py-1.5 rounded-full text-[12px] text-slate-500 font-medium border border-slate-100/50">
-                        Brand: <span className="text-[#081621] font-bold">{product.brand.name}</span>
+            {/* Metadata (Rating, Brand, SKU) */}
+            <div className="flex items-center flex-wrap gap-3 text-[13px] text-slate-500 mb-6 pb-4 border-b border-slate-100">
+                {/* Simulated Rating */}
+                <div className="flex items-center gap-1.5">
+                    <div className="flex text-[#fbbf24]">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#e2e8f0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     </div>
+                    <div className="flex items-center gap-1">
+                        <span className="border border-slate-200 px-1.5 py-0.5 rounded text-[11px] font-bold text-slate-700">4.33</span>
+                        <span className="text-[12px] text-slate-400">3</span>
+                    </div>
+                </div>
+
+                <div className="w-[1px] h-3.5 bg-slate-200"></div>
+
+                {product.brand?.name && (
+                    <>
+                        <div className="flex items-center gap-1">
+                            Brand: <span className="text-[#081621] font-bold">{product.brand.name}</span>
+                        </div>
+                        <div className="w-[1px] h-3.5 bg-slate-200"></div>
+                    </>
                 )}
+                
+                <div className="flex items-center gap-1">
+                    SKU: <span className="text-[#081621] font-bold">{product.sku}</span>
+                </div>
             </div>
 
-            {/* Key Features Executive Summary */}
-            <div className="mb-4">
-                <h3 className="text-[15px] font-bold text-[#081621] mb-4">Key Features</h3>
-                <ul className="space-y-3">
-                    {product.features?.length > 0 ? product.features.map((f) => {
-                        const featureKey = f.id || f.feature || f.name;
-                        return (
-                            <li key={featureKey} className="flex items-start gap-3 group">
-                                <div className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 shrink-0 group-hover:bg-[#4f46e5] transition-colors" />
-                                <span className="text-[13px] text-slate-600 font-medium leading-normal">{f.feature}</span>
-                            </li>
-                        );
-                    }) : (
-                        <li className="text-[13px] text-slate-400 italic">No key features listed for this model.</li>
-                    )}
-                </ul>
+            {/* Short Description */}
+            <div className="mb-6">
+                <p className="text-[14px] text-slate-500 leading-relaxed">
+                    This high-quality product is designed to meet your everyday needs. Vivamus adipiscing nisl ut dolor dignissim semper. Nulla luctus malesuada tincidunt. Class aptent taciti sociosqu ad litora.
+                </p>
+            </div>
 
-                <button
-                    onClick={onViewMore}
-                    className="text-[#4f46e5] text-[13px] font-bold mt-6 hover:underline transition-all inline-flex items-center gap-1 group"
-                >
-                    View More Info
-                    <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
+            {/* Pricing */}
+            <div className="flex items-end gap-3">
+                {product.price > product.discount_price && product.discount_price > 0 ? (
+                    <>
+                        <span className="text-[36px] font-black text-[#081621] tracking-tight leading-none">
+                            ৳{parseFloat(product.discount_price).toLocaleString()}
+                        </span>
+                        <span className="text-[20px] font-medium text-slate-400 line-through mb-1">
+                            ৳{parseFloat(product.price).toLocaleString()}
+                        </span>
+                    </>
+                ) : (
+                    <span className="text-[36px] font-black text-[#081621] tracking-tight leading-none">
+                        ৳{parseFloat(product.price).toLocaleString()}
+                    </span>
+                )}
             </div>
         </div>
     );

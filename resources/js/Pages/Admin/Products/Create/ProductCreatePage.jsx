@@ -129,6 +129,7 @@ const ProductCreatePage = ({ auth, categories: initialCategories, brands: initia
                                     <MediaTab
                                         data={data} setData={setData} previews={form.previews}
                                         handleThumbnailChange={form.handleThumbnailChange}
+                                        removeThumbnail={form.removeThumbnail}
                                         handleGalleryChange={form.handleGalleryChange}
                                         removeGalleryImage={form.removeGalleryImage}
                                     />

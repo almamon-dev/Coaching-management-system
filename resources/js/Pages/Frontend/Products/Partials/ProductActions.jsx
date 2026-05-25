@@ -1,60 +1,78 @@
-import { Plus, Minus, Heart } from 'lucide-react';
+import { Plus, Minus, Heart, Share2, ArrowRightLeft, ShoppingBag } from 'lucide-react';
 
 /**
  * ProductActions Component
  * Handles quantity selection and buy/cart actions.
- * 
- * @param {Number} quantity - Current quantity value
- * @param {Function} setQuantity - State setter for quantity
- * @param {Function} onAddToCart - Handler for adding to cart
- * @param {Function} onBuyNow - Handler for immediate purchase
- * @param {Boolean} isInWishlist - Whether product is in wishlist
- * @param {Function} onToggleWishlist - Handler for wishlist toggle
  */
-const ProductActions = ({ quantity, setQuantity, onAddToCart, onBuyNow, isInWishlist, onToggleWishlist }) => {
+const ProductActions = ({ quantity, setQuantity, onAddToCart, onBuyNow, isInWishlist, onToggleWishlist, children }) => {
     return (
-        <div className="flex items-center gap-4">
-            {/* Quantity Selector */}
-            <div className="flex items-center border border-slate-200 rounded h-[42px] bg-white overflow-hidden shadow-sm">
+        <div className="flex flex-col gap-6">
+            {/* Action Bar (Quantity + Cart) */}
+            <div className="flex items-center gap-4">
+                {/* Quantity Selector */}
+                <div className="flex items-center border border-slate-200 rounded-md h-[46px] bg-white overflow-hidden w-[120px] shrink-0">
+                    <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-10 h-full flex items-center justify-center hover:bg-slate-50 transition-colors text-slate-800 shrink-0"
+                    >
+                        <Minus size={16} />
+                    </button>
+                    <input
+                        type="text"
+                        value={quantity}
+                        onChange={(e) => {
+                            const val = parseInt(e.target.value);
+                            if (!isNaN(val)) setQuantity(Math.max(1, val));
+                        }}
+                        className="w-10 h-full text-center border-none focus:ring-0 font-bold text-slate-800 text-[15px] p-0 bg-transparent"
+                    />
+                    <button
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="w-10 h-full flex items-center justify-center hover:bg-slate-50 transition-colors text-slate-800 shrink-0"
+                    >
+                        <Plus size={16} />
+                    </button>
+                </div>
+
+                {/* Add to Cart Button */}
                 <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-full flex items-center justify-center hover:bg-slate-50 transition-colors border-r border-slate-100 text-slate-500"
+                    onClick={onAddToCart}
+                    className="flex-1 sm:flex-none px-6 h-[46px] bg-[#10b981] text-white font-bold rounded-md hover:bg-[#059669] transition-colors text-[14px] uppercase tracking-wide flex items-center justify-center gap-2 shadow-sm"
                 >
-                    <Minus size={16} />
+                    <ShoppingBag size={18} strokeWidth={2.5} />
+                    Add to cart
                 </button>
-                <input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                    className="w-12 h-full text-center border-none focus:ring-0 font-bold text-[#081621] text-[14px]"
-                />
+
+                {/* Buy Now Button */}
                 <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 h-full flex items-center justify-center hover:bg-slate-50 transition-colors border-l border-slate-100 text-[#4f46e5]"
+                    onClick={onBuyNow}
+                    className="flex-1 sm:flex-none px-6 h-[46px] bg-[#e62e04] text-white font-bold rounded-md hover:bg-[#cc2803] transition-colors text-[14px] uppercase tracking-wide flex items-center justify-center shadow-sm"
                 >
-                    <Plus size={16} />
+                    Buy Now
                 </button>
             </div>
 
-            {/* Buy Now Button - Smaller and Blue */}
-            <button
-                onClick={onBuyNow}
-                className="px-10 h-[42px] bg-[#3749bb] text-white font-bold rounded-[2px] hover:bg-[#2e3d9e] transition-all text-[14px] shadow-sm active:scale-95"
-            >
-                Buy Now
-            </button>
+            {/* Render PaymentOptions (Injected via children to keep separation of concerns) */}
+            {children}
 
-            {/* Wishlist Button */}
-            <button
-                onClick={onToggleWishlist}
-                className={`w-[42px] h-[42px] flex items-center justify-center rounded border transition-all shadow-sm active:scale-95 ${isInWishlist
-                        ? 'bg-[#4f46e5] border-[#4f46e5] text-white'
-                        : 'bg-white border-slate-200 text-slate-400 hover:text-[#4f46e5] hover:border-[#4f46e5]'
-                    }`}
-                title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
-            >
-                <Heart size={20} fill={isInWishlist ? "currentColor" : "none"} />
-            </button>
+            {/* Utility Actions (Wishlist, Share, Compare) */}
+            <div className="flex items-center flex-wrap gap-3 text-[13px] text-[#081621] font-medium mt-2">
+                <button
+                    onClick={onToggleWishlist}
+                    className={`flex items-center gap-2 border border-slate-200 rounded-md px-4 py-2 hover:border-slate-300 transition-colors ${isInWishlist ? 'text-[#5c319e]' : ''}`}
+                >
+                    <Heart size={16} fill={isInWishlist ? "currentColor" : "none"} strokeWidth={2} />
+                    {isInWishlist ? 'In wishlist' : 'Add to wishlist'}
+                </button>
+                <button className="flex items-center gap-2 border border-slate-200 rounded-md px-4 py-2 hover:border-slate-300 transition-colors">
+                    <Share2 size={16} strokeWidth={2} />
+                    Share this Product
+                </button>
+                <button className="flex items-center gap-2 border border-slate-200 rounded-md px-4 py-2 hover:border-slate-300 transition-colors">
+                    <ArrowRightLeft size={16} strokeWidth={2} />
+                    Compare
+                </button>
+            </div>
         </div>
     );
 };
