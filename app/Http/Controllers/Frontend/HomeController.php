@@ -19,7 +19,7 @@ class HomeController extends Controller
         // Cache featured products for 5 minutes
         $featuredProducts = Cache::remember('home_featured_products', 300, function () {
             $featured = Product::active()
-                ->select(['id', 'name', 'slug', 'price', 'discount_price', 'brand_id', 'is_featured'])
+                ->select(['id', 'name', 'slug', 'price', 'discount_price', 'discount_end_date', 'brand_id', 'is_featured'])
                 ->with(['primaryImage:id,product_id,image', 'brand:id,name,slug'])
                 ->where('is_featured', 1)
                 ->latest()
@@ -29,7 +29,7 @@ class HomeController extends Controller
             // Fallback to latest products if not enough featured
             if ($featured->count() < 4) {
                 $featured = Product::active()
-                    ->select(['id', 'name', 'slug', 'price', 'discount_price', 'brand_id'])
+                    ->select(['id', 'name', 'slug', 'price', 'discount_price', 'discount_end_date', 'brand_id'])
                     ->with(['primaryImage:id,product_id,image', 'brand:id,name,slug'])
                     ->latest()
                     ->take(15)
@@ -42,7 +42,7 @@ class HomeController extends Controller
         // Cache special offers for 5 minutes
         $specialOffers = Cache::remember('home_special_offers', 300, function () {
             return Product::active()
-                ->select(['id', 'name', 'slug', 'price', 'discount_price', 'brand_id'])
+                ->select(['id', 'name', 'slug', 'price', 'discount_price', 'discount_end_date', 'brand_id'])
                 ->with(['primaryImage:id,product_id,image', 'brand:id,name,slug'])
                 ->whereNotNull('discount_price')
                 ->where('discount_price', '>', 0)

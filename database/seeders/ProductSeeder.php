@@ -22,6 +22,7 @@ class ProductSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $categories = Category::all()->keyBy('id');
+        $brands = \App\Models\Brand::pluck('id')->toArray();
 
         if ($categories->isEmpty()) {
             $this->command->error("No categories found. Please run Category seeders first.");
@@ -67,27 +68,32 @@ class ProductSeeder extends Seeder
                 $catNameRaw = $catNameRaw['en'] ?? 'Product';
             }
 
-            // Create 5 products for this category node
-            for ($i = 1; $i <= 5; $i++) {
+            // Create 10 products for this category node
+            for ($i = 1; $i <= 10; $i++) {
                 $modifier = $modifiers[array_rand($modifiers)];
                 $weight = $weights[array_rand($weights)];
                 
                 $name = "{$modifier} {$catNameRaw} ({$weight}) - Item {$i}";
                 
                 $price = rand(40, 1200);
-                $discount = rand(0, 3) === 0 ? (int)($price * 0.85) : null;
+                $hasDiscount = rand(0, 3) === 0;
+                $discountPrice = $hasDiscount ? (int)($price * 0.85) : null;
+                $discountType = $hasDiscount ? 'percentage' : null;
+                $discountValue = $hasDiscount ? 15 : null;
                 
                 $product = Product::create([
                     'name'                => $name,
                     'slug'                => Str::slug($name) . '-' . $category->id . '-' . $i . '-' . Str::random(4),
                     'sku'                 => 'GRO-' . strtoupper(Str::random(8)),
-                    'brand_id'            => null,
+                    'brand_id'            => empty($brands) ? null : $brands[array_rand($brands)],
                     'category_id'         => $categoryId,
                     'sub_category_id'     => $subCategoryId,
                     'sub_sub_category_id' => $subSubCategoryId,
                     'description'         => "Buy {$modifier} {$catNameRaw} online. Selected carefully for the best quality and value. Guaranteed freshness delivered to your door.",
                     'price'               => $price,
-                    'discount_price'      => $discount,
+                    'discount_price'      => $discountPrice,
+                    'discount_type'       => $discountType,
+                    'discount_value'      => $discountValue,
                     'stock'               => rand(20, 200),
                     'status'              => 1,
                     'is_featured'         => rand(0, 5) === 0,
@@ -98,17 +104,54 @@ class ProductSeeder extends Seeder
                 $syncIds = array_filter([$categoryId, $subCategoryId, $subSubCategoryId]);
                 $product->categories()->sync($syncIds);
 
-                // Image
-                $imageFiles = glob(public_path('images/products/*.png'));
-                $imagePath = count($imageFiles) > 0 
-                    ? FileUploader::saveFromPath('products', $imageFiles[array_rand($imageFiles)])
-                    : "https://placehold.co/500x500/10b981/ffffff?text=" . urlencode(Str::limit($catNameRaw, 10));
+                // Image and Gallery based on category matching
+                $nodeId = $category->id;
                 
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image'      => $imagePath,
-                    'is_primary' => 1,
-                ]);
+                // Try specific category first
+                $imageFiles = glob(public_path("images/products/cat_{$nodeId}_*.png"));
+                
+                // Fallback to sub-category parent
+                if (empty($imageFiles) && $subCategoryId) {
+                    $imageFiles = glob(public_path("images/products/cat_{$subCategoryId}_*.png"));
+                }
+                
+                // Fallback to root category parent
+                if (empty($imageFiles) && $categoryId) {
+                    $imageFiles = glob(public_path("images/products/cat_{$categoryId}_*.png"));
+                }
+                
+                // Final fallback to any PNG or WebP
+                if (empty($imageFiles)) {
+                    $imageFiles = glob(public_path('images/products/*.{png,jpg,jpeg,webp}'), GLOB_BRACE);
+                }
+                if (count($imageFiles) > 0) {
+                    shuffle($imageFiles); // Randomize images
+                    
+                    // Primary image
+                    $primaryFile = array_shift($imageFiles);
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image'      => \App\Support\Media\FileUploader::saveFromPath('products', $primaryFile),
+                        'is_primary' => 1,
+                    ]);
+
+                    // Gallery images (assign up to 3 more images as gallery)
+                    $galleryCount = min(rand(1, 3), count($imageFiles));
+                    for ($g = 0; $g < $galleryCount; $g++) {
+                        $galleryFile = array_shift($imageFiles);
+                        ProductImage::create([
+                            'product_id' => $product->id,
+                            'image'      => \App\Support\Media\FileUploader::saveFromPath('products', $galleryFile),
+                            'is_primary' => 0,
+                        ]);
+                    }
+                } else {
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image'      => "https://placehold.co/500x500/10b981/ffffff?text=" . urlencode(Str::limit($catNameRaw, 10)),
+                        'is_primary' => 1,
+                    ]);
+                }
 
                 // Variants
                 if (rand(0, 2) === 0) {
@@ -122,6 +165,6 @@ class ProductSeeder extends Seeder
             }
         }
 
-        $this->command->info("✅ Seeded {$count} grocery products (5 per category node) successfully.");
+        $this->command->info("✅ Seeded {$count} grocery products (10 per category node) successfully.");
     }
 }

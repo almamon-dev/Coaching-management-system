@@ -15,7 +15,6 @@ const COLUMN_ICONS = {
     price: Banknote,
     discount_price: Percent,
     is_featured: Star,
-    has_emi: CreditCard,
     created_at: Calendar,
     updated_at: Clock,
     image: ImageIcon,

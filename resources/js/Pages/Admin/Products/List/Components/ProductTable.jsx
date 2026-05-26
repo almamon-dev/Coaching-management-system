@@ -51,7 +51,6 @@ const ProductTable = ({
                         {visibleColumns.includes('discount_price') && <th className="px-4 py-2.5 w-[90px] text-right">Discount</th>}
                         {visibleColumns.includes('is_featured') && <th className="px-4 py-2.5 w-[60px] text-center">Featured</th>}
                         {visibleColumns.includes('view_count') && <th className="px-4 py-2.5 w-[60px] text-right">Views</th>}
-                        {visibleColumns.includes('has_emi') && <th className="px-4 py-2.5 w-[60px] text-center">EMI</th>}
                         {visibleColumns.includes('warranty') && <th className="px-4 py-2.5 w-[90px]">Warranty</th>}
                         {visibleColumns.includes('created_at') && <th className="px-4 py-2.5 w-[90px]">Created</th>}
                         {visibleColumns.includes('updated_at') && <th className="px-4 py-2.5 w-[90px]">Updated</th>}
@@ -232,18 +231,6 @@ const ProductTable = ({
                                     <span className="text-[12px] text-[#202223] font-medium">
                                         {(product.view_count || 0).toLocaleString()}
                                     </span>
-                                </td>
-                            )}
-
-                            {visibleColumns.includes('has_emi') && (
-                                <td className="px-4 py-1 text-center">
-                                    {product.has_emi ? (
-                                        <span className="text-[10px] bg-[#e4f1ef] text-[#008060] px-1.5 py-0.5 rounded-[4px] font-bold">
-                                            EMI
-                                        </span>
-                                    ) : (
-                                        <span className="text-[#bababa]">—</span>
-                                    )}
                                 </td>
                             )}
 

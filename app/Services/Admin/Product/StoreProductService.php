@@ -21,7 +21,7 @@ class StoreProductService
             // 1. Core Product Data
             $productData = collect($data)->only([
                 'name', 'slug', 'sku', 'brand_id', 'category_id', 'sub_category_id', 'sub_sub_category_id', 'description',
-                'price', 'discount_price', 'emi_monthly', 'emi_duration', 'has_emi', 'status', 'is_featured', 'warranty'
+                'price', 'discount_price', 'discount_type', 'discount_value', 'discount_start_date', 'discount_end_date', 'status', 'is_featured', 'warranty'
             ])->toArray();
 
             $product = Product::create($productData);

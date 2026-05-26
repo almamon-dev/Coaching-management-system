@@ -10,21 +10,22 @@ class ProductResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $calculatedDiscount = $this->calculated_discount;
+        $effectivePrice = $calculatedDiscount ? $calculatedDiscount['price'] : null;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
             'price' => (float) $this->price,
-            'discount_price' => $this->discount_price ? (float) $this->discount_price : null,
+            'discount_price' => $effectivePrice ? (float) $effectivePrice : null,
+            'discount_info' => $calculatedDiscount,
             'sku' => $this->sku,
             'status' => $this->status,
             'status_label' => $this->status_label,
             'stock' => $this->stock,
             'warranty' => $this->warranty,
             'description' => $this->description,
-            'has_emi' => (bool) $this->has_emi,
-            'emi_monthly' => $this->emi_monthly ? (float) $this->emi_monthly : null,
-            'emi_duration' => $this->emi_duration,
             'thumbnail' => FileUrlGenerator::generate($this->primaryImage?->image ?? $this->thumbnail),
             'primary_image' => [
                 'full_url' => FileUrlGenerator::generate($this->primaryImage?->image ?? $this->thumbnail) ?? 'https://ui-avatars.com/api/?name='.urlencode($this->name),

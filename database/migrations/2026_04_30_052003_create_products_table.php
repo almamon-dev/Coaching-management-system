@@ -21,9 +21,10 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('discount_price', 10, 2)->nullable();
-            $table->decimal('emi_monthly', 10, 2)->nullable();
-            $table->integer('emi_duration')->nullable();
-            $table->boolean('has_emi')->default(false);
+            $table->enum('discount_type', ['fixed', 'percentage'])->nullable();
+            $table->decimal('discount_value', 10, 2)->nullable();
+            $table->timestamp('discount_start_date')->nullable();
+            $table->timestamp('discount_end_date')->nullable();
             $table->integer('stock')->default(0);
             $table->integer('view_count')->default(0);
             $table->string('warranty', 150)->nullable();
