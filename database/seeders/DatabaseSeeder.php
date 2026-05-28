@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
             BrandSeeder::class,
             CategorySeeder::class,
             GlobalVariantSeeder::class,
-           ProductSeeder::class,
+            ProductSeeder::class,
             // AttributePresetSeeder::class,
             // ProductSeeder::class,
             // OrderSeeder::class,

@@ -65,14 +65,8 @@ const ProductSkeleton = ({ visibleColumns = [] }) => {
             )}
 
             {visibleColumns.includes('view_count') && (
-                <td className="px-4 py-1 w-[60px]">
-                    <div className="h-2.5 w-10 bg-slate-100 rounded-full ml-auto"></div>
-                </td>
-            )}
-
-            {visibleColumns.includes('has_emi') && (
-                <td className="px-4 py-1 w-[60px]">
-                    <div className="h-4 w-4 bg-slate-100 rounded-full mx-auto"></div>
+                <td className="px-4 py-3 text-right">
+                    <div className="h-3 w-8 bg-[#ebebeb] rounded animate-pulse ml-auto"></div>
                 </td>
             )}
 

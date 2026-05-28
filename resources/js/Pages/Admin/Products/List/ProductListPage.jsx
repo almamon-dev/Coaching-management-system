@@ -9,7 +9,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 // Icons
-import { Plus, Upload } from 'lucide-react';
+import { Plus, Upload, Percent } from 'lucide-react';
 
 // List Components
 import ProductTable from './Components/ProductTable';
@@ -33,7 +33,6 @@ const ProductListPage = ({ auth, products, filters, stats, categories, brands })
         { id: 'discount_price', label: 'Discount' },
         { id: 'is_featured', label: 'Featured' },
         { id: 'view_count', label: 'Views' },
-        { id: 'has_emi', label: 'EMI' },
         { id: 'warranty', label: 'Warranty' },
         { id: 'created_at', label: 'Created At' },
         { id: 'updated_at', label: 'Updated At' },
@@ -41,7 +40,7 @@ const ProductListPage = ({ auth, products, filters, stats, categories, brands })
 
     const [visibleColumns, setVisibleColumns] = useState([
         'product', 'status', 'stock', 'category', 'price', 'discount_price',
-        'is_featured', 'brand', 'has_emi', 'created_at'
+        'is_featured', 'brand', 'created_at'
     ]);
     const [hideArchived, setHideArchived] = useState(false);
 
@@ -252,6 +251,12 @@ const ProductListPage = ({ auth, products, filters, stats, categories, brands })
                     <p className="text-[#6d7175] text-[13px] mt-0.5 font-medium">Manage your inventory, pricing, and catalog details</p>
                 </div>
                 <div className="flex items-center gap-2">
+                    <Link
+                        href={route("admin.category-discounts.index")}
+                        className="h-[36px] px-4 bg-white text-[#ef4a23] border border-[#ef4a23]/30 rounded-[4px] flex items-center gap-1.5 hover:bg-[#ef4a23]/5 active:scale-95 transition-all font-bold text-[12px] shadow-sm normal-case whitespace-nowrap"
+                    >
+                        <Percent size={14} strokeWidth={2.5} /> Global Discounts
+                    </Link>
                     <button
                         onClick={() => setShowImportModal(true)}
                         className="h-[36px] px-4 bg-white text-slate-700 border border-[#d1d1d1] rounded-[4px] flex items-center gap-1.5 hover:bg-slate-50 active:scale-95 transition-all font-bold text-[12px] shadow-sm normal-case whitespace-nowrap"

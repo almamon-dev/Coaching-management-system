@@ -250,9 +250,13 @@ Route::middleware('auth')->group(function () {
             Route::resource('tickets', \App\Http\Controllers\Admin\Tickets\TicketController::class)->only(['index', 'show']);
         });
 
-        Route::get('category-discounts', function () {
-            return Inertia::render('Admin/Categories/Marketing/CategoryDiscountPage');
-        })->name('category-discounts.index');
+        Route::prefix('category-discounts')->name('category-discounts.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\Category\GlobalDiscountController::class, 'index'])->name('index');
+            Route::post('/', [\App\Http\Controllers\Admin\Category\GlobalDiscountController::class, 'store'])->name('store');
+            Route::put('/{discount}', [\App\Http\Controllers\Admin\Category\GlobalDiscountController::class, 'update'])->name('update');
+            Route::patch('/{discount}/status', [\App\Http\Controllers\Admin\Category\GlobalDiscountController::class, 'updateStatus'])->name('status');
+            Route::delete('/{discount}', [\App\Http\Controllers\Admin\Category\GlobalDiscountController::class, 'destroy'])->name('destroy');
+        });
 
         // Seller Products
         Route::prefix('seller')->name('seller.')->group(function () {

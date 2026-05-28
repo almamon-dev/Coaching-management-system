@@ -137,12 +137,6 @@ const ProductDetailsPage = ({ auth, product }) => {
                                     {product.brochures_count} Brochures
                                 </div>
                             )}
-                            {product.has_emi && (
-                                <div className="flex items-center gap-1 px-2 py-0.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-[1px] text-[9px]">
-                                    <CreditCard size={10} />
-                                    EMI Available
-                                </div>
-                            )}
                         </div>
                     </div>
 
@@ -204,7 +198,7 @@ const ProductDetailsPage = ({ auth, product }) => {
                         <div className="bg-[#FAFBFD] border border-slate-100 rounded-[1px] p-5 shadow-sm">
                             <h3 className="text-[13px] font-bold text-[#081621] mb-4">Payment Options</h3>
 
-                            <div className={cn("grid gap-3", product.has_emi ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1")}>
+                            <div className="grid grid-cols-1 gap-3">
                                 {/* Cash Price */}
                                 <div className="bg-white border-2 border-[#ef4a23]/20 hover:border-[#ef4a23] p-4 rounded-[1px] relative cursor-pointer group transition-all">
                                     <div className="flex items-center justify-between mb-1.5">
@@ -216,18 +210,6 @@ const ProductDetailsPage = ({ auth, product }) => {
                                     <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">Cash Price</p>
                                     <p className="text-[9px] font-medium text-slate-400 italic">Online Payment / Cash</p>
                                 </div>
-
-                                {/* EMI Price */}
-                                {Boolean(product.has_emi) && (
-                                    <div className="bg-white border border-slate-200 hover:border-[#ef4a23] p-4 rounded-[1px] cursor-pointer group transition-all">
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <span className="text-[20px] font-bold text-slate-400 group-hover:text-[#081621]">{formatPrice(product.emi_monthly || (product.price / 12))}</span>
-                                            <div className="w-3.5 h-3.5 rounded-full border-2 border-slate-200 group-hover:border-[#ef4a23]"></div>
-                                        </div>
-                                        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">Monthly EMI</p>
-                                        <p className="text-[9px] font-medium text-slate-400 italic">0% EMI for {product.emi_duration || 12} Months</p>
-                                    </div>
-                                )}
                             </div>
 
                             <div className="mt-5 flex flex-col gap-2">

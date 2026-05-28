@@ -33,10 +33,9 @@ const ImportModal = ({ show, onClose }) => {
 
         // 3. Pricing
         { key: 'price', label: 'Main Price', required: true },
-        { key: 'discount_price', label: 'Discount Price', required: false },
-        { key: 'has_emi', label: 'Has EMI (0/1)', required: false },
-        { key: 'emi_monthly', label: 'EMI Monthly Amt', required: false },
-        { key: 'emi_duration', label: 'EMI Duration (mo)', required: false },
+        { key: 'discount_type', label: 'Discount Type (percentage/fixed)', required: false },
+        { key: 'discount_value', label: 'Discount Value', required: false },
+        { key: 'stock', label: 'Stock Quantity', required: false },
 
         // 4. Description (Content)
         { key: 'description', label: 'Main Description', required: false },

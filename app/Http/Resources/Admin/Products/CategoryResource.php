@@ -9,11 +9,20 @@ class CategoryResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        // Helper to extract English name from model or array
+        $getEnName = function ($item) {
+            if (!$item) return null;
+            if ($item instanceof \App\Models\Category) {
+                return $item->getTranslation('name', 'en', false) ?: $item->name;
+            }
+            return data_get($item, 'name_translations.en') ?: data_get($item, 'name');
+        };
+
         // data_get() works on both Eloquent models AND plain arrays (from cache)
         $parentId       = data_get($this->resource, 'parent_id');
         $parent         = data_get($this->resource, 'parent');
         $parentParentId = data_get($parent, 'parent_id');
-        $parentName     = data_get($parent, 'name');
+        $parentName     = $getEnName($parent);
 
         $level = 0;
         if ($parentId) {
@@ -33,7 +42,7 @@ class CategoryResource extends JsonResource
 
         return [
             'id'               => data_get($this->resource, 'id'),
-            'name'             => data_get($this->resource, 'name'),
+            'name'             => $getEnName($this->resource),
             'slug'             => data_get($this->resource, 'slug'),
             'image'            => data_get($this->resource, 'image'),
             'parent_id'        => $parentId,

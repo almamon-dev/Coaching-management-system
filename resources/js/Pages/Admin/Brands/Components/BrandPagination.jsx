@@ -11,7 +11,7 @@ const BrandPagination = ({ brands, filters, total, stats, handlePerPageChange })
 
     const fromIdx = count > 0 ? startIdx : 0;
     const toIdx   = count > 0 ? startIdx + count - 1 : 0;
-    const total   = stats?.total ?? null;
+    const totalCount = stats?.total ?? total ?? null;
 
     const getPaginatedUrl = (url, nextStartIndex) => {
         if (!url) return null;
@@ -50,8 +50,8 @@ const BrandPagination = ({ brands, filters, total, stats, handlePerPageChange })
 
             <div className="flex items-center gap-4">
                 <span className="text-[12px] text-[#202223] font-bold tabular-nums">
-                    {total !== null
-                        ? `${fromIdx} - ${toIdx} of ${total}`
+                    {totalCount !== null
+                        ? `${fromIdx} - ${toIdx} of ${totalCount}`
                         : `${fromIdx} - ${toIdx}`
                     }
                 </span>

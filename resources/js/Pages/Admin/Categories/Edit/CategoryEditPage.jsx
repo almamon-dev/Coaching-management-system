@@ -9,8 +9,8 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 // Icons
-import { 
-    ArrowLeft, ShieldCheck, CheckCircle2, X, 
+import {
+    ArrowLeft, ShieldCheck, CheckCircle2, X,
     Upload, Save, ImageIcon, Send, Loader2
 } from 'lucide-react';
 
@@ -95,7 +95,7 @@ const CategoryEditPage = ({ auth, category, categories }) => {
                                 <ShieldCheck size={16} className="text-[#008060]" />
                                 <h3 className="text-[12px] font-bold text-[#081621] uppercase tracking-wider">General Information</h3>
                             </div>
-                            
+
                             <div className="p-6 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-1">
@@ -168,7 +168,7 @@ const CategoryEditPage = ({ auth, category, categories }) => {
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-4">
                                         <label className="flex items-center gap-3 cursor-pointer group">
-                                            <div 
+                                            <div
                                                 onClick={() => setData('is_active', !data.is_active)}
                                                 className={`w-10 h-5 rounded-full transition-all relative ${data.is_active ? 'bg-[#008060]' : 'bg-slate-200'}`}
                                             >
@@ -196,7 +196,7 @@ const CategoryEditPage = ({ auth, category, categories }) => {
                                     {preview ? (
                                         <div className="relative w-full h-full p-4 animate-in fade-in duration-300">
                                             <img src={preview} className="w-full h-full object-contain" alt="Preview" />
-                                            <button 
+                                            <button
                                                 type="button"
                                                 onClick={() => { setPreview(null); setData('image', null) }}
                                                 className="absolute top-2 right-2 w-7 h-7 bg-white shadow-md rounded-full flex items-center justify-center text-rose-500 hover:bg-rose-50 transition-all border border-slate-100"

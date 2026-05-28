@@ -11,7 +11,15 @@ class Product extends Model
 
     protected $guarded = ['id'];
 
-
+    protected $casts = [
+        'discount_start_date' => 'datetime',
+        'discount_end_date' => 'datetime',
+        'price' => 'float',
+        'discount_price' => 'float',
+        'is_featured' => 'boolean',
+        'discount_type' => 'string',
+        'discount_value' => 'float',
+    ];
     /**
      * Scope to only include active products.
      */
@@ -186,13 +194,27 @@ class Product extends Model
         return $this->hasMany(Wishlist::class);
     }
 
-    /**
-     * The warehouses that store this product.
-     */
     public function warehouses()
     {
         return $this->belongsToMany(Warehouse::class, 'product_warehouse')
             ->withPivot('quantity')
             ->withTimestamps();
+    }
+
+    /**
+     * Get the dynamically calculated best discount details.
+     */
+    public function getCalculatedDiscountAttribute(): ?array
+    {
+        return app(\App\Services\Discount\GlobalDiscountService::class)->calculateBestDiscount($this);
+    }
+
+    /**
+     * Get the effective price after the best discount is applied.
+     */
+    public function getEffectivePriceAttribute(): float
+    {
+        $discount = $this->calculated_discount;
+        return $discount ? $discount['price'] : (float) $this->price;
     }
 }

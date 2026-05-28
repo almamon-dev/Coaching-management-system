@@ -5,7 +5,6 @@ import InputLabel from '@/Components/InputLabel';
 const DeliveryMethods = ({ formData, setFormData }) => {
     const methods = [
         { id: 'home', label: 'Home Delivery', price: 200 },
-        { id: 'pickup', label: 'Store Pickup', price: 0 },
         { id: 'express', label: 'Request Express', price: 300 },
     ];
 
@@ -28,7 +27,7 @@ const DeliveryMethods = ({ formData, setFormData }) => {
                                     : 'text-slate-700 hover:text-slate-900'
                                 }`}
                         >
-                            {method.label} - {method.price}৳
+                            {method.label} - {method.price} Tk
                         </label>
                     </div>
                 ))}

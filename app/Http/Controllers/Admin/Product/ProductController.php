@@ -162,7 +162,7 @@ class ProductController extends Controller
         $columns = [
             'name', 'sku', 'status', 'stock', 'warehouse_stocks', 'warranty', 'is_featured',
             'brand_id', 'category_id', 'sub_category_id', 'sub_sub_category_id',
-            'price', 'discount_price', 'has_emi', 'emi_monthly', 'emi_duration',
+            'price', 'discount_price', 'discount_type', 'discount_value', 'discount_start_date', 'discount_end_date',
             'description', 'benefits', 'side_effects', 'formula', 'variants', 'primary_image', 'gallery_images',
             'meta_title', 'meta_description', 'tags',
         ];
@@ -191,9 +191,10 @@ class ProductController extends Controller
                 '45', // sub_sub_category_id
                 '350000', // price
                 '340000', // discount_price
-                '1', // has_emi
-                '28333', // emi_monthly
-                '12', // emi_duration
+                'percentage', // discount_type
+                '15', // discount_value
+                '', // discount_start_date
+                '', // discount_end_date
                 'The most advanced Mac ever created.', // description
                 'Fast performance', // benefits
                 'None', // side_effects

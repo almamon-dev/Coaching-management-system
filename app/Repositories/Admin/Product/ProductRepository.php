@@ -61,7 +61,7 @@ class ProductRepository
         $query = Product::select([
             'id', 'name', 'slug', 'sku', 'price', 'discount_price', 'stock',
             'status', 'brand_id', 'category_id', 'is_featured',
-            'has_emi', 'warranty', 'view_count', 'created_at',
+            'discount_type', 'discount_value', 'warranty', 'view_count', 'created_at',
         ])
         ->with([
             'brand:id,name',
