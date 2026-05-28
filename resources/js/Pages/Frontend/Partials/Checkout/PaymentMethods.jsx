@@ -39,12 +39,6 @@ const PaymentMethods = ({ formData, setFormData }) => {
                 ))}
             </RadioGroup>
 
-            <div className="mt-8 pt-6 border-t border-slate-100">
-                <p className="text-[13px] font-bold text-[#081621] mb-4">We Accept :</p>
-                <div className="flex flex-wrap gap-2 items-center opacity-80">
-                    <img src="https://www.startech.com.bd/catalog/view/theme/starship/assets/images/payment-methods.png" alt="Payments" className="h-7" />
-                </div>
-            </div>
         </div>
     );
 };

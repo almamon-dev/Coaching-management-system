@@ -91,7 +91,7 @@ export default function SelectInput({
         <div className={cn("w-full", className, disabled && "opacity-60 cursor-not-allowed pointer-events-none")}>
             <Listbox value={normalizedValue} onChange={handleChange} multiple={multiple} disabled={disabled}>
                 {({ open }) => (
-                    <div className="relative">
+                    <div className="relative h-full">
                         <Listbox.Button className={cn(
                             "relative w-full h-full min-h-[32px] cursor-pointer rounded-[3px] border border-[#d1d1d1] bg-white py-1 pr-10 text-left text-[12px] font-medium text-[#202223] focus:outline-none focus:border-[#008060] transition-all",
                             Icon ? "pl-9" : "pl-3"
@@ -147,11 +147,11 @@ export default function SelectInput({
                                                     <Listbox.Option
                                                         key={idx}
                                                         className={({ active: isHovered }) =>
-                                                    cn(
-                                                        "relative cursor-pointer select-none py-1.5 px-3 border-b border-slate-50/50 last:border-0",
-                                                        active ? "text-[#008060] font-bold bg-emerald-50/20" : "text-[#202223] font-medium",
-                                                        isHovered ? "bg-slate-50 text-[#008060]" : ""
-                                                    )
+                                                            cn(
+                                                                "relative cursor-pointer select-none py-1.5 px-3 border-b border-slate-50/50 last:border-0",
+                                                                active ? "text-[#008060] font-bold bg-emerald-50/20" : "text-[#202223] font-medium",
+                                                                isHovered ? "bg-slate-50 text-[#008060]" : ""
+                                                            )
                                                         }
                                                         value={option.id}
                                                     >
@@ -159,10 +159,10 @@ export default function SelectInput({
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center gap-2">
                                                                     {option.image && (
-                                                                        <img 
-                                                                            src={option.image.startsWith('http') ? option.image : `/storage/${option.image}`} 
-                                                                            className="w-4 h-4 object-contain" 
-                                                                            alt="" 
+                                                                        <img
+                                                                            src={option.image.startsWith('http') ? option.image : `/storage/${option.image}`}
+                                                                            className="w-4 h-4 object-contain"
+                                                                            alt=""
                                                                         />
                                                                     )}
                                                                     <span className="block truncate">

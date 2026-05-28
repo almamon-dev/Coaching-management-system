@@ -15,7 +15,8 @@ import {
     Headset,
     Nut,
     Truck,
-    FileText
+    FileText,
+    ShoppingCart
 } from "lucide-react";
 
 /*
@@ -115,6 +116,13 @@ const RAW_MENU_GROUPS = [
                 icon: FileText,
                 getPath: () => route('admin.pages.index'),
                 roles: ["Super Admin"],
+            },
+            {
+                key: "blogs",
+                label: "Blog Management",
+                icon: FileText,
+                getPath: () => route('admin.blogs.index'),
+                roles: ["Super Admin", "Marketing Specialist"],
             },
             {
                 key: "settings",
@@ -330,8 +338,14 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
             {/* BRANDING HEADER */}
             <div className="h-[60px] flex items-center px-4 shrink-0 bg-white border-b border-slate-200/60 overflow-hidden relative">
                 {!isCollapsed && (
-                    <Link href="/" className="flex-shrink-0 flex items-center h-[45px]">
-                        <img src="/images/logo-indigo.png" alt="Admin Logo" className="h-full w-auto object-contain scale-[1.35] origin-left -translate-y-1" />
+                    <Link href="/" className="flex-shrink-0 flex items-center gap-2 h-[45px]">
+                        <div className="relative text-[#16a34a]">
+                            <ShoppingCart size={24} className="md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
+                            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#f59e0b] rounded-full border-2 border-white"></div>
+                        </div>
+                        <span className="text-[20px] font-black tracking-tight text-[#16a34a]">
+                            DailyFresh
+                        </span>
                     </Link>
                 )}
             </div>

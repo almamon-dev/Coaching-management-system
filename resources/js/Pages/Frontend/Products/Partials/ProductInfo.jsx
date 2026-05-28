@@ -11,7 +11,7 @@ import React, { memo } from 'react';
  */
 const ProductInfo = memo(({ product, onViewMore }) => {
     return (
-        <div className="flex-1">
+        <div>
             <h1 className="text-[32px] lg:text-[36px] font-bold text-[#081621] leading-tight mb-4 tracking-tight">
                 {product.name}
             </h1>
@@ -47,17 +47,29 @@ const ProductInfo = memo(({ product, onViewMore }) => {
                 <div className="flex items-center gap-1">
                     SKU: <span className="text-[#081621] font-bold">{product.sku}</span>
                 </div>
+
+                <div className="w-[1px] h-3.5 bg-slate-200"></div>
+                <div className="flex items-center gap-1 text-[#10b981] font-semibold">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    In Stock
+                </div>
+            </div>
+
+            {/* Product Badges */}
+            <div className="flex flex-wrap gap-2 mb-4">
+                <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wide border border-emerald-100">Fresh</span>
+                <span className="bg-amber-50 text-amber-600 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wide border border-amber-100">100% Organic</span>
             </div>
 
             {/* Short Description */}
-            <div className="mb-6">
-                <p className="text-[14px] text-slate-500 leading-relaxed">
-                    This high-quality product is designed to meet your everyday needs. Vivamus adipiscing nisl ut dolor dignissim semper. Nulla luctus malesuada tincidunt. Class aptent taciti sociosqu ad litora.
+            <div className="mb-4">
+                <p className="text-[13px] text-slate-500 leading-relaxed">
+                    {product.short_description || "High-quality, freshly sourced product designed to meet your daily grocery needs. Carefully packed to ensure maximum freshness and quality."}
                 </p>
             </div>
 
             {/* Pricing */}
-            <div className="flex items-end gap-3">
+            <div className="flex items-end gap-3 mb-2">
                 {product.price > product.discount_price && product.discount_price > 0 ? (
                     <>
                         <span className="text-[36px] font-black text-[#081621] tracking-tight leading-none">

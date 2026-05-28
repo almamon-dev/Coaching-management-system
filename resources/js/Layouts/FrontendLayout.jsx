@@ -1,7 +1,6 @@
 import React, { useEffect, memo } from 'react';
 import Header from '@/Components/Navigation/Guest/Header';
 import Footer from '@/Components/Navigation/Guest/Footer';
-import StickyActions from '@/Components/Frontend/StickyActions';
 import CartSidebar from '@/Components/Frontend/CartSidebar';
 import CartModal from '@/Components/Frontend/CartModal';
 import LoadingOverlay from '@/Components/ui/LoadingOverlay';
@@ -66,12 +65,6 @@ const FrontendLayout = ({ children, categories, brands }) => {
             <Footer />
 
             {/* Utility Overlays and Interaction Components */}
-            <StickyActions
-                cartCount={cartItems.length}
-                compareCount={0}
-                onCartClick={toggleCartSidebar}
-            />
-            
             <CartSidebar
                 isOpen={isCartOpen}
                 onClose={() => setIsCartOpen(false)}

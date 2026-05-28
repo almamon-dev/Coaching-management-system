@@ -104,16 +104,16 @@ export default function Hero({ categories = [] }) {
                             >
                                 <Link
                                     href={route('frontend.url', category.path)}
-                                    className={`flex items-center justify-between px-5 py-3 text-[14px] font-medium transition-colors ${hoveredCatId === category.id ? 'text-[#5c319e] bg-[#f3f4f7]' : 'text-slate-700 hover:text-[#5c319e] hover:bg-[#f3f4f7]'}`}
+                                    className={`flex items-center justify-between px-5 py-3 text-[14px] font-medium transition-colors ${hoveredCatId === category.id ? 'text-[#16a34a] bg-[#f3f4f7]' : 'text-slate-700 hover:text-[#16a34a] hover:bg-[#f3f4f7]'}`}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <span className={`transition-colors ${hoveredCatId === category.id ? 'text-[#5c319e]' : 'text-slate-400'}`}>
+                                        <span className={`transition-colors ${hoveredCatId === category.id ? 'text-[#16a34a]' : 'text-slate-400'}`}>
                                             {getCategoryIcon(category.name)}
                                         </span>
                                         <span className="truncate max-w-[140px]">{category.name}</span>
                                     </div>
                                     {category.children && category.children.length > 0 && (
-                                        <ChevronRight size={15} className={`transition-colors ${hoveredCatId === category.id ? 'text-[#5c319e]' : 'text-slate-400'}`} />
+                                        <ChevronRight size={15} className={`transition-colors ${hoveredCatId === category.id ? 'text-[#16a34a]' : 'text-slate-400'}`} />
                                     )}
                                 </Link>
 
@@ -121,7 +121,7 @@ export default function Hero({ categories = [] }) {
                                 {category.children && category.children.length > 0 && hoveredCatId === category.id && (() => {
                                     const layout2 = getFlyoutLayout(category.children.length);
                                     return (
-                                        <div className={`absolute left-full -top-2 ${layout2.container} bg-white border border-slate-100 border-t-[3px] border-t-[#5c319e] shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 rounded-b-md rounded-tr-md`} onMouseLeave={() => setHoveredSubCatId(null)}>
+                                        <div className={`absolute left-full -top-2 ${layout2.container} bg-white border border-slate-100 border-t-[3px] border-t-[#16a34a] shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 rounded-b-md rounded-tr-md`} onMouseLeave={() => setHoveredSubCatId(null)}>
                                             <div className={`${layout2.inner} py-2`}>
                                                 {category.children.map((sub) => (
                                                     <div 
@@ -131,11 +131,11 @@ export default function Hero({ categories = [] }) {
                                                     >
                                                         <Link
                                                             href={route('frontend.url', sub.path)}
-                                                            className={`flex items-center justify-between px-4 py-1.5 text-[13px] font-medium transition-colors ${hoveredSubCatId === sub.id ? 'text-[#5c319e] bg-[#f3f4f7]' : 'text-slate-600 hover:text-[#5c319e] hover:bg-[#f3f4f7]'}`}
+                                                            className={`flex items-center justify-between px-4 py-1.5 text-[13px] font-medium transition-colors ${hoveredSubCatId === sub.id ? 'text-[#16a34a] bg-[#f3f4f7]' : 'text-slate-600 hover:text-[#16a34a] hover:bg-[#f3f4f7]'}`}
                                                         >
                                                             <span className="truncate">{sub.name}</span>
                                                             {sub.children && sub.children.length > 0 && (
-                                                                <ChevronRight size={14} className={`transition-colors ${hoveredSubCatId === sub.id ? 'text-[#5c319e]' : 'text-slate-400'}`} />
+                                                                <ChevronRight size={14} className={`transition-colors ${hoveredSubCatId === sub.id ? 'text-[#16a34a]' : 'text-slate-400'}`} />
                                                             )}
                                                         </Link>
 
@@ -143,13 +143,13 @@ export default function Hero({ categories = [] }) {
                                                         {sub.children && sub.children.length > 0 && hoveredSubCatId === sub.id && (() => {
                                                             const layout3 = getFlyoutLayout(sub.children.length);
                                                             return (
-                                                                <div className={`absolute left-full -top-[3px] ${layout3.container} bg-white border border-slate-100 border-t-[3px] border-t-[#5c319e] shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 rounded-b-md rounded-tr-md ml-[1px]`}>
+                                                                <div className={`absolute left-full -top-[3px] ${layout3.container} bg-white border border-slate-100 border-t-[3px] border-t-[#16a34a] shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 rounded-b-md rounded-tr-md ml-[1px]`}>
                                                                     <div className={`${layout3.inner} py-2`}>
                                                                         {sub.children.map((subSub) => (
                                                                             <div key={subSub.id} className={`${layout3.itemClass}`}>
                                                                                 <Link
                                                                                     href={route('frontend.url', subSub.path)}
-                                                                                    className="block px-4 py-1.5 text-[13px] font-medium text-slate-600 hover:text-[#5c319e] hover:bg-[#f3f4f7] transition-colors truncate"
+                                                                                    className="block px-4 py-1.5 text-[13px] font-medium text-slate-600 hover:text-[#16a34a] hover:bg-[#f3f4f7] transition-colors truncate"
                                                                                 >
                                                                                     {subSub.name}
                                                                                 </Link>
@@ -159,7 +159,7 @@ export default function Hero({ categories = [] }) {
                                                                     <div className="border-t border-slate-100">
                                                                         <Link
                                                                             href={route('frontend.url', sub.path)}
-                                                                            className="block px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:text-[#5c319e] hover:bg-slate-50 transition-colors truncate"
+                                                                            className="block px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:text-[#16a34a] hover:bg-slate-50 transition-colors truncate"
                                                                         >
                                                                             Show All {sub.name}
                                                                         </Link>
@@ -173,7 +173,7 @@ export default function Hero({ categories = [] }) {
                                             <div className="border-t border-slate-100">
                                                 <Link
                                                     href={route('frontend.url', category.path)}
-                                                    className="block px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:text-[#5c319e] hover:bg-slate-50 transition-colors"
+                                                    className="block px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:text-[#16a34a] hover:bg-slate-50 transition-colors"
                                                 >
                                                     Show All {category.name}
                                                 </Link>
@@ -185,7 +185,7 @@ export default function Hero({ categories = [] }) {
                         ))}
                         {categories.length > 15 && (
                             <li className="mt-auto border-t border-slate-100">
-                                <Link href={route('frontend.url', 'categories')} className="block px-4 py-3 text-[13px] font-bold text-[#5c319e] hover:underline text-center">
+                                <Link href={route('frontend.url', 'categories')} className="block px-4 py-3 text-[13px] font-bold text-[#16a34a] hover:underline text-center">
                                     View All Categories
                                 </Link>
                             </li>
@@ -245,7 +245,7 @@ export default function Hero({ categories = [] }) {
             {/* Grogin Feature Bar */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm transition-transform hover:-translate-y-1 duration-300">
-                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-[#f3f4f7] rounded-full text-[#5c319e]">
+                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-[#f3f4f7] rounded-full text-[#16a34a]">
                         <CreditCard size={24} strokeWidth={1.5} />
                     </div>
                     <div>
@@ -255,7 +255,7 @@ export default function Hero({ categories = [] }) {
                 </div>
 
                 <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm transition-transform hover:-translate-y-1 duration-300">
-                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-[#f3f4f7] rounded-full text-[#5c319e]">
+                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-[#f3f4f7] rounded-full text-[#16a34a]">
                         <Tag size={24} strokeWidth={1.5} />
                     </div>
                     <div>
@@ -265,7 +265,7 @@ export default function Hero({ categories = [] }) {
                 </div>
 
                 <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm transition-transform hover:-translate-y-1 duration-300">
-                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-[#f3f4f7] rounded-full text-[#5c319e]">
+                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-[#f3f4f7] rounded-full text-[#16a34a]">
                         <ShieldCheck size={24} strokeWidth={1.5} />
                     </div>
                     <div>
@@ -275,7 +275,7 @@ export default function Hero({ categories = [] }) {
                 </div>
 
                 <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm transition-transform hover:-translate-y-1 duration-300">
-                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-[#f3f4f7] rounded-full text-[#5c319e]">
+                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-[#f3f4f7] rounded-full text-[#16a34a]">
                         <Truck size={24} strokeWidth={1.5} />
                     </div>
                     <div>

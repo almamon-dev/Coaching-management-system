@@ -63,6 +63,12 @@ Route::middleware('auth')->group(function () {
 
     // Admin Routes
     Route::prefix('admin')->middleware('admin')->name('admin.')->group(function () {
+        // Blog Management
+        Route::post('blogs/bulk-update-status', [\App\Http\Controllers\Admin\Blog\BlogController::class, 'bulkUpdateStatus'])->name('blogs.bulk-update-status');
+        Route::delete('blogs/bulk-destroy', [\App\Http\Controllers\Admin\Blog\BlogController::class, 'bulkDestroy'])->name('blogs.bulk-destroy');
+        Route::patch('blogs/{blog}/status', [\App\Http\Controllers\Admin\Blog\BlogController::class, 'updateStatus'])->name('blogs.status');
+        Route::resource('blogs', \App\Http\Controllers\Admin\Blog\BlogController::class);
+
         // Page Management
         Route::post('pages/bulk-update-status', [\App\Http\Controllers\Admin\Page\PageController::class, 'bulkUpdateStatus'])->name('pages.bulk-update-status');
         Route::delete('pages/bulk-destroy', [\App\Http\Controllers\Admin\Page\PageController::class, 'bulkDestroy'])->name('pages.bulk-destroy');
@@ -310,12 +316,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/product/{product}/review', [\App\Http\Controllers\Frontend\ProductInteractionController::class, 'storeReview'])->name('frontend.product.review.store');
     Route::post('/product/{product}/wishlist', [\App\Http\Controllers\Frontend\ProductInteractionController::class, 'toggleWishlist'])->name('frontend.product.wishlist.toggle');
 
-    // Checkout Routes
-    Route::get('/checkout', [\App\Http\Controllers\Frontend\CheckoutController::class, 'index'])->name('checkout');
-    Route::post('/checkout/place-order', [\App\Http\Controllers\Frontend\CheckoutController::class, 'placeOrder'])->name('checkout.place-order');
-    Route::get('/checkout/success/{orderNumber}', [\App\Http\Controllers\Frontend\CheckoutController::class, 'orderSuccess'])->name('checkout.success');
-    Route::get('/checkout/invoice/{orderNumber}', [\App\Http\Controllers\Frontend\CheckoutController::class, 'generateInvoice'])->name('checkout.invoice');
 });
+
+// Checkout Routes
+Route::get('/checkout', [\App\Http\Controllers\Frontend\CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout/place-order', [\App\Http\Controllers\Frontend\CheckoutController::class, 'placeOrder'])->name('checkout.place-order');
+Route::get('/checkout/success/{orderNumber}', [\App\Http\Controllers\Frontend\CheckoutController::class, 'orderSuccess'])->name('checkout.success');
+Route::get('/checkout/invoice/{orderNumber}', [\App\Http\Controllers\Frontend\CheckoutController::class, 'generateInvoice'])->name('checkout.invoice');
 
 // Payment Routes (Centralized)
 Route::middleware(['auth', 'verified'])->group(function () {

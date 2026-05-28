@@ -226,8 +226,8 @@ class UserSeeder extends Seeder
                 'user_id' => $demoUser->id,
                 'name' => 'Demo User',
                 'address' => '123 Tech Avenue, Sector 7',
-                'city' => 'Dhaka',
-                'area' => 'Uttara',
+                'district' => 'Dhaka',
+                'upazila' => 'Uttara',
                 'post_code' => '1230',
                 'is_primary' => true,
             ]

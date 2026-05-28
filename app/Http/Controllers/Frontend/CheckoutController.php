@@ -50,7 +50,6 @@ class CheckoutController extends Controller
     {
         $order = Order::with(['items', 'payment'])
             ->where('order_number', $orderNumber)
-            ->where('user_id', auth()->id())
             ->firstOrFail();
 
         $headerData = $this->productService->getHeaderData();
@@ -64,7 +63,6 @@ class CheckoutController extends Controller
     {
         $order = Order::with(['items', 'payment'])
             ->where('order_number', $orderNumber)
-            ->where('user_id', auth()->id())
             ->firstOrFail();
 
         $pdf = Pdf::loadView('invoices.order', compact('order'));

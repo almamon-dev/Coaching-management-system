@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
-import { Home, ChevronRight, CreditCard, Package, Truck, ShoppingCart } from 'lucide-react';
+import { Home, ChevronRight, CreditCard, Package, Truck, ShoppingCart, Trash2 } from 'lucide-react';
 
 // Partials
 import ShippingForm from './Partials/Checkout/ShippingForm';
@@ -13,7 +13,7 @@ import { useFrontend } from '@/Contexts/FrontendContext';
 import Notify from '@/Utils/Notify';
 
 const Checkout = ({ categories, brands, auth_user, primary_address }) => {
-    const { cartItems, setCartItems } = useFrontend();
+    const { cartItems, setCartItems, removeFromCart } = useFrontend();
 
     const fullName = primary_address?.name || auth_user?.name || '';
     const nameParts = fullName.trim().split(' ');
@@ -26,9 +26,23 @@ const Checkout = ({ categories, brands, auth_user, primary_address }) => {
         address: primary_address?.address || '',
         upazila: primary_address?.area || '',
         district: primary_address?.city || 'Dhaka - City',
+        shipping_zip_code: primary_address?.post_code || '',
         mobile: auth_user?.phone || '',
         email: auth_user?.email || '',
         comment: '',
+        
+        // New professional fields
+        company_name: '',
+        vat_id: '',
+        delivery_instructions: '',
+        is_billing_same_as_shipping: true,
+        billing_name: '',
+        billing_email: '',
+        billing_phone: '',
+        billing_address: '',
+        billing_upazila: '',
+        billing_district: 'Dhaka - City',
+        billing_zip_code: '',
         paymentMethod: 'cod',
         deliveryMethod: 'home',
         agreeTerms: true,
@@ -168,11 +182,22 @@ const Checkout = ({ categories, brands, auth_user, primary_address }) => {
                                 <div className="p-6">
                                     {cartItems.map((item) => (
                                         <div key={item.id} className="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
-                                            <div className="text-[14px] text-[#081621]">
+                                            <div className="text-[14px] text-[#081621] flex-1 pr-4">
                                                 {item.quantity} X <span className="font-medium hover:text-[#4f46e5] cursor-pointer transition-colors">{item.name}</span>
                                             </div>
-                                            <div className="text-[15px] font-bold text-[#081621]">
-                                                {item.price.toLocaleString()}৳
+                                            <div className="flex items-center gap-3">
+                                                <div className="text-[15px] font-bold text-[#081621]">
+                                                    {item.price.toLocaleString()}৳
+                                                </div>
+                                                <div className="w-[1px] h-4 bg-slate-200"></div>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => removeFromCart(item.id)}
+                                                    className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all"
+                                                    title="Remove item"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
                                             </div>
                                         </div>
                                     ))}

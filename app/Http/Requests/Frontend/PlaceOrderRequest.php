@@ -24,8 +24,25 @@ class PlaceOrderRequest extends FormRequest
             'address' => 'required|string',
             'upazila' => 'nullable|string',
             'district' => 'required|string',
+            'shipping_zip_code' => 'nullable|string',
             'mobile' => 'required|string',
             'email' => 'required|email',
+            
+            // Company & Delivery
+            'company_name' => 'nullable|string',
+            'vat_id' => 'nullable|string',
+            'delivery_instructions' => 'nullable|string',
+            
+            // Billing
+            'is_billing_same_as_shipping' => 'required|boolean',
+            'billing_name' => 'nullable|string|required_if:is_billing_same_as_shipping,false',
+            'billing_email' => 'nullable|email',
+            'billing_phone' => 'nullable|string|required_if:is_billing_same_as_shipping,false',
+            'billing_address' => 'nullable|string|required_if:is_billing_same_as_shipping,false',
+            'billing_upazila' => 'nullable|string',
+            'billing_district' => 'nullable|string|required_if:is_billing_same_as_shipping,false',
+            'billing_zip_code' => 'nullable|string',
+            
             'paymentMethod' => 'required|string',
             'deliveryMethod' => 'required|string',
             'comment' => 'nullable|string',

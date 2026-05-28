@@ -20,6 +20,22 @@ return new class extends Migration
             $table->text('shipping_address')->nullable();
             $table->string('shipping_upazila')->nullable();
             $table->string('shipping_district')->nullable();
+            $table->string('shipping_zip_code')->nullable();
+            $table->text('delivery_instructions')->nullable();
+
+            // Billing Info Snapshot
+            $table->string('billing_name')->nullable();
+            $table->string('billing_email')->nullable();
+            $table->string('billing_phone')->nullable();
+            $table->text('billing_address')->nullable();
+            $table->string('billing_upazila')->nullable();
+            $table->string('billing_district')->nullable();
+            $table->string('billing_zip_code')->nullable();
+            
+            // Professional B2B/Company fields
+            $table->string('company_name')->nullable();
+            $table->string('vat_id')->nullable();
+            $table->boolean('is_billing_same_as_shipping')->default(true);
             
             $table->decimal('subtotal', 12, 2);
             $table->decimal('discount', 12, 2)->default(0);

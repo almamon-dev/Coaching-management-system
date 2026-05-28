@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Head, router, Link } from '@inertiajs/react';
-import { Home, ChevronRight } from 'lucide-react';
+import { Home, ChevronRight, X } from 'lucide-react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 
 // Partials
@@ -14,10 +14,6 @@ import Pagination from './Partials/Pagination';
  * Product Index Page (Frontend)
  * 
  * Orchestrates the product listing view with filtering, sorting, and layout management.
- * Performance Strategy: Minimizes state lifting by using the URL as the single source of truth 
- * for filters, while using Inertia router events for localized loading states.
- * 
- * @param {Object} props - Inherited from Laravel ProductController
  */
 const Index = ({
     category,
@@ -30,11 +26,11 @@ const Index = ({
     relevantBrands = [],
     subcategories = []
 }) => {
-    // Localized loading state for granular UI feedback during navigation
     const [isLoading, setIsLoading] = useState(false);
+    const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
     useEffect(() => {
-        // Global router listeners to manage the loading overlay (only on GET requests to prevent wishlist/cart actions from showing skeletons)
+        // Global router listeners to manage the loading overlay
         const removeStartListener = router.on('start', (event) => {
             if (event.detail.visit.method.toLowerCase() === 'get' && !event.detail.visit.prefetch) {
                 setIsLoading(true);
@@ -53,23 +49,23 @@ const Index = ({
 
     return (
         <>
-            <Head title={`${title} - Star Tech`} />
+            <Head title={`${title} - DailyFresh`} />
 
-            <div className="bg-[#f2f4f8] min-h-screen pt-8 pb-8">
+            <div className="bg-[#f2f4f8] min-h-screen pt-4 md:pt-8 pb-8">
 
                 <div className="container mx-auto px-4">
                     {/* Breadcrumbs */}
                     {breadcrumbs && breadcrumbs.length > 0 && (
-                        <nav className="flex items-center gap-2 text-[13px] text-slate-500 mb-6">
-                            <Link href="/" className="hover:text-[#5c319e] flex items-center gap-1 transition-colors">
+                        <nav className="flex items-center gap-2 text-[12px] md:text-[13px] text-slate-500 mb-4 md:mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
+                            <Link href="/" className="hover:text-[#16a34a] flex items-center gap-1 transition-colors shrink-0">
                                 <Home size={14} />
                             </Link>
                             {breadcrumbs.map((crumb, idx) => (
                                 <React.Fragment key={idx}>
-                                    <ChevronRight size={12} className="text-slate-400" />
+                                    <ChevronRight size={12} className="text-slate-400 shrink-0" />
                                     <Link
                                         href={crumb.type === 'brand_category' ? `/${crumb.slug}` : route('frontend.url', crumb.slug)}
-                                        className={`transition-colors ${idx === breadcrumbs.length - 1 ? 'font-bold text-[#081621]' : 'hover:text-[#5c319e]'}`}
+                                        className={`transition-colors shrink-0 ${idx === breadcrumbs.length - 1 ? 'font-bold text-[#081621]' : 'hover:text-[#16a34a]'}`}
                                     >
                                         {crumb.name}
                                     </Link>
@@ -78,10 +74,36 @@ const Index = ({
                         </nav>
                     )}
 
-                    <div className="flex flex-col lg:flex-row gap-8">
+                    <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
 
-                        {/* 2. Filter Sidebar Section */}
-                        <aside className="w-full lg:w-[280px] shrink-0">
+                        {/* Mobile Filter Overlay */}
+                        {isMobileFilterOpen && (
+                            <div className="fixed inset-0 z-[100] lg:hidden flex">
+                                <div className="fixed inset-0 bg-black/50" onClick={() => setIsMobileFilterOpen(false)}></div>
+                                <div className="relative w-[85%] max-w-[320px] bg-white h-full flex flex-col overflow-y-auto transform transition-transform">
+                                    <div className="p-4 flex items-center justify-between bg-[#16a34a] text-white">
+                                        <span className="font-bold text-lg">Filters</span>
+                                        <button onClick={() => setIsMobileFilterOpen(false)} className="text-white hover:text-slate-200 p-1">
+                                            <X size={24} />
+                                        </button>
+                                    </div>
+                                    <div className="flex-1 p-4 bg-[#f2f4f8]">
+                                        <ProductSidebar
+                                            category={category}
+                                            brand={brand}
+                                            filters={filters}
+                                            priceRange={priceRange}
+                                            availableVariants={availableVariants}
+                                            relevantBrands={relevantBrands}
+                                            subcategories={subcategories}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Desktop Filter Sidebar */}
+                        <aside className="hidden lg:block w-[280px] shrink-0">
                             <ProductSidebar
                                 category={category}
                                 brand={brand}
@@ -93,20 +115,21 @@ const Index = ({
                             />
                         </aside>
 
-                        {/* 3. Main Product Listing Area */}
+                        {/* Main Product Listing Area */}
                         <main className="flex-1 relative min-h-[800px]">
-                            {/* 3.1 Toolbar: Sorting & Limit */}
+                            {/* Toolbar: Sorting & Limit */}
                             <IndexToolbar
                                 title={title}
                                 filters={filters}
                                 category={category}
                                 brand={brand}
+                                onFilterClick={() => setIsMobileFilterOpen(true)}
                             />
 
-                            {/* 3.2 Product Grid with Empty State */}
+                            {/* Product Grid with Empty State */}
                             <ProductGrid products={products?.data || []} isLoading={isLoading || !products} />
 
-                            {/* 3.3 Pagination Section */}
+                            {/* Pagination Section */}
                             <div className={`transition-all duration-300 ${(!products || isLoading) ? 'min-h-[80px]' : ''}`}>
                                 <Pagination
                                     meta={products?.meta || {

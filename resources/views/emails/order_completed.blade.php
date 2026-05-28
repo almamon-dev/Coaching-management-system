@@ -35,6 +35,6 @@
     </div>
 
     <div class="text">
-        Thank you for choosing Star Tech. We look forward to serving you again soon!
+        Thank you for choosing DailyFresh. We look forward to serving you again soon!
     </div>
 @endsection

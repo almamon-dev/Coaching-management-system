@@ -16,10 +16,13 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('type')->default('Home'); // Home, Office, etc.
             $table->string('name');
+            $table->string('phone')->nullable();
             $table->text('address');
-            $table->string('city');
-            $table->string('area')->nullable();
+            $table->string('district')->nullable();
+            $table->string('upazila')->nullable();
             $table->string('post_code')->nullable();
+            $table->boolean('is_billing')->default(false);
+            $table->boolean('is_shipping')->default(true);
             $table->boolean('is_primary')->default(false);
             $table->timestamps();
         });

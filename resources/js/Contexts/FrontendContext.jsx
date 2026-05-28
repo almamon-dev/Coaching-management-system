@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { router } from '@inertiajs/react';
 
 const FrontendContext = createContext();
 
@@ -55,6 +56,33 @@ export const FrontendProvider = ({ children }) => {
         addToCart(product, quantity);
     };
 
+    const buyNow = (product, quantity = 1) => {
+        // Clear cart and add only this item
+        const newItem = { 
+            id: product.id, 
+            name: product.name, 
+            price: product.price, 
+            image: product.image || (product.primary_image?.full_url),
+            quantity: quantity 
+        };
+        const newCart = [newItem];
+        
+        // Update state
+        setCartItems(newCart);
+        
+        // Synchronously update localStorage to prevent race conditions during redirect
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('cart', JSON.stringify(newCart));
+        }
+        
+        // Use Inertia router for smooth client-side redirect
+        if (typeof route !== 'undefined') {
+            router.get(route('checkout'));
+        } else {
+            router.get('/checkout');
+        }
+    };
+
     const closeCartModal = () => setIsCartModalOpen(false);
     const toggleCartSidebar = () => setIsCartOpen(!isCartOpen);
 
@@ -67,6 +95,7 @@ export const FrontendProvider = ({ children }) => {
             cartItems,
             addToCart,
             removeFromCart,
+            buyNow,
             openCartModal, 
             closeCartModal, 
             toggleCartSidebar,

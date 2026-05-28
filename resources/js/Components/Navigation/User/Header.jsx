@@ -33,8 +33,14 @@ const Header = memo(({ user, isSidebarOpen, setIsSidebarOpen }) => {
                     >
                         {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
-                    <Link href="/" prefetch className="flex-shrink-0 flex items-center h-[45px]">
-                        <img src="/images/logo-indigo.png" alt="GadgetZone Logo" className="h-full w-auto object-contain scale-[1.35] origin-left -translate-y-1" />
+                    <Link href="/" prefetch className="flex-shrink-0 flex items-center gap-2 h-[45px]">
+                        <div className="relative text-[#16a34a]">
+                            <ShoppingCart size={24} className="md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
+                            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#f59e0b] rounded-full border-2 border-white"></div>
+                        </div>
+                        <span className="text-[20px] font-black tracking-tight text-[#16a34a]">
+                            DailyFresh
+                        </span>
                     </Link>
                 </div>
 

@@ -25,7 +25,7 @@ import ReviewModal from '@/Components/Frontend/ReviewModal';
  */
 const Show = ({ product, breadcrumbs, relatedProducts }) => {
     const { auth } = usePage().props;
-    const { openCartModal } = useFrontend();
+    const { openCartModal, buyNow } = useFrontend();
     
     // UI Interaction States
     const [quantity, setQuantity] = useState(1);
@@ -34,7 +34,7 @@ const Show = ({ product, breadcrumbs, relatedProducts }) => {
 
     // Stable Handlers for Action Components
     const handleAddToCart = useCallback(() => openCartModal(product, quantity), [product, quantity, openCartModal]);
-    const handleBuyNow = useCallback(() => openCartModal(product, quantity), [product, quantity, openCartModal]);
+    const handleBuyNow = useCallback(() => buyNow(product, quantity), [product, quantity, buyNow]);
 
     // Optimized calculation for wishlist status
     const isInWishlist = useMemo(() => auth.user?.wishlist_ids?.includes(product.id), [auth.user?.wishlist_ids, product.id]);
