@@ -1,37 +1,21 @@
 import React, { useEffect, memo } from 'react';
 import Header from '@/Components/Navigation/Guest/Header';
 import Footer from '@/Components/Navigation/Guest/Footer';
-import CartSidebar from '@/Components/Frontend/CartSidebar';
-import CartModal from '@/Components/Frontend/CartModal';
 import LoadingOverlay from '@/Components/ui/LoadingOverlay';
-import { useFrontend } from '@/Contexts/FrontendContext';
 import { usePage } from '@inertiajs/react';
 import { useToast } from '@/Hooks/use-toast';
 
 /**
  * FrontendLayout Component
  * 
- * Serves as the primary wrapper for all guest-facing pages.
- * Handles global UI states (Cart, Modals), flash notifications, and shared navigation.
+ * Serves as the primary wrapper for all guest-facing pages for the School Management System.
+ * Handles global UI states, flash notifications, and shared navigation.
  * 
  * @param {Object} props.children - Active page component
- * @param {Array} props.categories - Categorical navigation data
- * @param {Array} props.brands - Branding navigation data
  */
-const FrontendLayout = ({ children, categories, brands }) => {
+const FrontendLayout = ({ children }) => {
     const { flash } = usePage().props;
     const { toast } = useToast();
-    const {
-        isCartOpen,
-        setIsCartOpen,
-        isCartModalOpen,
-        closeCartModal,
-        addedProduct,
-        addedQuantity,
-        cartItems,
-        removeFromCart,
-        toggleCartSidebar
-    } = useFrontend();
 
     // Global Flash Notification Sync
     useEffect(() => {
@@ -52,33 +36,23 @@ const FrontendLayout = ({ children, categories, brands }) => {
     }, [flash, toast]);
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#f2f4f8] overflow-x-hidden font-inter selection:bg-[#4f46e5] selection:text-white">
-            {/* Optimized Navigation Header */}
-            <Header categories={categories} brands={brands} />
+        <div className="min-h-screen flex flex-col relative overflow-x-hidden font-inter selection:bg-[#16a34a] selection:text-white bg-gradient-to-r from-white via-[#f0f9f8] to-[#ccece6]">
+            {/* Grid Overlay */}
+            <div className="fixed inset-0 z-0 pointer-events-none bg-[linear-gradient(to_right,#009ca60d_1px,transparent_1px),linear-gradient(to_bottom,#009ca60d_1px,transparent_1px)] bg-[size:40px_40px]"></div>
             
-            {/* Dynamic Page Content Area */}
-            <main className="relative flex-1">
-                {children}
-            </main>
-            
-            {/* Global Footer */}
-            <Footer />
+            <div className="relative z-10 flex flex-col min-h-screen">
+                {/* Enterprise Navigation Header */}
+                <Header />
+                
+                {/* Dynamic Page Content Area */}
+                <main className="flex-1">
+                    {children}
+                </main>
+                
+                {/* Global Footer */}
+                <Footer />
+            </div>
 
-            {/* Utility Overlays and Interaction Components */}
-            <CartSidebar
-                isOpen={isCartOpen}
-                onClose={() => setIsCartOpen(false)}
-                cartItems={cartItems}
-                onRemove={removeFromCart}
-            />
-            
-            <CartModal
-                isOpen={isCartModalOpen}
-                onClose={closeCartModal}
-                product={addedProduct}
-                quantity={addedQuantity}
-            />
-            
             {/* System-wide Loading Indicator */}
             <LoadingOverlay />
         </div>

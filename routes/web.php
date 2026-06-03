@@ -322,6 +322,10 @@ Route::middleware('auth')->group(function () {
 
 });
 
+// Faculties Routes
+Route::get('/faculties', [\App\Http\Controllers\Frontend\FacultyController::class, 'index'])->name('faculties.index');
+Route::get('/faculties/{id}', [\App\Http\Controllers\Frontend\FacultyController::class, 'show'])->name('faculties.show');
+
 // Checkout Routes
 Route::get('/checkout', [\App\Http\Controllers\Frontend\CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout/place-order', [\App\Http\Controllers\Frontend\CheckoutController::class, 'placeOrder'])->name('checkout.place-order');
