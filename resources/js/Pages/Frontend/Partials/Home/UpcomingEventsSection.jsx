@@ -11,7 +11,7 @@ export default function UpcomingEventsSection() {
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">Upcoming Events</h2>
                         <p className="text-slate-600 text-[15px]">Don't miss out on what's happening around our beautiful campus this month.</p>
                     </div>
-                    <Link href="#" className="shrink-0 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded font-bold transition-colors shadow-sm text-sm">
+                    <Link href="/events" className="shrink-0 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded font-bold transition-colors shadow-sm text-sm">
                         View All Events
                     </Link>
                 </div>
@@ -20,7 +20,7 @@ export default function UpcomingEventsSection() {
                     {/* Event Card 1 */}
                     <div className="bg-white rounded-sm overflow-hidden shadow-sm border border-slate-100 flex flex-col sm:flex-row group">
                         <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2026&auto=format&fit=crop" alt="Harvest Festival" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                            <img src="/images/event_harvest.png" alt="Harvest Festival" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                             <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-center shadow-lg border-b-2 border-rose-500 min-w-[55px]">
                                 <span className="block text-rose-600 font-bold text-[10px] uppercase mb-0.5">Mar</span>
                                 <span className="block text-xl font-black text-slate-900 leading-none">15</span>
@@ -40,7 +40,7 @@ export default function UpcomingEventsSection() {
                     {/* Event Card 2 */}
                     <div className="bg-white rounded-sm overflow-hidden shadow-sm border border-slate-100 flex flex-col sm:flex-row group">
                         <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1564069114553-7215e1ff1890?q=80&w=1332&auto=format&fit=crop" alt="Science Fair" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                            <img src="/images/event_science.png" alt="Science Fair" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                             <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-center shadow-lg border-b-2 border-emerald-500 min-w-[55px]">
                                 <span className="block text-emerald-600 font-bold text-[10px] uppercase mb-0.5">Mar</span>
                                 <span className="block text-xl font-black text-slate-900 leading-none">22</span>
@@ -60,7 +60,7 @@ export default function UpcomingEventsSection() {
                     {/* Event Card 3 */}
                     <div className="bg-white rounded-sm overflow-hidden shadow-sm border border-slate-100 flex flex-col sm:flex-row group">
                         <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1518605368461-1e96a30c5e63?q=80&w=2070&auto=format&fit=crop" alt="Football Championship" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                            <img src="/images/event_football.png" alt="Football Championship" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                             <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-center shadow-lg border-b-2 border-blue-500 min-w-[55px]">
                                 <span className="block text-blue-600 font-bold text-[10px] uppercase mb-0.5">Apr</span>
                                 <span className="block text-xl font-black text-slate-900 leading-none">05</span>
@@ -80,7 +80,7 @@ export default function UpcomingEventsSection() {
                     {/* Event Card 4 */}
                     <div className="bg-white rounded-sm overflow-hidden shadow-sm border border-slate-100 flex flex-col sm:flex-row group">
                         <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1522037943542-fbc94e10df2e?q=80&w=2070&auto=format&fit=crop" alt="Pohela Boishakh" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                            <img src="/images/event_boishakh.png" alt="Pohela Boishakh" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                             <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-center shadow-lg border-b-2 border-amber-500 min-w-[55px]">
                                 <span className="block text-amber-600 font-bold text-[10px] uppercase mb-0.5">Apr</span>
                                 <span className="block text-xl font-black text-slate-900 leading-none">14</span>

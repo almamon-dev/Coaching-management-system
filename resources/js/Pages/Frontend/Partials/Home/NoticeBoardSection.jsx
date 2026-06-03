@@ -4,7 +4,7 @@ import { ChevronRight } from 'lucide-react';
 
 export default function NoticeBoardSection({ notices = [] }) {
     return (
-        <section className="py-16 bg-transparent">
+        <section id="notice-board" className="py-16 bg-transparent scroll-mt-24">
             <div className="container mx-auto px-4 md:px-8 max-w-8xl">
                 <div className="max-w-full mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -17,7 +17,7 @@ export default function NoticeBoardSection({ notices = [] }) {
                                         Notice Board
                                     </h2>
                                 </div>
-                                <Link href="#" className="inline-flex items-center text-[#16a34a] text-xs font-bold hover:text-[#009ca6] transition-colors mb-1">
+                                <Link href={route('coming.soon')} className="inline-flex items-center text-[#16a34a] text-xs font-bold hover:text-[#009ca6] transition-colors mb-1">
                                     View All <ChevronRight size={14} />
                                 </Link>
                             </div>
@@ -26,7 +26,11 @@ export default function NoticeBoardSection({ notices = [] }) {
                                 {notices && notices.length > 0 ? (
                                     <div className="divide-y divide-[#16a34a]/10">
                                         {notices.map((notice, index) => (
-                                            <div key={index} className="flex gap-3.5 items-center p-3 hover:bg-white/90 transition-colors group">
+                                            <Link 
+                                                key={index} 
+                                                href={route('notices.show', notice.id)}
+                                                className="flex gap-3.5 items-center p-3 hover:bg-white/90 transition-colors group cursor-pointer"
+                                            >
                                                 {/* Date Box */}
                                                 <div className="flex flex-col items-center justify-center bg-white border border-[#009ca6]/20 text-[#009ca6] rounded-sm w-12 h-12 shadow-sm shrink-0">
                                                     <span className="font-black text-[17px] leading-none">
@@ -41,7 +45,7 @@ export default function NoticeBoardSection({ notices = [] }) {
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 mb-0.5">
                                                         <h3 className="text-[14px] font-bold text-slate-800 truncate group-hover:text-[#16a34a] transition-colors">
-                                                            <Link href="#">{notice.title}</Link>
+                                                            {notice.title}
                                                         </h3>
                                                         {notice.is_new && (
                                                             <span className="bg-red-50 text-red-600 border border-red-100 text-[8px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider shrink-0 shadow-sm">New</span>
@@ -49,7 +53,7 @@ export default function NoticeBoardSection({ notices = [] }) {
                                                     </div>
                                                     <p className="text-slate-600 text-[12px] truncate">{notice.description}</p>
                                                 </div>
-                                            </div>
+                                            </Link>
                                         ))}
                                     </div>
                                 ) : (
@@ -78,7 +82,7 @@ export default function NoticeBoardSection({ notices = [] }) {
                                     ].map((link, idx) => (
                                         <Link
                                             key={idx}
-                                            href="#"
+                                            href={route('coming.soon')}
                                             className="py-2 px-4 text-[#333333] hover:text-[#009ca6] hover:bg-white/60 transition-colors text-[13px] font-medium"
                                         >
                                             {link}

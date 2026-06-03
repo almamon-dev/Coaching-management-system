@@ -326,6 +326,25 @@ Route::middleware('auth')->group(function () {
 Route::get('/faculties', [\App\Http\Controllers\Frontend\FacultyController::class, 'index'])->name('faculties.index');
 Route::get('/faculties/{id}', [\App\Http\Controllers\Frontend\FacultyController::class, 'show'])->name('faculties.show');
 
+// Gallery & Events Routes
+Route::get('/gallery', function () {
+    return \Inertia\Inertia::render('Frontend/Gallery');
+})->name('gallery');
+
+Route::get('/admissions', function () {
+    return \Inertia\Inertia::render('Frontend/Admissions');
+})->name('admissions');
+
+Route::get('/events', function () {
+    return \Inertia\Inertia::render('Frontend/Events');
+})->name('events');
+
+Route::get('/notices/{id}', [\App\Http\Controllers\Frontend\NoticeController::class, 'show'])->name('notices.show');
+
+Route::get('/coming-soon', function () {
+    return \Inertia\Inertia::render('Errors/ComingSoon');
+})->name('coming.soon');
+
 // Checkout Routes
 Route::get('/checkout', [\App\Http\Controllers\Frontend\CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout/place-order', [\App\Http\Controllers\Frontend\CheckoutController::class, 'placeOrder'])->name('checkout.place-order');

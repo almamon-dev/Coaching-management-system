@@ -3,13 +3,10 @@ import { Mail, MapPin, Phone, Share2, Camera, MessagesSquare, Video, BookOpen } 
 
 export default function Footer() {
     return (
-        <footer className="bg-indigo-950 text-slate-300 pt-16 pb-8 border-t border-indigo-900 font-inter">
+        <footer className="bg-indigo-950 text-slate-300 pt-16 pb-8 border-t border-indigo-900 font-inter print:hidden">
             <div className="container mx-auto px-4">
 
-                {/* Main 4-Column Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
-
-                    {/* Column 1: About */}
                     <div className="space-y-6">
                         <Link href="/" className="flex-shrink-0 flex items-center gap-2">
                             <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white shadow-md">

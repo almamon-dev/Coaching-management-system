@@ -7,11 +7,11 @@ export default function CampusLifeSection() {
             <div className="container mx-auto px-4 md:px-8 max-w-8xl">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
                     <div className="max-w-2xl">
-                        <div className="inline-block px-3 py-1 bg-amber-100 text-amber-700 font-bold text-[10px] uppercase tracking-wider rounded-full mb-3">Vibrant Community</div>
+                        <div className="inline-block px-3 py-1 bg-amber-100 text-amber-700 font-bold text-[11px] rounded-full mb-3">Vibrant Community</div>
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-3">School Life & Activities</h2>
                         <p className="text-slate-600 text-[14px] leading-relaxed">Education goes beyond the classroom. Explore the vibrant student life, clubs, sports, and cultural events.</p>
                     </div>
-                    <Link href="#gallery" className="shrink-0 px-5 py-2 border-2 border-[#009ca6] text-[#009ca6] hover:bg-[#009ca6] hover:text-white rounded font-bold transition-colors text-[13px]">
+                    <Link href="/gallery" className="shrink-0 px-5 py-2 border-2 border-[#009ca6] text-[#009ca6] hover:bg-[#009ca6] hover:text-white rounded font-bold transition-colors text-[13px]">
                         View Gallery
                     </Link>
                 </div>

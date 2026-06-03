@@ -5,14 +5,14 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const SLIDES = [
     { 
         id: 1, 
-        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2132&auto=format&fit=crop', 
+        image: '/images/hero_bg_1.png', 
         title: 'Inspire Learning for Innovation and Transformation',
         description: 'Lohadi High School provides education that sparks curiosity, critical thinking, and a passion for learning. Our education methodology highlights the role of learning in fostering innovation, driving positive change in various fields, and transforming both individuals and society.',
         link: '#' 
     },
     { 
         id: 2, 
-        image: 'https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=2072&auto=format&fit=crop', 
+        image: '/images/hero_bg_2.png', 
         title: 'Empowering the Next Generation of Global Leaders',
         description: 'We believe in nurturing the unique potential of every student through a blend of academic rigor, character development, and real-world problem solving.',
         link: '#' 

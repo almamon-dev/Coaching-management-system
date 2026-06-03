@@ -23,13 +23,12 @@ export default function Home({ notices = [] }) {
             
             <NoticeBoardSection notices={notices} />
             
-            <FoundersSection />
-            
             <FacultiesSection />
             
             <UpcomingEventsSection />
             
             <CampusLifeSection />
+            <FoundersSection />
         </>
     );
 }
