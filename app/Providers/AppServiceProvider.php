@@ -42,9 +42,7 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // Silently fail if DB is not ready
         }
-        \App\Models\Category::observe(\App\Observers\Category\CategoryObserver::class);
-        \App\Models\Product::observe(\App\Observers\Product\ProductObserver::class);
-        \App\Models\Brand::observe(\App\Observers\Brand\BrandObserver::class);
+
         $this->app->bind(
             LogisticsRepositoryInterface::class,
             EloquentLogisticsRepository::class

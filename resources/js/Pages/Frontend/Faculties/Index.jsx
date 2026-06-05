@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
-import { Mail, Phone, BookOpen, GraduationCap } from 'lucide-react';
+import { Mail, Phone, GraduationCap, MonitorSmartphone, ClipboardCheck, Users } from 'lucide-react';
 
-export default function FacultyIndex({ faculties }) {
+export default function FacultyIndex({ faculties = [] }) {
     const [activeFilter, setActiveFilter] = useState('All Departments');
 
     const departments = ['All Departments', 'Science', 'Business Studies', 'Humanities', 'Physical Education'];
@@ -17,22 +17,22 @@ export default function FacultyIndex({ faculties }) {
             <Head title="Faculty & Staff - Lohadi High School" />
 
             {/* Page Header */}
-            <div className="bg-[#15803d] py-16 relative overflow-hidden border-b-4 border-[#16a34a]">
-                <div className="absolute inset-0 opacity-10 pointer-events-none flex justify-center items-center">
-                    <GraduationCap size={200} />
-                </div>
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <h1 className="text-3xl md:text-5xl font-black text-white mb-4">Our Faculty & Staff</h1>
-                    <p className="text-white/80 text-lg max-w-2xl mx-auto">Meet the dedicated educators and professionals who are shaping the future of our students.</p>
+            <div className="bg-[#15803d] py-12 relative overflow-hidden border-b-4 border-[#16a34a]">
+                <div className="container mx-auto px-4 text-center relative z-10">
+                    <h1 className="text-3xl md:text-5xl font-black text-white mb-2">Faculty & Staff</h1>
                 </div>
             </div>
 
             {/* Faculty Grid */}
-            <section className="py-16">
+            <section className="py-8 bg-white border-t border-slate-100">
                 <div className="container mx-auto px-4 md:px-8">
                     
+                    <div className="border-b-2 border-[#00a9cc] mb-8 pb-2">
+                        <h2 className="text-2xl font-bold text-[#00a9cc]">Faculty List</h2>
+                    </div>
+                    
                     {/* Filters */}
-                    <div className="flex flex-wrap justify-center gap-3 mb-12">
+                    <div className="flex flex-wrap gap-3 mb-8">
                         {departments.map((dept) => (
                             <button 
                                 key={dept}
@@ -49,7 +49,7 @@ export default function FacultyIndex({ faculties }) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredFaculties.length > 0 ? (
+                        {filteredFaculties && filteredFaculties.length > 0 ? (
                             filteredFaculties.map((faculty) => (
                                 <Link
                                     href={route('faculties.show', faculty.id)}
@@ -61,7 +61,6 @@ export default function FacultyIndex({ faculties }) {
 
                                     {/* Actual Card Content with Glass and Grid */}
                                     <div className="relative rounded-[22px] bg-white/90 backdrop-blur-md p-8 w-full h-full flex flex-col items-center text-center z-10">
-                                        {/* Subtle Grid Pattern Overlay */}
                                         <div className="absolute inset-0 opacity-[0.02] pointer-events-none rounded-[22px]" style={{ backgroundImage: 'linear-gradient(#16a34a 1px, transparent 1px), linear-gradient(90deg, #16a34a 1px, transparent 1px)', backgroundSize: '16px 16px' }}></div>
 
                                         {/* Faculty Image */}

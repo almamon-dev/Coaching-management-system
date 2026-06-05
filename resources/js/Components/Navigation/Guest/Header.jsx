@@ -11,7 +11,7 @@ export default function Header() {
     const topBarLinks = [
         { name: 'Students', url: route('coming.soon') },
         { name: 'Admissions', url: route('admissions') },
-        { name: 'Faculty & Staff', url: route('faculties.index') },
+        { name: 'Staff Faculty Portal', url: route('portals.index') },
         { name: 'Library', url: route('coming.soon') },
         { name: 'Notice', url: '/#notice-board' },
         { name: 'News', url: route('events') },

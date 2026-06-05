@@ -14,21 +14,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleAndPermissionSeeder::class,
             UserSeeder::class,
-            BrandSeeder::class,
-            CategorySeeder::class,
-            GlobalVariantSeeder::class,
-            ProductSeeder::class,
-            // AttributePresetSeeder::class,
-            // ProductSeeder::class,
-            // OrderSeeder::class,
-            // SupplierSeeder::class,
-            // MarketingCampaignSeeder::class,
-            // WarehouseSeeder::class,
-            // OfferSeeder::class,
-            ShippingMethodSeeder::class,
-            // OrderReturnSeeder::class,
             PageSeeder::class,
-            
+            AcademicClassSeeder::class,
+            SubjectSeeder::class,
+            ClassRoutineSeeder::class,
+            StudentSeeder::class,
         ]);
     }
 }

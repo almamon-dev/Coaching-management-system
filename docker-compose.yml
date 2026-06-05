@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    container_name: shop-app
+    container_name: sms-app
     working_dir: /app
     volumes:
       - ./:/app
@@ -12,30 +12,30 @@ services:
 
   mysql:
     image: mysql:8
-    container_name: shop-db
+    container_name: sms-db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: shop_management
+      MYSQL_DATABASE: sms_management
     ports:
-      - "3308:3306"
+      - "3310:3306"
 
   phpmyadmin:
     image: phpmyadmin:latest
-    container_name: shop-pma
+    container_name: sms-pma
     restart: always
     environment:
       PMA_HOST: mysql
       PMA_USER: root
       PMA_PASSWORD: root
     ports:
-      - "8082:80"
+      - "8083:80"
     depends_on:
       - mysql
 
   redis:
     image: redis:alpine
-    container_name: shop-redis
+    container_name: sms-redis
     restart: always
     ports:
-      - "6382:6379"
+      - "6383:6379"

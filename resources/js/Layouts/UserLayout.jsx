@@ -1,102 +1,163 @@
-import React, { useState, useMemo, memo, useEffect } from 'react';
-import { Link, usePage, router } from '@inertiajs/react';
-import {
-    LayoutDashboard,
-    ShoppingBag,
-    Heart,
-    User,
-    MapPin,
-    Lock,
-    Star,
-    CreditCard,
-    Headset,
-    Wrench,
-    Bell
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Notify from '@/Utils/Notify';
+import React, {
+    useState,
+    useEffect,
+    useMemo,
+    useCallback,
+    memo
+} from "react";
 
-import Sidebar from '@/Components/Navigation/User/Sidebar';
-import Header from '@/Components/Navigation/User/Header';
-import LoadingOverlay from '@/Components/ui/LoadingOverlay';
+import Header from "../Components/Navigation/User/Header";
+import Sidebar from "../Components/Navigation/User/Sidebar";
 
+import Notify from "@/Utils/Notify";
+import { usePage } from "@inertiajs/react";
 
+/*
+|--------------------------------------------------------------------------
+| MEMOIZED COMPONENTS
+|--------------------------------------------------------------------------
+*/
 
-export default function UserLayout({ children, user }) {
+const MemoSidebar = memo(Sidebar);
+const MemoHeader = memo(Header);
+
+/*
+|--------------------------------------------------------------------------
+| MAIN LAYOUT
+|--------------------------------------------------------------------------
+*/
+
+export default function UserLayout({ children }) {
+
     const { flash } = usePage().props;
-    const { url } = usePage();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    useEffect(() => {
-        if (flash?.success) Notify.success('Success', flash.success);
-        if (flash?.error) Notify.error('Error', flash.error);
-    }, [flash]);
+    /*
+    |--------------------------------------------------------------------------
+    | STATES
+    |--------------------------------------------------------------------------
+    */
 
-    // Track navigation for closing sidebar on mobile
-    useEffect(() => {
-        const finishHandler = () => {
-            setIsSidebarOpen(false);
-        };
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-        const unbindFinish = router.on('finish', finishHandler);
-        return () => unbindFinish();
+    const [isCollapsed, setIsCollapsed] = useState(() => {
+        const saved = localStorage.getItem("user-sidebar");
+        return saved ? JSON.parse(saved) : false;
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOGGLE SIDEBAR
+    |--------------------------------------------------------------------------
+    */
+
+    const handleToggleSidebar = useCallback(() => {
+        setIsCollapsed((prev) => {
+            const updated = !prev;
+            localStorage.setItem("user-sidebar", JSON.stringify(updated));
+            return updated;
+        });
     }, []);
 
-    const navigation = useMemo(() => [
-        { name: 'Dashboard', href: route('user.dashboard'), icon: LayoutDashboard },
-        { name: 'My Orders', href: route('user.orders'), icon: ShoppingBag },
-        { name: 'Wishlist', href: route('user.wishlist'), icon: Heart },
-        { name: 'My Reviews', href: route('user.reviews'), icon: Star },
-        { name: 'Notifications', href: route('user.notifications.index'), icon: Bell },
-        { name: 'Account Info', href: route('profile.edit'), icon: User },
-        { name: 'Addresses', href: route('user.addresses'), icon: MapPin },
-        { name: 'Payment Methods', href: route('user.payment-methods'), icon: CreditCard },
-        { name: 'Security', href: route('user.security'), icon: Lock },
-        { name: 'Support Tickets', href: route('dashboard.tickets.index'), icon: Headset },
-    ], []);
+    /*
+    |--------------------------------------------------------------------------
+    | MOBILE MENU
+    |--------------------------------------------------------------------------
+    */
+
+    const handleMobileMenu = useCallback(() => {
+        setIsMobileOpen(true);
+    }, []);
+
+    const closeMobileMenu = useCallback(() => {
+        setIsMobileOpen(false);
+    }, []);
+
+    /*
+    |--------------------------------------------------------------------------
+    | FLASH NOTIFICATION
+    |--------------------------------------------------------------------------
+    */
+
+    useEffect(() => {
+        if (flash?.success) {
+            Notify.success("Success", flash.success);
+        }
+        if (flash?.error) {
+            Notify.error("Error", flash.error);
+        }
+    }, [flash]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CLOSE MOBILE ON RESIZE
+    |--------------------------------------------------------------------------
+    */
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 1024) {
+                setIsMobileOpen(false);
+            }
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
-        <div className="min-h-screen bg-[#F2F4F8]">
-            <LoadingOverlay />
+        <div className="h-screen overflow-hidden bg-[#f6f6f7]">
 
-            {/* Sidebar Mobile Overlay */}
-            {isSidebarOpen && (
-                <div 
-                    className="fixed inset-0 z-[105] bg-[#081621]/40 backdrop-blur-sm lg:hidden transition-all duration-300" 
-                    onClick={() => setIsSidebarOpen(false)} 
+            {/* MOBILE OVERLAY */}
+            {isMobileOpen && (
+                <div
+                    onClick={closeMobileMenu}
+                    className="fixed inset-0 z-[90] bg-black/40 lg:hidden"
                 />
             )}
-            <Header
-                user={user}
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-            />
 
-            <div className="max-w-[1440px] mx-auto pt-9 px-4 pt-3 pb-10">
-                <div className="flex flex-col lg:flex-row gap-6">
-                    <Sidebar
-                        url={url}
-                        user={user}
-                        navigation={navigation}
-                        isSidebarOpen={isSidebarOpen}
-                        setIsSidebarOpen={setIsSidebarOpen}
-                    />
-
-                    {/* Main Content Area */}
-                    <main className="flex-1 min-w-0">
-                        {children}
-                    </main>
-                </div>
-            </div>
-
-            {/* Floating Support Button in Bottom-Right Corner of the Screen */}
-            <Link 
-                href={route('dashboard.tickets.index')}
-                className="fixed right-8 bottom-8 z-[999] w-12 h-12 bg-[#008060] text-white flex items-center justify-center rounded-full shadow-2xl hover:bg-[#006e52] hover:scale-105 transition-all duration-200 group"
-                title="Customer Support Tickets"
+            {/* SIDEBAR */}
+            <aside
+                className={`
+                    fixed top-0 left-0 z-[100]
+                    h-screen bg-white border-r border-slate-200
+                    will-change-transform
+                    lg:translate-x-0
+                    transition-transform duration-200 lg:transition-none
+                    ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+                    ${isCollapsed ? "w-[68px]" : "w-[240px]"}
+                `}
             >
-                <Headset size={22} className="group-hover:scale-110 group-hover:-translate-y-0.5 transition-all duration-300" />
-            </Link>
+                <MemoSidebar
+                    isCollapsed={isCollapsed}
+                    toggleCollapse={handleToggleSidebar}
+                />
+            </aside>
+
+            {/* MAIN WRAPPER */}
+            <div
+                className={`
+                    h-screen flex flex-col
+                    transition-none
+                    ${isCollapsed ? "lg:pl-[68px]" : "lg:pl-[240px]"}
+                `}
+            >
+                {/* HEADER */}
+                <MemoHeader
+                    onMenuClick={handleMobileMenu}
+                />
+
+                {/* CONTENT */}
+                <main
+                    className="
+                        flex-1 overflow-y-auto
+                        no-scrollbar
+                        contain-layout
+                    "
+                >
+                    <div className="p-4 md:p-6 lg:p-8">
+                        {children}
+                    </div>
+                </main>
+            </div>
         </div>
     );
 }

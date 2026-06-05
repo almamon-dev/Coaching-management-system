@@ -36,135 +36,6 @@ export default function Login({ status, canResetPassword, isAdmin }) {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const FormContent = (
-        <div className="w-full bg-white min-h-[60vh]">
-            {/* Breadcrumb */}
-            <div className="py-3">
-                <div className="container mx-auto px-4 flex items-center gap-2 text-[13px]">
-                    <Link href="/" className="text-gray-600 hover:text-[#ef4a23] px-2">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-                    </Link>
-                    <ChevronRight size={14} className="text-gray-300" />
-                    <Link href="#" className="text-gray-600 hover:text-[#ef4a23]">{t('Account')}</Link>
-                    <ChevronRight size={14} className="text-gray-300" />
-                    <span className="text-gray-400">{t('Login')}</span>
-                </div>
-            </div>
-
-            <div className="max-w-[400px] mx-auto px-4 pt-5 pb-20">
-                <div className="mb-6 text-center">
-                    <h1 className="text-[22px] font-bold text-[#081621]">{isAdmin ? 'Admin Login' : t('Account Login')}</h1>
-                </div>
-
-                {status && (
-                    <div className="mb-4 text-sm font-medium text-green-600 bg-green-50 p-3 rounded">
-                        {status}
-                    </div>
-                )}
-
-                <form onSubmit={submit} className="space-y-4">
-                    <div className="space-y-2">
-                        <InputLabel htmlFor="email" value={t('Phone / E-Mail')} className="text-[14px] font-semibold text-[#081621]" />
-                        <div className="relative">
-                            <TextInput
-                                id="email"
-                                type="email"
-                                name="email"
-                                value={data.email}
-                                className="w-full h-[45px] border-gray-200 focus:border-[#3749bb] focus:ring-0 rounded-[4px] text-[14px] placeholder-gray-300"
-                                onChange={(e) => setData('email', e.target.value)}
-                                placeholder={t('Phone / E-Mail')}
-                                required
-                            />
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500">
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
-                            </div>
-                        </div>
-                        <InputError message={errors.email} />
-                    </div>
-
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <InputLabel htmlFor="password" value={t('Password')} className="text-[14px] font-semibold text-[#081621]" />
-                            {!isAdmin && canResetPassword && (
-                                <Link
-                                    href={route('password.request')}
-                                    className="text-[13px] text-[#ef4a23] hover:underline"
-                                >
-                                    {t('Forgotten Password?')}
-                                </Link>
-                            )}
-                        </div>
-                        <TextInput
-                            id="password"
-                            type="password"
-                            name="password"
-                            value={data.password}
-                            className="w-full h-[45px] border-gray-200 focus:border-[#3749bb] focus:ring-0 rounded-[4px] text-[14px] placeholder-gray-300"
-                            onChange={(e) => setData('password', e.target.value)}
-                            placeholder={t('Password')}
-                            required
-                        />
-                        <InputError message={errors.password} />
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="w-full h-[45px] bg-[#3749bb] hover:bg-[#2c3a96] text-white font-semibold text-[13px] rounded-[4px] transition-colors uppercase mt-2"
-                        disabled={processing}
-                    >
-                        {t('Login')}
-                    </button>
-
-                    {!isAdmin && (
-                        <>
-                            <div className="relative py-6">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-100"></div>
-                                </div>
-                                <div className="relative flex justify-center text-[13px]">
-                                    <span className="px-4 bg-white text-gray-500 font-medium">{t("Don't have an account?")}</span>
-                                </div>
-                            </div>
-
-                            <Link
-                                href={route('register')}
-                                className="w-full h-[45px] flex items-center justify-center border border-[#3749bb] text-[#3749bb] hover:bg-[#3749bb] hover:text-white font-semibold text-[13px] rounded-[4px] transition-all uppercase"
-                            >
-                                {t('Create Your Account')}
-                            </Link>
-
-                            <div className="mt-8 p-4 bg-slate-50 border border-slate-100 rounded-[8px] border-dashed">
-                                <div className="flex items-center gap-2 mb-3">
-
-                                    <p className="text-[11px] font-bold text-slate-500">{t('Test Credentials')}</p>
-                                </div>
-                                <div className="space-y-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => handleQuickLogin('mamon193p@gmail.com', 'user123')}
-                                        className="w-full flex items-center justify-between p-2.5 hover:bg-white rounded-lg transition-all group border border-transparent hover:border-slate-200 hover:shadow-sm"
-                                    >
-                                        <div className="text-left">
-                                            <p className="text-[13px] font-bold text-[#081621] group-hover:text-[#3749bb]">mamon193p@gmail.com</p>
-                                            <p className="text-[11px] text-slate-400 font-medium">{t('Password')}: user123</p>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`text-[10px] font-bold transition-all ${copied ? 'text-emerald-500 opacity-100' : 'text-[#3749bb] opacity-0 group-hover:opacity-100'}`}>
-                                                {copied ? t('COPIED!') : t('COPY & FILL')}
-                                            </span>
-                                            <svg className={`w-4 h-4 transition-colors ${copied ? 'text-emerald-500' : 'text-slate-300 group-hover:text-[#3749bb]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </form>
-            </div>
-        </div>
-    );
-
     if (isAdmin) {
         return (
             <div className="min-h-screen bg-[#030712] flex items-center justify-center p-4 relative overflow-hidden bg-[linear-gradient(to_right,#1f293708_1px,transparent_1px),linear-gradient(to_bottom,#1f293708_1px,transparent_1px)] bg-[size:24px_24px]">
@@ -296,10 +167,132 @@ export default function Login({ status, canResetPassword, isAdmin }) {
         );
     }
 
+    // USER LOGIN (Lohadi High School styling based on Green Uni reference)
     return (
-        <FrontendLayout categories={categories} brands={brands}>
+        <>
             <Head title="Account Login" />
-            {FormContent}
-        </FrontendLayout>
+            
+            <div className="relative min-h-screen bg-white flex items-center justify-center overflow-hidden font-sans">
+                {/* Top Left Gradient Circle */}
+                <div 
+                    className="absolute top-[-25%] left-[-15%] w-[80vw] max-w-[800px] h-[80vw] max-h-[800px] rounded-full pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, rgba(98,177,70,0.2) 0%, rgba(255,255,255,0) 70%)' }}
+                ></div>
+                
+                {/* Bottom Right Gradient Circle */}
+                <div 
+                    className="absolute bottom-[-25%] right-[-15%] w-[80vw] max-w-[800px] h-[80vw] max-h-[800px] rounded-full pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, rgba(98,177,70,0.2) 0%, rgba(255,255,255,0) 70%)' }}
+                ></div>
+
+                <div className="container mx-auto px-4 relative z-10 flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-32 w-full max-w-5xl">
+                    
+                    {/* Left Side - Logo & Typography */}
+                    <div className="flex items-center gap-3 md:gap-5 max-w-full">
+                        <div className="w-[60px] h-[80px] md:w-[90px] md:h-[110px] lg:w-[100px] lg:h-[120px] flex-shrink-0">
+                            {/* Abstract Tree/Leaf Logo mimicking the screenshot structure */}
+                            <svg viewBox="0 0 100 120" className="w-full h-full fill-none stroke-[#008a45]" strokeWidth="8" strokeLinecap="square" strokeLinejoin="miter">
+                                {/* Center Trunk */}
+                                <path d="M50 110 V10" />
+                                {/* Left Branches */}
+                                <path d="M50 30 Q25 30 10 40" />
+                                <path d="M50 50 Q25 50 10 60" />
+                                <path d="M50 70 Q25 70 10 80" />
+                                <path d="M50 90 Q25 90 10 100" />
+                                {/* Right Branches */}
+                                <path d="M50 20 Q75 20 90 30" />
+                                <path d="M50 40 Q75 40 90 50" />
+                                <path d="M50 60 Q75 60 90 70" />
+                                <path d="M50 80 Q75 80 90 90" />
+                            </svg>
+                        </div>
+                        <div className="flex flex-col justify-center">
+                            <h1 className="text-[24px] sm:text-[32px] md:text-[38px] lg:text-[46px] font-bold leading-[1.1] text-[#008a45] font-serif uppercase tracking-wide whitespace-nowrap">
+                                Lohadi High<br/>School
+                            </h1>
+                            <span className="text-[11px] sm:text-[14px] lg:text-[18px] text-[#008a45] tracking-[0.15em] lg:tracking-[0.2em] font-medium mt-1 md:mt-2 uppercase whitespace-nowrap">
+                                Of Bangladesh
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Right Side - Login Box */}
+                    <div className="bg-white rounded-[4px] p-10 w-full max-w-[400px] relative z-10" style={{ boxShadow: '0px 0px 40px rgba(98,177,70,0.2)' }}>
+                        <h2 className="text-center text-[32px] font-serif text-[#4a3f35] mb-8">Login</h2>
+
+                        {status && (
+                            <div className="mb-4 text-sm font-medium text-green-600 bg-green-50 p-3 rounded">
+                                {status}
+                            </div>
+                        )}
+
+                        <form onSubmit={submit} className="space-y-6">
+                            {/* Username Field */}
+                            <div className="relative border-b border-[#a4b0c0] focus-within:border-[#008a45] transition-colors pb-1">
+                                <div className="absolute left-1 top-1/2 -translate-y-1/2 text-[#778ca3]">
+                                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                </div>
+                                <input 
+                                    id="email"
+                                    type="email"
+                                    name="email"
+                                    value={data.email}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                    required
+                                    className="w-full pl-9 pr-3 py-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-[#778ca3]" 
+                                    placeholder="Username"
+                                />
+                            </div>
+                            <InputError message={errors.email} className="mt-1 text-xs" />
+
+                            {/* Password Field */}
+                            <div className="relative border-b border-[#a4b0c0] focus-within:border-[#008a45] transition-colors pb-1">
+                                <div className="absolute left-1 top-1/2 -translate-y-1/2 text-[#778ca3]">
+                                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                </div>
+                                <input 
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    value={data.password}
+                                    onChange={(e) => setData('password', e.target.value)}
+                                    required
+                                    className="w-full pl-9 pr-3 py-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-[#778ca3]" 
+                                    placeholder="Password"
+                                />
+                            </div>
+                            <InputError message={errors.password} className="mt-1 text-xs" />
+
+                            <button 
+                                type="submit" 
+                                disabled={processing}
+                                className="w-full py-3 mt-4 bg-gradient-to-r from-[#5ca939] to-[#8ac950] hover:from-[#4b8a2e] hover:to-[#74ad42] text-white rounded-[4px] font-medium transition-colors text-[16px] shadow-md"
+                            >
+                                Login
+                            </button>
+                        </form>
+
+                        <div className="mt-8 pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Test Credentials:</span>
+                            <button
+                                type="button"
+                                onClick={() => handleQuickLogin('mamon193p@gmail.com', 'user123')}
+                                className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-gray-50 hover:bg-gray-100 rounded text-[11px] text-gray-600 font-medium transition-colors"
+                            >
+                                <span>{copied ? 'Copied!' : 'Click to Fill'}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Back Link to Home */}
+                <div className="absolute top-6 left-6 z-20">
+                    <Link href="/" className="inline-flex items-center gap-2 text-[#008a45] hover:text-[#006834] font-medium text-[14px]">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Back to Home
+                    </Link>
+                </div>
+            </div>
+        </>
     );
 }

@@ -41,11 +41,7 @@ class HandleInertiaRequests extends Middleware
                     'user_type' => $request->user()->user_type,
                     'designation' => $request->user()->designation,
                     'phone' => $request->user()->phone,
-                    'wishlist_ids' => ($request->user() && !$isAdmin) 
-                        ? \Illuminate\Support\Facades\Cache::remember("user_wishlist_{$request->user()->id}", 60, function () use ($request) {
-                            return $request->user()->wishlists()->pluck('product_id')->toArray();
-                        }) 
-                        : [],
+
                     'profile_picture' => \App\Support\Media\FileUrlGenerator::generate($request->user()->profile_picture),
                     'notifications' => \Illuminate\Support\Facades\Cache::remember("user_notifications_{$request->user()->id}", 15, function () use ($request) {
                         return $request->user()->unreadNotifications()->limit(10)->get();
@@ -74,10 +70,7 @@ class HandleInertiaRequests extends Middleware
                 $path = base_path('lang/' . app()->getLocale() . '.json');
                 return file_exists($path) ? json_decode(file_get_contents($path), true) : [];
             }),
-            'categories' => $isAdmin ? [] : app(\App\Caches\Admin\Category\CategoryCache::class)->getNavbarCategoriesTree(),
-            'brands' => $isAdmin ? [] : \Illuminate\Support\Facades\Cache::remember('global_brands_list', 3600, function () {
-                return \App\Models\Brand::select('id', 'name', 'slug', 'logo as image')->where('status', 1)->get();
-            }),
+
             'pages' => $isAdmin ? [] : \Illuminate\Support\Facades\Cache::remember('global_pages_list', 3600, function () {
                 return \App\Models\Page::select('id', 'title', 'slug')->where('is_active', true)->get();
             }),

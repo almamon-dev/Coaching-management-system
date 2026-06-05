@@ -219,18 +219,6 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Add Demo Address
-        $demoUser->addresses()->updateOrCreate(
-            ['type' => 'Home'],
-            [
-                'user_id' => $demoUser->id,
-                'name' => 'Demo User',
-                'address' => '123 Tech Avenue, Sector 7',
-                'district' => 'Dhaka',
-                'upazila' => 'Uttara',
-                'post_code' => '1230',
-                'is_primary' => true,
-            ]
-        );
+        // Demo User created successfully without address
     }
 }
