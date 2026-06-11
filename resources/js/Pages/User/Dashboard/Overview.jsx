@@ -91,9 +91,7 @@ export default function Overview({ auth }) {
     return (
         <UserLayout user={user}>
             <Head title="Dashboard Overview" />
-
-            <div className="p-4 md:p-6 lg:p-8 space-y-6">
-                
+            <div className="space-y-6">
                 {/* Header Section */}
                 <div className="mb-8">
                     <h1 className="text-2xl font-bold text-[#1e293b] tracking-tight flex items-center gap-2">

@@ -35,6 +35,7 @@ const RAW_MENU_GROUPS = [
                     { label: "Classes", getPath: () => route('admin.classes.index') },
                     { label: "Sections", getPath: () => route('admin.sections.index') },
                     { label: "Subjects", getPath: () => route('admin.subjects.index') },
+                    { label: "Assign Subjects", getPath: () => route('admin.subject-allocation.index') },
                     { label: "Class Routine", getPath: () => route('admin.class_routines.index') },
                 ],
             },
@@ -56,8 +57,7 @@ const RAW_MENU_GROUPS = [
                 label: "Teacher Management",
                 icon: UserCheck,
                 children: [
-                    { label: "Teachers", getPath: () => '#' },
-                    { label: "Subject Assignment", getPath: () => '#' },
+                    { label: "Teachers", getPath: () => route('admin.teachers.index') },
                     { label: "Class Assignment", getPath: () => '#' },
                 ],
             },

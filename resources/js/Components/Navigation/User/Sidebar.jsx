@@ -130,10 +130,10 @@ const SubMenuItem = React.memo(({ child, currentPath }) => {
             href={path}
             prefetch={path !== '#' ? ["hover", "mount"] : undefined}
             showProgress={false}
-            className={`flex items-center gap-2.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-all duration-150 group/sub
+            className={`flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-all duration-150 group/sub
                 ${childActive ? "text-blue-600 bg-blue-50/50" : "text-slate-500 hover:text-blue-600 hover:bg-slate-50/50"}`}
         >
-            <span className={`w-1 h-1 rounded-full transition-all duration-150 shrink-0 ${childActive ? "bg-blue-600 scale-125" : "bg-slate-300 group-hover/sub:bg-blue-600"
+            <span className={`w-1.5 h-1.5 rounded-full transition-all duration-150 shrink-0 ${childActive ? "bg-blue-600 scale-125" : "bg-slate-300 group-hover/sub:bg-blue-600"
                 }`} />
             <span>{child.label}</span>
         </Link>
@@ -165,17 +165,17 @@ const NavItem = React.memo(({ item, isCollapsed, currentPath, openTicketsCount }
                 <label className="block w-full cursor-pointer select-none">
                     <input type="checkbox" defaultChecked={isChildActive} className="peer hidden" />
 
-                    <div className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-all duration-150 group
+                    <div className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-150 group
                         peer-checked:[&_svg.chevron]:rotate-90 ${isChildActive ? "bg-blue-50 text-blue-700 font-semibold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium"}`}
                     >
                         {Icon && (
-                            <Icon size={15} strokeWidth={isChildActive ? 2 : 1.75} className={`transition-all duration-200 group-hover:scale-105 ${isChildActive ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"}`} />
+                            <Icon size={16} strokeWidth={isChildActive ? 2 : 1.75} className={`transition-all duration-200 group-hover:scale-105 ${isChildActive ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"}`} />
                         )}
 
                         {!isCollapsed && (
                             <>
-                                <span className="text-[11.5px] truncate flex-1 tracking-tight">{item.label}</span>
-                                <ChevronRight size={13} className="chevron transition-transform duration-150 text-slate-400 group-hover:text-blue-600" />
+                                <span className="text-[13px] truncate flex-1 tracking-tight">{item.label}</span>
+                                <ChevronRight size={14} className="chevron transition-transform duration-150 text-slate-400 group-hover:text-blue-600" />
                             </>
                         )}
                     </div>
@@ -206,17 +206,17 @@ const NavItem = React.memo(({ item, isCollapsed, currentPath, openTicketsCount }
             as={item.method === "post" ? "button" : "a"}
             className="block w-full text-left focus:outline-none"
         >
-            <div className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-all duration-150 group cursor-pointer
+            <div className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-150 group cursor-pointer
                 ${isActive ? "bg-blue-50 text-blue-700 font-semibold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium"}`}
             >
                 {Icon && (
-                    <Icon size={15} strokeWidth={isActive ? 2 : 1.75} className={`transition-all duration-200 group-hover:scale-105 ${isActive ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"}`} />
+                    <Icon size={16} strokeWidth={isActive ? 2 : 1.75} className={`transition-all duration-200 group-hover:scale-105 ${isActive ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"}`} />
                 )}
                 {!isCollapsed && (
                     <>
-                        <span className="text-[11.5px] truncate flex-1 tracking-tight">{item.label}</span>
+                        <span className="text-[13px] truncate flex-1 tracking-tight">{item.label}</span>
                         {item.key === "notices" && (
-                            <div className="px-1.5 min-w-[16px] h-3.5 rounded text-blue-600 border border-blue-200 bg-blue-50 text-[9px] flex items-center justify-center font-bold">5</div>
+                            <div className="px-2 min-w-[18px] h-4 rounded text-blue-600 border border-blue-200 bg-blue-50 text-[10px] flex items-center justify-center font-bold">5</div>
                         )}
                     </>
                 )}
@@ -266,10 +266,10 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
                             <GraduationCap size={18} strokeWidth={2.5} />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[14px] font-black tracking-tight text-slate-800 leading-tight">
+                            <span className="text-[16px] font-black tracking-tight text-slate-800 leading-tight">
                                 Lohadi High
                             </span>
-                            <span className="text-[9px] font-semibold text-slate-400">School Management System</span>
+                            <span className="text-[10px] font-semibold text-slate-400">School Management System</span>
                         </div>
                     </Link>
                 )}
@@ -279,27 +279,27 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
             <div className="flex-1 overflow-y-auto no-scrollbar pb-6 flex flex-col">
                 
                 {/* QUICK LINK: DASHBOARD */}
-                <div className="p-2 pb-0 shrink-0">
+                <div className="p-3 pb-0 shrink-0">
                     <Link
                         href={route('user.dashboard')}
                         prefetch={["hover", "mount"]}
                         showProgress={false}
-                        className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-all duration-150 group
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-150 group
                             ${currentPath === "/user/dashboard" ? "bg-blue-50 text-blue-700 font-bold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium"}`}
                     >
-                        <LayoutDashboard size={15} className={currentPath === "/user/dashboard" ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"} />
-                        {!isCollapsed && <span className="text-[11.5px] tracking-tight">Dashboard</span>}
+                        <LayoutDashboard size={16} className={currentPath === "/user/dashboard" ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"} />
+                        {!isCollapsed && <span className="text-[13px] tracking-tight">Dashboard</span>}
                     </Link>
                 </div>
 
                 {filteredMenuGroups.map((group, idx) => (
                     <div key={idx} className="mt-2 flex-1">
                         {!isCollapsed && group.title && (
-                            <div className="px-5 mb-1 mt-1">
-                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{group.title}</span>
+                            <div className="px-6 mb-1.5 mt-2">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{group.title}</span>
                             </div>
                         )}
-                        <div className="space-y-0.5 px-2">
+                        <div className="space-y-1 px-3">
                             {group.items.map((item) => (
                                 <NavItem
                                     key={item.key}
@@ -313,62 +313,7 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
                     </div>
                 ))}
 
-                {/* QUICK ACTIONS BLOCK */}
-                {!isCollapsed && (
-                    <div className="mt-4 px-3 shrink-0">
-                        <h3 className="text-[9.5px] font-bold text-slate-800 uppercase tracking-wider mb-2 pl-2">Quick Actions</h3>
-                        <div className="grid grid-cols-2 gap-1.5">
-                            <button className="flex items-center gap-1.5 p-1.5 rounded border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50 transition-colors group">
-                                <div className="w-5 h-5 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                                    <UserCheck size={10} />
-                                </div>
-                                <span className="text-[8.5px] font-bold text-slate-600 leading-tight group-hover:text-emerald-700 text-left">Mark<br/>Attendance</span>
-                            </button>
-                            <button className="flex items-center gap-1.5 p-1.5 rounded border border-slate-100 hover:border-blue-200 hover:bg-blue-50 transition-colors group">
-                                <div className="w-5 h-5 rounded bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                    <FileText size={10} />
-                                </div>
-                                <span className="text-[8.5px] font-bold text-slate-600 leading-tight group-hover:text-blue-700 text-left">Enter<br/>Marks</span>
-                            </button>
-                            <button className="flex items-center gap-1.5 p-1.5 rounded border border-slate-100 hover:border-amber-200 hover:bg-amber-50 transition-colors group">
-                                <div className="w-5 h-5 rounded bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 group-hover:bg-amber-500 group-hover:text-white transition-colors">
-                                    <Bell size={10} />
-                                </div>
-                                <span className="text-[8.5px] font-bold text-slate-600 leading-tight group-hover:text-amber-700 text-left">Add<br/>Notice</span>
-                            </button>
-                            <button className="flex items-center gap-1.5 p-1.5 rounded border border-slate-100 hover:border-purple-200 hover:bg-purple-50 transition-colors group">
-                                <div className="w-5 h-5 rounded bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                                    <BookOpen size={10} />
-                                </div>
-                                <span className="text-[8.5px] font-bold text-slate-600 leading-tight group-hover:text-purple-700 text-left">Add<br/>Assignment</span>
-                            </button>
-                            <button className="flex items-center gap-1.5 p-1.5 rounded border border-slate-100 hover:border-cyan-200 hover:bg-cyan-50 transition-colors group">
-                                <div className="w-5 h-5 rounded bg-cyan-100 text-cyan-600 flex items-center justify-center shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
-                                    <UserPlus size={10} />
-                                </div>
-                                <span className="text-[8.5px] font-bold text-slate-600 leading-tight group-hover:text-cyan-700 text-left">Admit<br/>Student</span>
-                            </button>
-                            <button className="flex items-center gap-1.5 p-1.5 rounded border border-slate-100 hover:border-red-200 hover:bg-red-50 transition-colors group">
-                                <div className="w-5 h-5 rounded bg-red-100 text-red-600 flex items-center justify-center shrink-0 group-hover:bg-red-600 group-hover:text-white transition-colors">
-                                    <Wallet size={10} />
-                                </div>
-                                <span className="text-[8.5px] font-bold text-slate-600 leading-tight group-hover:text-red-700 text-left">Collect<br/>Fees</span>
-                            </button>
-                            <button className="flex items-center gap-1.5 p-1.5 rounded border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50 transition-colors group">
-                                <div className="w-5 h-5 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                                    <FileText size={10} />
-                                </div>
-                                <span className="text-[8.5px] font-bold text-slate-600 leading-tight group-hover:text-indigo-700 text-left">Generate<br/>Report</span>
-                            </button>
-                            <button className="flex items-center gap-1.5 p-1.5 rounded border border-slate-100 hover:border-slate-300 hover:bg-slate-100 transition-colors group">
-                                <div className="w-5 h-5 rounded bg-slate-200 text-slate-600 flex items-center justify-center shrink-0 group-hover:bg-slate-600 group-hover:text-white transition-colors">
-                                    <Users size={10} />
-                                </div>
-                                <span className="text-[8.5px] font-bold text-slate-600 leading-tight group-hover:text-slate-800 text-left">Manage<br/>Staff</span>
-                            </button>
-                        </div>
-                    </div>
-                )}
+
             </div>
 
             {/* TRIGGER COLLAPSE */}

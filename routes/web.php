@@ -77,6 +77,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('sections', \App\Http\Controllers\Admin\SectionController::class);
         Route::resource('academic_sessions', \App\Http\Controllers\Admin\AcademicSessionController::class);
         Route::resource('subjects', \App\Http\Controllers\Admin\SubjectController::class);
+        Route::get('subject-allocation', [\App\Http\Controllers\Admin\SubjectAllocationController::class, 'index'])->name('subject-allocation.index');
+        Route::post('subject-allocation', [\App\Http\Controllers\Admin\SubjectAllocationController::class, 'store'])->name('subject-allocation.store');
         Route::resource('class_routines', \App\Http\Controllers\Admin\ClassRoutineController::class);
 
         // Student Management

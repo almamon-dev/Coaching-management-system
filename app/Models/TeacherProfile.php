@@ -15,11 +15,13 @@ class TeacherProfile extends Model
         'designation',
         'department',
         'joining_date',
-        'qualifications'
+        'qualifications',
+        'specializations'
     ];
 
     protected $casts = [
         'joining_date' => 'date',
+        'specializations' => 'array',
     ];
 
     public function user()

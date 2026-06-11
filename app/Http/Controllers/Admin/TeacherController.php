@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\TeacherProfile;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -14,18 +15,75 @@ class TeacherController extends Controller
 {
     public function index(Request $request)
     {
-        $teachers = TeacherProfile::with('user')
-            ->latest()
-            ->paginate(15);
+        $perPage = $request->input('per_page', 15);
+        $search = $request->input('search');
+        $department = $request->input('department');
+        $designation = $request->input('designation');
+
+        $query = TeacherProfile::with('user');
+
+        if ($search) {
+            $query->where('employee_id', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                  });
+        }
+
+        if ($department) {
+            $query->where('department', $department);
+        }
+
+        if ($designation) {
+            $query->where('designation', $designation);
+        }
+
+        $teachers = $query->latest()->paginate($perPage)->withQueryString();
+
+        // Get unique options for filters
+        $departments = TeacherProfile::whereNotNull('department')->distinct()->pluck('department')->map(function($dept) {
+            return ['id' => $dept, 'name' => $dept];
+        });
+        
+        $designations = TeacherProfile::whereNotNull('designation')->distinct()->pluck('designation')->map(function($desig) {
+            return ['id' => $desig, 'name' => $desig];
+        });
 
         return Inertia::render('Admin/Teachers/Index', [
-            'teachers' => $teachers
+            'teachers' => $teachers,
+            'filters' => $request->only(['search', 'per_page', 'department', 'designation']),
+            'departments' => $departments,
+            'designations' => $designations
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/Teachers/Create');
+        $subjects = Subject::all();
+
+        $departments = [
+            ['id' => 'Science', 'name' => 'Science'],
+            ['id' => 'Humanities', 'name' => 'Humanities'],
+            ['id' => 'Commerce', 'name' => 'Commerce'],
+            ['id' => 'Mathematics', 'name' => 'Mathematics'],
+            ['id' => 'Languages', 'name' => 'Languages'],
+            ['id' => 'Physical Education', 'name' => 'Physical Education'],
+            ['id' => 'Arts', 'name' => 'Arts'],
+        ];
+
+        $designations = [
+            ['id' => 'Senior Teacher', 'name' => 'Senior Teacher'],
+            ['id' => 'Assistant Teacher', 'name' => 'Assistant Teacher'],
+            ['id' => 'Lecturer', 'name' => 'Lecturer'],
+            ['id' => 'Head of Department', 'name' => 'Head of Department'],
+            ['id' => 'Instructor', 'name' => 'Instructor'],
+        ];
+
+        return Inertia::render('Admin/Teachers/Create', [
+            'subjects' => $subjects,
+            'departments' => $departments,
+            'designations' => $designations,
+        ]);
     }
 
     public function store(Request $request)
@@ -39,6 +97,8 @@ class TeacherController extends Controller
             'department' => 'nullable|string|max:255',
             'joining_date' => 'nullable|date',
             'qualifications' => 'nullable|string',
+            'specializations' => 'nullable|array',
+            'specializations.*' => 'exists:subjects,id',
         ]);
 
         DB::transaction(function () use ($validated) {
@@ -69,6 +129,7 @@ class TeacherController extends Controller
                 'department' => $validated['department'],
                 'joining_date' => $validated['joining_date'],
                 'qualifications' => $validated['qualifications'],
+                'specializations' => $validated['specializations'] ?? [],
             ]);
         });
 

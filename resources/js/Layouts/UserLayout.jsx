@@ -123,7 +123,7 @@ export default function UserLayout({ children }) {
                     lg:translate-x-0
                     transition-transform duration-200 lg:transition-none
                     ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
-                    ${isCollapsed ? "w-[68px]" : "w-[240px]"}
+                    ${isCollapsed ? "w-[68px]" : "w-[280px]"}
                 `}
             >
                 <MemoSidebar
@@ -137,7 +137,7 @@ export default function UserLayout({ children }) {
                 className={`
                     h-screen flex flex-col
                     transition-none
-                    ${isCollapsed ? "lg:pl-[68px]" : "lg:pl-[240px]"}
+                    ${isCollapsed ? "lg:pl-[68px]" : "lg:pl-[280px]"}
                 `}
             >
                 {/* HEADER */}

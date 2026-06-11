@@ -4,10 +4,10 @@ import UserLayout from '@/Layouts/UserLayout';
 import { Head, usePage } from '@inertiajs/react';
 import { 
     Calendar, ChevronDown, Users, CheckCircle2, UserX, Clock, 
-    CalendarCheck, Download, Save, ChevronRight, PieChart as PieChartIcon,
-    BookOpen
+    CalendarCheck, Download, Save, PieChart as PieChartIcon,
+    BookOpen, RefreshCcw
 } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import SelectInput from '@/Components/SelectInput';
 
 // --- MOCK DATA ---
 const initialStudents = [
@@ -25,6 +25,11 @@ export default function Index({ auth }) {
     const [attendanceList, setAttendanceList] = useState(initialStudents);
     const [selectedIds, setSelectedIds] = useState([]);
     const [bulkDropdownOpen, setBulkDropdownOpen] = useState(false);
+    
+    // Filter states
+    const [selectedClass, setSelectedClass] = useState('Class 10-B');
+    const [selectedSubject, setSelectedSubject] = useState('Mathematics');
+    const [selectedPeriod, setSelectedPeriod] = useState('2nd Period (09:45 AM)');
     
     const Layout = auth?.user?.user_type === 'admin' ? AdminLayout : UserLayout;
 
@@ -46,11 +51,6 @@ export default function Index({ auth }) {
         };
     }, [attendanceList]);
 
-    const chartData = [
-        { name: 'Present', value: stats.present, color: '#10b981' },
-        { name: 'Absent', value: stats.absent, color: '#ef4444' },
-        { name: 'Late', value: stats.late, color: '#f59e0b' }
-    ];
 
     // Handlers
     const handleStatusChange = (id, newStatus) => {
@@ -89,7 +89,7 @@ export default function Index({ auth }) {
         <Layout user={auth?.user}>
             <Head title="Mark Attendance" />
 
-            <div className="min-h-screen bg-[#f8fafc] pb-10 font-sans">
+            <div className="bg-[#f8fafc] font-sans">
                 {/* --- HEADER --- */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
                     <div>
@@ -106,44 +106,51 @@ export default function Index({ auth }) {
                 </div>
 
                 {/* --- TOP FILTERS --- */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                    <FilterCard 
-                        icon={Users} iconColor="text-purple-600" iconBg="bg-purple-50"
-                        label="Select Class" value="Class 10-B"
-                    />
-                    <FilterCard 
-                        icon={BookOpen} iconColor="text-emerald-600" iconBg="bg-emerald-50"
-                        label="Select Subject" value="Mathematics"
-                    />
-                    <FilterCard 
-                        icon={Clock} iconColor="text-orange-500" iconBg="bg-orange-50"
-                        label="Select Period" value="2nd Period (09:45 AM)"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                    <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-0.5">Select Class</label>
+                        <SelectInput 
+                            icon={Users}
+                            value={selectedClass}
+                            onChange={(e) => setSelectedClass(e.target.value)}
+                            className="h-[42px]"
+                        >
+                            <option value="Class 10-A">Class 10-A</option>
+                            <option value="Class 10-B">Class 10-B</option>
+                            <option value="Class 9-A">Class 9-A</option>
+                            <option value="Class 9-B">Class 9-B</option>
+                        </SelectInput>
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-0.5">Select Subject</label>
+                        <SelectInput 
+                            icon={BookOpen}
+                            value={selectedSubject}
+                            onChange={(e) => setSelectedSubject(e.target.value)}
+                            className="h-[42px]"
+                        >
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="English">English</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                        </SelectInput>
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-0.5">Select Period</label>
+                        <SelectInput 
+                            icon={Clock}
+                            value={selectedPeriod}
+                            onChange={(e) => setSelectedPeriod(e.target.value)}
+                            className="h-[42px]"
+                        >
+                            <option value="1st Period (08:45 AM)">1st Period (08:45 AM)</option>
+                            <option value="2nd Period (09:45 AM)">2nd Period (09:45 AM)</option>
+                            <option value="3rd Period (11:30 AM)">3rd Period (11:30 AM)</option>
+                            <option value="4th Period (12:30 PM)">4th Period (12:30 PM)</option>
+                        </SelectInput>
+                    </div>
                 </div>
 
-                {/* --- SUMMARY CARDS --- */}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
-                    <SummaryCard 
-                        icon={Users} iconColor="text-emerald-600" iconBg="bg-emerald-50"
-                        title="Total Students" value={stats.total} subtitle=""
-                    />
-                    <SummaryCard 
-                        icon={CheckCircle2} iconColor="text-emerald-600" iconBg="bg-emerald-50"
-                        title="Present" value={stats.present} subtitle={`${stats.presentPct}%`}
-                    />
-                    <SummaryCard 
-                        icon={UserX} iconColor="text-red-500" iconBg="bg-red-50"
-                        title="Absent" value={stats.absent} subtitle={`${stats.absentPct}%`}
-                    />
-                    <SummaryCard 
-                        icon={Calendar} iconColor="text-amber-500" iconBg="bg-amber-50"
-                        title="Late" value={stats.late} subtitle={`${stats.latePct}%`}
-                    />
-                    <SummaryCard 
-                        icon={CalendarCheck} iconColor="text-purple-600" iconBg="bg-purple-50"
-                        title="Marked By" value={auth?.user?.name || 'Admin'} subtitle="Today" isText
-                    />
-                </div>
 
                 {/* --- MAIN TABLE SECTION --- */}
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-5 flex flex-col">
@@ -169,8 +176,11 @@ export default function Index({ auth }) {
                                     </div>
                                 )}
                             </div>
-                            <button className="flex items-center gap-1.5 px-2.5 py-1.5 border border-slate-200 text-blue-600 text-[11.5px] font-bold rounded hover:bg-slate-50 transition-colors">
-                                <Download size={13} className="rotate-180" /> Import
+                            <button 
+                                onClick={() => handleQuickAction('Clear')}
+                                className="flex items-center gap-1.5 px-2.5 py-1.5 border border-slate-200 text-slate-600 text-[11.5px] font-bold rounded hover:bg-slate-50 hover:text-red-600 hover:border-red-200 transition-colors"
+                            >
+                                <RefreshCcw size={13} /> Clear
                             </button>
                             <button className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-[11.5px] font-bold rounded hover:bg-blue-700 shadow-sm transition-colors">
                                 <Save size={13} /> Save
@@ -193,7 +203,7 @@ export default function Index({ auth }) {
                                     </th>
                                     <th className="py-2 px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider w-[80px]">Roll No.</th>
                                     <th className="py-2 px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider w-[220px]">Student Name</th>
-                                    <th className="py-2 px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider w-[140px]">Status</th>
+                                    <th className="py-2 px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider w-[240px]">Status</th>
                                     <th className="py-2 pr-4 pl-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Remarks (Optional)</th>
                                 </tr>
                             </thead>
@@ -216,7 +226,7 @@ export default function Index({ auth }) {
                                             </div>
                                         </td>
                                         <td className="py-2.5 px-3">
-                                            <StatusDropdown status={student.status} onChange={(val) => handleStatusChange(student.id, val)} />
+                                            <StatusRadio status={student.status} studentId={student.id} onChange={(val) => handleStatusChange(student.id, val)} />
                                         </td>
                                         <td className="py-2.5 pr-4 pl-3">
                                             <input 
@@ -232,78 +242,41 @@ export default function Index({ auth }) {
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                {/* --- BOTTOM ROW --- */}
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-4">
-                    {/* Attendance Summary */}
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
-                        <h2 className="text-[13px] font-bold text-slate-800 mb-4">Attendance Summary</h2>
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="relative w-[110px] h-[110px] shrink-0">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie data={chartData} cx="50%" cy="50%" innerRadius={42} outerRadius={55} paddingAngle={2} dataKey="value" stroke="none">
-                                            {chartData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-[16px] font-black text-slate-900 leading-none">{stats.presentPct}%</span>
-                                    <span className="text-[9px] text-slate-500 font-bold mt-1 tracking-tight leading-none text-center">Overall<br/>Attendance</span>
-                                </div>
+                    
+                    {/* Table Footer / Summary */}
+                    <div className="bg-slate-50/50 border-t border-slate-100 px-4 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-b-xl">
+                        <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-2 text-[12px]">
+                                <span className="font-semibold text-slate-600">Total Students:</span>
+                                <span className="font-bold text-slate-800">{stats.total}</span>
                             </div>
-                            <div className="flex flex-col gap-3 flex-1">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                        <span className="text-[11.5px] font-semibold text-slate-700">Present</span>
-                                    </div>
-                                    <span className="text-[11.5px] text-slate-500 font-medium">{stats.present} ({stats.presentPct}%)</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                                        <span className="text-[11.5px] font-semibold text-slate-700">Absent</span>
-                                    </div>
-                                    <span className="text-[11.5px] text-slate-500 font-medium">{stats.absent} ({stats.absentPct}%)</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-amber-500"></div>
-                                        <span className="text-[11.5px] font-semibold text-slate-700">Late</span>
-                                    </div>
-                                    <span className="text-[11.5px] text-slate-500 font-medium">{stats.late} ({stats.latePct}%)</span>
-                                </div>
+                            <div className="flex items-center gap-2 text-[12px]">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                <span className="font-semibold text-slate-600">Present:</span>
+                                <span className="font-bold text-emerald-700">{stats.present}</span>
+                                <span className="text-slate-400 font-medium text-[10px]">({stats.presentPct}%)</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[12px]">
+                                <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                <span className="font-semibold text-slate-600">Absent:</span>
+                                <span className="font-bold text-red-700">{stats.absent}</span>
+                                <span className="text-slate-400 font-medium text-[10px]">({stats.absentPct}%)</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[12px]">
+                                <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                                <span className="font-semibold text-slate-600">Late:</span>
+                                <span className="font-bold text-amber-700">{stats.late}</span>
+                                <span className="text-slate-400 font-medium text-[10px]">({stats.latePct}%)</span>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
-                        <h2 className="text-[13px] font-bold text-slate-800 mb-3">Quick Actions</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 flex-1">
-                            <QuickActionCard 
-                                icon={CheckCircle2} iconColor="text-emerald-600" bg="bg-emerald-50" hoverBg="hover:bg-emerald-100" border="border-emerald-100"
-                                label="Mark All Present" onClick={() => handleQuickAction('Present')}
-                            />
-                            <QuickActionCard 
-                                icon={UserX} iconColor="text-red-500" bg="bg-red-50" hoverBg="hover:bg-red-100" border="border-red-100"
-                                label="Mark All Absent" onClick={() => handleQuickAction('Absent')}
-                            />
-                            <QuickActionCard 
-                                icon={Clock} iconColor="text-amber-500" bg="bg-amber-50" hoverBg="hover:bg-amber-100" border="border-amber-100"
-                                label="Mark All Late" onClick={() => handleQuickAction('Late')}
-                            />
-                            <QuickActionCard 
-                                icon={Calendar} iconColor="text-purple-600" bg="bg-purple-50" hoverBg="hover:bg-purple-100" border="border-purple-100"
-                                label="Clear All" onClick={() => handleQuickAction('Clear')}
-                            />
+                        <div className="text-[11px] font-medium text-slate-500 flex items-center gap-1.5 bg-white border border-slate-200 px-2.5 py-1 rounded shadow-sm">
+                            <CalendarCheck size={13} className="text-slate-400" />
+                            Marked by <span className="font-bold text-slate-700 ml-0.5">{auth?.user?.name || 'Admin'}</span>
                         </div>
                     </div>
                 </div>
+
+
 
             </div>
         </Layout>
@@ -312,80 +285,32 @@ export default function Index({ auth }) {
 
 // --- SUB-COMPONENTS ---
 
-function FilterCard({ icon: Icon, iconColor, iconBg, label, value }) {
+
+function StatusRadio({ status, studentId, onChange }) {
+    const options = [
+        { value: 'Present', label: 'Present', activeColor: 'text-emerald-600', radioColor: 'text-emerald-500 focus:ring-emerald-500' },
+        { value: 'Absent', label: 'Absent', activeColor: 'text-red-600', radioColor: 'text-red-500 focus:ring-red-500' },
+        { value: 'Late', label: 'Late', activeColor: 'text-amber-600', radioColor: 'text-amber-500 focus:ring-amber-500' }
+    ];
+
     return (
-        <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between group cursor-pointer hover:border-slate-300 transition-colors">
-            <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconBg} ${iconColor} group-hover:scale-105 transition-transform`}>
-                    <Icon size={16} />
-                </div>
-                <div>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{label}</p>
-                    <p className="text-[12.5px] font-bold text-slate-800">{value}</p>
-                </div>
-            </div>
-            <ChevronDown size={15} className="text-blue-500 group-hover:-translate-y-0.5 transition-transform" />
+        <div className="flex items-center gap-4">
+            {options.map(opt => (
+                <label key={opt.value} className="flex items-center gap-1.5 cursor-pointer group">
+                    <input 
+                        type="radio" 
+                        name={`status-${studentId}`}
+                        value={opt.value} 
+                        checked={status === opt.value}
+                        onChange={(e) => onChange(e.target.value)}
+                        className={`w-3.5 h-3.5 border-slate-300 cursor-pointer transition-all ${opt.radioColor}`}
+                    />
+                    <span className={`text-[11px] font-bold transition-colors ${status === opt.value ? opt.activeColor : 'text-slate-500 group-hover:text-slate-700'}`}>
+                        {opt.label}
+                    </span>
+                </label>
+            ))}
         </div>
     );
 }
 
-function SummaryCard({ icon: Icon, iconColor, iconBg, title, value, subtitle, isText }) {
-    return (
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow h-[100px]">
-            <div className="flex items-start justify-between">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconBg} ${iconColor}`}>
-                    <Icon size={16} strokeWidth={2.5} />
-                </div>
-                {subtitle && !isText && (
-                    <span className="text-[11px] font-bold text-slate-600">{subtitle}</span>
-                )}
-            </div>
-            <div className="mt-2">
-                <p className="text-[11px] font-semibold text-slate-500 mb-0.5">{title}</p>
-                <div className="flex items-end justify-between">
-                    <p className={`font-black text-slate-800 ${isText ? 'text-[14px]' : 'text-[22px] leading-none'}`}>{value}</p>
-                    {isText && <span className="text-[10px] font-semibold text-slate-400">{subtitle}</span>}
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function StatusDropdown({ status, onChange }) {
-    let bg, text, border;
-    if (status === 'Present') { bg = 'bg-emerald-50'; text = 'text-emerald-600'; border = 'border-emerald-100'; }
-    else if (status === 'Absent') { bg = 'bg-red-50'; text = 'text-red-500'; border = 'border-red-100'; }
-    else if (status === 'Late') { bg = 'bg-amber-50'; text = 'text-amber-600'; border = 'border-amber-100'; }
-    else { bg = 'bg-slate-50'; text = 'text-slate-500'; border = 'border-slate-200'; }
-
-    return (
-        <div className={`relative flex items-center justify-between w-[110px] px-2.5 py-1.5 rounded border ${bg} ${border} cursor-pointer hover:brightness-95 transition-all`}>
-            <span className={`text-[11px] font-bold ${text}`}>{status || 'Select'}</span>
-            <ChevronDown size={12} className={text} />
-            <select 
-                value={status} 
-                onChange={(e) => onChange(e.target.value)}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            >
-                <option value="">Select</option>
-                <option value="Present">Present</option>
-                <option value="Absent">Absent</option>
-                <option value="Late">Late</option>
-            </select>
-        </div>
-    );
-}
-
-function QuickActionCard({ icon: Icon, iconColor, bg, hoverBg, border, label, onClick }) {
-    return (
-        <button 
-            onClick={onClick}
-            className={`flex flex-col items-center justify-center p-3 rounded-xl border ${border} ${bg} ${hoverBg} transition-colors group h-[95px]`}
-        >
-            <div className={`w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center ${iconColor} mb-2.5 group-hover:scale-110 transition-transform`}>
-                <Icon size={18} strokeWidth={2.5} />
-            </div>
-            <p className={`text-[11.5px] font-bold ${iconColor} text-center leading-snug px-1`}>{label}</p>
-        </button>
-    );
-}

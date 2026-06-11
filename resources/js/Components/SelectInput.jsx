@@ -101,7 +101,7 @@ export default function SelectInput({
                                     <Icon size={14} aria-hidden="true" />
                                 </span>
                             )}
-                            <span className="block truncate">
+                            <span className={cn("block", multiple ? "break-words whitespace-normal pb-0.5" : "truncate")}>
                                 {getSelectedDisplay()}
                             </span>
                             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
