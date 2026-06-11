@@ -40,6 +40,7 @@ class StudentSeeder extends Seeder
         for ($i = 1; $i <= 300; $i++) {
             $user = User::create([
                 'name' => $faker->name,
+                'username' => 'student' . $i,
                 'email' => 'student' . $i . '@sms.com',
                 'phone' => '017' . str_pad($i, 8, '0', STR_PAD_LEFT),
                 'password' => Hash::make('password'),

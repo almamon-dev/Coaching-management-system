@@ -219,7 +219,7 @@ const NavItem = React.memo(({ item, isCollapsed, currentPath, openTicketsCount }
                             <Icon
                                 size={18}
                                 strokeWidth={isChildActive ? 2.25 : 1.75}
-                                className={`transition-all duration-200 group-hover:scale-105 ${isChildActive ? "text-[#008060]" : "text-slate-400 group-hover:text-[#008060]"}`}
+                                className={`transition-colors duration-200 ${isChildActive ? "text-[#008060]" : "text-slate-400 group-hover:text-[#008060]"}`}
                             />
                         )}
 
@@ -233,12 +233,15 @@ const NavItem = React.memo(({ item, isCollapsed, currentPath, openTicketsCount }
                             </>
                         )}
                     </div>
-
                     {!isCollapsed && (
-                        <div className="max-h-0 overflow-hidden peer-checked:max-h-[800px] peer-checked:mt-0.5 ml-5 space-y-0.5 transition-all duration-300 ease-in-out will-change-[max-height]">
-                            {item.children.map((child) => (
-                                <SubMenuItem key={child.label} child={child} currentPath={currentPath} />
-                            ))}
+                        <div className="grid grid-rows-[0fr] peer-checked:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                            <div className="overflow-hidden">
+                                <div className="ml-5 space-y-0.5 mt-0.5">
+                                    {item.children.map((child) => (
+                                        <SubMenuItem key={child.label} child={child} currentPath={currentPath} />
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     )}
                 </label>
@@ -263,7 +266,7 @@ const NavItem = React.memo(({ item, isCollapsed, currentPath, openTicketsCount }
                     <Icon
                         size={18}
                         strokeWidth={isActive ? 2.25 : 1.75}
-                        className={`transition-all duration-200 group-hover:scale-105 ${isActive ? "text-[#008060]" : "text-slate-400 group-hover:text-[#008060]"}`}
+                        className={`transition-colors duration-200 ${isActive ? "text-[#008060]" : "text-slate-400 group-hover:text-[#008060]"}`}
                     />
                 )}
                 {!isCollapsed && (
@@ -312,13 +315,12 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
             {/* BRANDING HEADER */}
             <div className="h-[60px] flex items-center px-4 shrink-0 bg-white border-b border-slate-200/60 overflow-hidden relative">
                 {!isCollapsed && (
-                    <Link href="/" className="flex-shrink-0 flex items-center gap-2 h-[45px]">
-                        <div className="relative text-[#16a34a]">
-                            <ShoppingCart size={24} className="md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
-                            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#f59e0b] rounded-full border-2 border-white"></div>
+                    <Link href="/dashboard" className="flex-shrink-0 flex items-center gap-2 h-[45px]">
+                        <div className="relative text-[#008060] bg-[#e6f2ef] p-1.5 rounded-lg">
+                            <GraduationCap size={22} className="md:w-[22px] md:h-[22px]" strokeWidth={2} />
                         </div>
-                        <span className="text-[20px] font-black tracking-tight text-[#16a34a]">
-                            DailyFresh
+                        <span className="text-[18px] font-bold tracking-tight text-[#202223]">
+                            School SMS
                         </span>
                     </Link>
                 )}
@@ -362,13 +364,6 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
                 ))}
             </div>
 
-            {/* TRIGGER COLLAPSE */}
-            <button
-                onClick={toggleCollapse}
-                className="absolute top-4 -right-3 z-[110] w-6 h-6 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-[#008060] transition-colors shadow-sm focus:outline-none"
-            >
-                <ChevronsLeft size={11} className={isCollapsed ? 'rotate-180' : ''} />
-            </button>
         </div>
     );
 }

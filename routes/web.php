@@ -34,6 +34,7 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
 
     // Attendance
     Route::get('/user/attendance', [\App\Http\Controllers\AttendanceController::class, 'myAttendance'])->name('user.attendance');
+    Route::get('/user/mark-attendance', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('user.mark-attendance');
 
     // Customer Support Tickets
     Route::prefix('user/tickets')->name('dashboard.tickets.')->group(function () {

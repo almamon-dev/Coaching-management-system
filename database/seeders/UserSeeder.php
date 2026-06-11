@@ -185,10 +185,12 @@ class UserSeeder extends Seeder
 
         // Create the Seeded Users and Assign Roles
         foreach ($usersData as $data) {
+            $username = explode('@', $data['email'])[0];
             $user = User::updateOrCreate(
                 ['email' => $data['email']],
                 [
                     'name' => $data['name'],
+                    'username' => $username,
                     'password' => Hash::make($data['password']),
                     'user_type' => $data['user_type'],
                     'phone' => $data['phone'],
@@ -209,6 +211,7 @@ class UserSeeder extends Seeder
             ['email' => 'mamon193p@gmail.com'],
             [
                 'name' => 'Demo User',
+                'username' => 'mamon193p',
                 'password' => Hash::make('user123'),
                 'user_type' => 'user',
                 'phone' => '01800000000',

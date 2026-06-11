@@ -230,6 +230,7 @@ export default function AdminLayout({ children }) {
 
                 <MemoHeader
                     onMenuClick={handleMobileMenu}
+                    onToggleSidebar={handleToggleSidebar}
                 />
 
 
