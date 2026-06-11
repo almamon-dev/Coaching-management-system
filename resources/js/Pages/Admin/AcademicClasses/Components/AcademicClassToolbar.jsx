@@ -75,25 +75,6 @@ const AcademicClassToolbar = ({
                 {/* --- Filters Group --- */}
                 <div className="flex items-center gap-1.5 flex-1 justify-end">
                     <div className="flex items-center gap-1.5">
-                        {/* Filters Toggle */}
-                        <button
-                            onClick={() => setShowAdvanced(!showAdvanced)}
-                            className={cn(
-                                "h-[32px] px-3 rounded-[3px] border text-[12px] font-bold flex items-center gap-1.5 transition-all cursor-pointer bg-white outline-none",
-                                showAdvanced || activeFilterCount > 0
-                                    ? "bg-[#e4f1ef] border-[#008060] text-[#008060]"
-                                    : "bg-white border-[#d1d1d1] text-[#202223] hover:bg-[#f6f6f7]"
-                            )}
-                        >
-                            <SlidersHorizontal size={14} />
-                            Filters
-                            {activeFilterCount > 0 && (
-                                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[#008060] text-white text-[10px] font-bold leading-none">
-                                    {activeFilterCount}
-                                </span>
-                            )}
-                        </button>
-
                         {/* Reset Button */}
                         <button
                             onClick={handleReset}
@@ -114,21 +95,6 @@ const AcademicClassToolbar = ({
                     </div>
                 </div>
             </div>
-
-            {/* Advanced Filters Drawer */}
-            {showAdvanced && (
-                <div className="px-3 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 animate-in slide-in-from-top-1 duration-150 border-t border-[#ebebeb] pt-3 bg-[#f9fafb]">
-                    <div>
-                        <label className="text-[11px] font-bold text-[#6d7175] mb-1 block">Access Role</label>
-                        <SelectInput
-                            value={filters?.role || 'all'}
-                            onChange={(e) => handleFilterChange('role', e.target.value)}
-                            options={[{ id: 'all', name: 'All Roles' }, ...roles.map(r => ({ id: r.name, name: r.name }))]}
-                            className="h-[32px] text-[12px] font-medium border-[#d1d1d1] rounded-[3px]"
-                        />
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

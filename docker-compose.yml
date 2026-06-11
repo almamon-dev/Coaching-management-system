@@ -29,7 +29,7 @@ services:
       PMA_USER: root
       PMA_PASSWORD: root
     ports:
-      - "8083:80"
+      - "8084:80"
     depends_on:
       - mysql
 
@@ -38,4 +38,4 @@ services:
     container_name: sms-redis
     restart: always
     ports:
-      - "6383:6379"
+      - "6384:6379"

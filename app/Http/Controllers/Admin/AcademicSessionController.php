@@ -22,6 +22,11 @@ class AcademicSessionController extends Controller
         return Inertia::render('Admin/AcademicSessions/Index', [
             'sessions' => $sessions,
             'filters' => $request->only(['search', 'per_page']),
+            'stats' => [
+                'all' => AcademicSession::count(),
+                'active' => AcademicSession::where('is_current', true)->count(),
+                'inactive' => AcademicSession::where('is_current', false)->count(),
+            ],
         ]);
     }
 

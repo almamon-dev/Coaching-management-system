@@ -7,17 +7,51 @@ import Notify from '@/Utils/Notify';
 import TextInput from '@/Components/TextInput';
 import SelectInput from '@/Components/SelectInput';
 import ColumnManager from '../AcademicClasses/Components/ColumnManager';
+import AcademicClassStats from '../AcademicClasses/Components/AcademicClassStats';
+import { ChevronDown, Check } from 'lucide-react';
 
-const SessionToolbar = ({ search, setSearch, handleReset, showAdvanced, setShowAdvanced, columns, visibleColumns, toggleColumn, selectedIds, handleClearSelection, handleBulkDelete }) => (
+const SessionToolbar = ({ search, setSearch, handleReset, showAdvanced, setShowAdvanced, columns, visibleColumns, toggleColumn, selectedIds, handleClearSelection, handleBulkDelete }) => {
+    const [showSelectionMenu, setShowSelectionMenu] = useState(false);
+    return (
     <div className="border-b border-[#ebebeb] bg-white relative z-30">
         {selectedIds.length > 0 && (
-            <div className="absolute inset-0 bg-[#008060] flex items-center justify-between px-4 z-40 text-white rounded-t-[4px] shadow-[0_2px_10px_rgba(0,0,0,0.1)]">
-                <div className="flex items-center gap-3">
-                    <span className="text-[13px] font-bold">{selectedIds.length} academic years selected</span>
-                </div>
+            <div className="absolute inset-0 bg-white z-20 flex items-center justify-between px-3 animate-in slide-in-from-top-1 duration-200 shadow-sm border-b border-[#ebebeb]">
                 <div className="flex items-center gap-2">
-                    <button onClick={handleClearSelection} className="px-3 py-1.5 text-[12px] font-bold text-white hover:bg-white/10 rounded-[3px] transition-colors border border-white/20">Cancel</button>
-                    <button onClick={handleBulkDelete} className="px-3 py-1.5 text-[12px] font-bold bg-[#e32c2b] hover:bg-[#c92625] text-white rounded-[3px] transition-colors shadow-sm">Delete Selected</button>
+                    <div className="relative">
+                        <div 
+                            onClick={() => setShowSelectionMenu(!showSelectionMenu)}
+                            className="flex items-center gap-2 px-2.5 h-[36px] bg-[#f1f1f1] border border-[#d1d1d1] rounded-[4px] cursor-pointer hover:bg-[#ebebeb] transition-colors"
+                        >
+                            <div className="w-[17px] h-[17px] bg-[#008060] border-[#008060] rounded-[3px] flex items-center justify-center">
+                                <Check size={11} strokeWidth={4} className="text-white" />
+                            </div>
+                            <span className="text-[13px] font-bold text-[#202223]">
+                                {selectedIds.length} selected
+                            </span>
+                            <ChevronDown size={14} className={`text-[#6d7175] transition-transform ${showSelectionMenu ? "rotate-180" : ""}`} />
+                        </div>
+                        {showSelectionMenu && (
+                            <>
+                                <div className="fixed inset-0 z-30" onClick={() => setShowSelectionMenu(false)} />
+                                <div className="absolute top-full left-0 mt-1 w-auto min-w-full bg-white border border-[#d1d1d1] rounded-[4px] shadow-lg z-40 py-1 animate-in fade-in zoom-in-95 duration-100">
+                                    <button 
+                                        onClick={() => { handleClearSelection(); setShowSelectionMenu(false); }}
+                                        className="w-full text-left px-3 py-2 text-[12px] hover:bg-[#f6f6f7] text-[#202223] transition-colors whitespace-nowrap"
+                                    >
+                                        Deselect all
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    <div className="h-4 w-[1px] bg-[#d1d1d1] mx-1" />
+                    <button onClick={handleBulkDelete} className="h-[36px] px-3 bg-white border border-[#d1d1d1] rounded-[4px] text-[12px] font-bold text-[#bf0711] hover:bg-[#fbeae5] transition-all flex items-center gap-1.5 shadow-sm">
+                        <Trash2 size={14} />
+                        Delete
+                    </button>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button onClick={handleClearSelection} className="p-1.5 text-[#6d7175] hover:text-[#202223] transition-colors border-l border-[#ebebeb] pl-3"><X size={16} /></button>
                 </div>
             </div>
         )}
@@ -37,12 +71,6 @@ const SessionToolbar = ({ search, setSearch, handleReset, showAdvanced, setShowA
                 )}
             </div>
             <div className="flex items-center gap-1.5">
-                <button
-                    onClick={() => setShowAdvanced(!showAdvanced)}
-                    className={`h-[32px] px-3 rounded-[3px] border text-[12px] font-bold flex items-center gap-1.5 transition-all cursor-pointer outline-none ${showAdvanced ? 'bg-[#e4f1ef] border-[#008060] text-[#008060]' : 'bg-white border-[#d1d1d1] text-[#202223] hover:bg-[#f6f6f7]'}`}
-                >
-                    <SlidersHorizontal size={14} /> Filters
-                </button>
                 <button onClick={handleReset} className="h-[32px] w-[32px] flex items-center justify-center bg-white border border-[#d1d1d1] text-[#6d7175] rounded-[3px] hover:border-[#008060] hover:text-[#008060] transition-all group cursor-pointer" title="Reset Filters">
                     <RotateCcw size={14} className="group-hover:rotate-[-45deg] transition-transform" />
                 </button>
@@ -51,7 +79,7 @@ const SessionToolbar = ({ search, setSearch, handleReset, showAdvanced, setShowA
             </div>
         </div>
     </div>
-);
+)};
 
 const SessionPagination = ({ paginator, perPage, handlePerPageChange }) => {
     const fromIdx = paginator?.meta?.from || paginator?.from || 0;
@@ -102,15 +130,17 @@ const SessionPagination = ({ paginator, perPage, handlePerPageChange }) => {
     );
 };
 
-export default function Index({ auth, sessions, filters }) {
+export default function Index({ auth, sessions, filters, stats }) {
     // Column Management
     const allColumns = [
         { id: 'name', label: 'Year Name' },
         { id: 'start_date', label: 'Start Date' },
         { id: 'end_date', label: 'End Date' },
         { id: 'is_current', label: 'Status' },
+        { id: 'created_at', label: 'Created At' },
+        { id: 'updated_at', label: 'Updated At' },
     ];
-    const [visibleColumns, setVisibleColumns] = useState(['name', 'start_date', 'end_date', 'is_current']);
+    const [visibleColumns, setVisibleColumns] = useState(['name', 'start_date', 'end_date', 'is_current', 'created_at', 'updated_at']);
     const toggleColumn = (id) => setVisibleColumns(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
 
     // Data Management
@@ -237,6 +267,7 @@ export default function Index({ auth, sessions, filters }) {
             </div>
 
             <div className="bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)]">
+                {stats && <AcademicClassStats stats={stats} />}
                 <SessionToolbar 
                     search={search} setSearch={setSearch} handleReset={handleReset}
                     showAdvanced={showAdvanced} setShowAdvanced={setShowAdvanced}
@@ -250,13 +281,15 @@ export default function Index({ auth, sessions, filters }) {
                             <tr className="bg-slate-50/50 border-b border-[#ebebeb]">
                                 <th className="py-3 px-4 w-[48px] text-center select-none">
                                     <div onClick={toggleSelectAll} className={`w-[17px] h-[17px] border-[1.5px] rounded-[3px] mx-auto cursor-pointer transition-all flex items-center justify-center ${isAllSelected ? 'bg-[#008060] border-[#008060]' : 'bg-white border-[#d1d1d1]'}`}>
-                                        {isAllSelected && <div className="w-2 h-2 bg-white rounded-sm" />}
+                                        {isAllSelected && <Check size={12} strokeWidth={3} className="text-white" />}
                                     </div>
                                 </th>
                                 {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Year Name</th>}
                                 {visibleColumns.includes('start_date') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Start Date</th>}
                                 {visibleColumns.includes('end_date') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">End Date</th>}
                                 {visibleColumns.includes('is_current') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-center">Status</th>}
+                                {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Created At</th>}
+                                {visibleColumns.includes('updated_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Updated At</th>}
                                 <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-right w-[120px]">Actions</th>
                             </tr>
                         </thead>
@@ -267,7 +300,7 @@ export default function Index({ auth, sessions, filters }) {
                                     <tr key={session.id} className={`hover:bg-slate-50/40 transition-colors ${isSelected ? 'bg-[#f0f9f7]/20' : ''}`}>
                                         <td className="py-2 px-4 text-center select-none">
                                             <div onClick={() => toggleSelect(session.id)} className={`w-[17px] h-[17px] border-[1.5px] rounded-[3px] mx-auto cursor-pointer transition-all flex items-center justify-center ${isSelected ? 'bg-[#008060] border-[#008060]' : 'bg-white border-[#d1d1d1] hover:border-slate-400'}`}>
-                                                {isSelected && <div className="w-2 h-2 bg-white rounded-sm" />}
+                                                {isSelected && <Check size={12} strokeWidth={3} className="text-white" />}
                                             </div>
                                         </td>
                                         {visibleColumns.includes('name') && (
@@ -277,12 +310,12 @@ export default function Index({ auth, sessions, filters }) {
                                         )}
                                         {visibleColumns.includes('start_date') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {session.start_date || '-'}
+                                                {session.start_date ? new Date(session.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
                                             </td>
                                         )}
                                         {visibleColumns.includes('end_date') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {session.end_date || '-'}
+                                                {session.end_date ? new Date(session.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
                                             </td>
                                         )}
                                         {visibleColumns.includes('is_current') && (
@@ -296,6 +329,16 @@ export default function Index({ auth, sessions, filters }) {
                                                         <XCircle size={12} /> Inactive
                                                     </span>
                                                 )}
+                                            </td>
+                                        )}
+                                        {visibleColumns.includes('created_at') && (
+                                            <td className="py-2 px-4 text-[13px] text-slate-600">
+                                                {session.created_at ? new Date(session.created_at).toLocaleDateString() : '-'}
+                                            </td>
+                                        )}
+                                        {visibleColumns.includes('updated_at') && (
+                                            <td className="py-2 px-4 text-[13px] text-slate-600">
+                                                {session.updated_at ? new Date(session.updated_at).toLocaleDateString() : '-'}
                                             </td>
                                         )}
                                         <td className="py-2 px-4 text-right">

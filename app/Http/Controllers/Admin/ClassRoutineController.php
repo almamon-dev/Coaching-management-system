@@ -39,6 +39,11 @@ class ClassRoutineController extends Controller
             'subjects' => Subject::orderBy('name')->get(),
             'teachers' => User::where('user_type', 'teacher')->orderBy('name')->get(),
             'filters' => $request->only(['search', 'per_page']),
+            'stats' => [
+                'all' => ClassRoutine::count(),
+                'active' => ClassRoutine::count(),
+                'inactive' => 0,
+            ],
         ]);
     }
 

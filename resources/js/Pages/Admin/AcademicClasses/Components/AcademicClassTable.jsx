@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
-import { AlertTriangle, SquarePen, Trash2, Hash, Layers } from 'lucide-react';
+import { AlertTriangle, SquarePen, Trash2, Hash, Layers, Check } from 'lucide-react';
 import AcademicClassSkeleton from './AcademicClassSkeleton';
 
 const AcademicClassTable = ({
@@ -35,13 +35,15 @@ const AcademicClassTable = ({
                                 )}
                             >
                                 {isAllSelected && (
-                                    <div className="w-2 h-2 bg-white rounded-sm" />
+                                    <Check size={12} strokeWidth={3} className="text-white" />
                                 )}
                             </div>
                         </th>
                         {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Class Name</th>}
                         {visibleColumns.includes('numeric_value') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Numeric Value</th>}
                         {visibleColumns.includes('sections') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Total Sections</th>}
+                        {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Created At</th>}
+                        {visibleColumns.includes('updated_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Updated At</th>}
                         <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-right w-[120px] select-none">Actions</th>
                     </tr>
                 </thead>
@@ -73,7 +75,7 @@ const AcademicClassTable = ({
                                             )}
                                         >
                                             {isSelected && (
-                                                <div className="w-2 h-2 bg-white rounded-sm" />
+                                                <Check size={12} strokeWidth={3} className="text-white" />
                                             )}
                                         </div>
                                     </td>
@@ -101,6 +103,18 @@ const AcademicClassTable = ({
                                                 <Layers size={13} className="text-slate-400" />
                                                 <span className="font-medium text-[#008060] bg-[#e4f1ef] px-2 rounded-full border border-[#a3dfd2]/30">{academic_class.sections_count || 0} Sections</span>
                                             </div>
+                                        </td>
+                                    )}
+
+                                    {visibleColumns.includes('created_at') && (
+                                        <td className="py-2 px-4 text-[13px] text-slate-600">
+                                            {academic_class.created_at ? new Date(academic_class.created_at).toLocaleDateString() : '-'}
+                                        </td>
+                                    )}
+
+                                    {visibleColumns.includes('updated_at') && (
+                                        <td className="py-2 px-4 text-[13px] text-slate-600">
+                                            {academic_class.updated_at ? new Date(academic_class.updated_at).toLocaleDateString() : '-'}
                                         </td>
                                     )}
 

@@ -23,6 +23,11 @@ class SubjectController extends Controller
         return Inertia::render('Admin/Subjects/Index', [
             'subjects' => $subjects,
             'filters' => $request->only(['search', 'per_page']),
+            'stats' => [
+                'all' => Subject::count(),
+                'active' => Subject::count(),
+                'inactive' => 0,
+            ],
         ]);
     }
 

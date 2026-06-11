@@ -34,7 +34,12 @@ class SectionController extends Controller
             'sections' => $sections,
             'classes' => AcademicClass::orderBy('numeric_value')->get(),
             'teachers' => User::where('user_type', 'teacher')->get(),
-            'filters' => $request->only(['search', 'per_page']),
+            'filters' => $request->only(['search', 'per_page', 'class_id']),
+            'stats' => [
+                'all' => Section::count(),
+                'active' => Section::count(),
+                'inactive' => 0,
+            ],
         ]);
     }
 

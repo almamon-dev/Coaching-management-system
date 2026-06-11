@@ -14,9 +14,11 @@ const AcademicClassListPage = ({ auth, classes, filters, stats }) => {
         { id: 'name', label: 'Class Name' },
         { id: 'numeric_value', label: 'Numeric Value' },
         { id: 'sections', label: 'Total Sections' },
+        { id: 'created_at', label: 'Created At' },
+        { id: 'updated_at', label: 'Updated At' },
     ];
 
-    const [visibleColumns, setVisibleColumns] = useState(['name', 'numeric_value', 'sections']);
+    const [visibleColumns, setVisibleColumns] = useState(['name', 'numeric_value', 'sections', 'created_at', 'updated_at']);
 
     const toggleColumn = (id) => {
         setVisibleColumns(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
