@@ -130,10 +130,17 @@ export default function Index({ auth, teachers, filters, departments, designatio
             setDeleteModal(prev => ({ ...prev, show: false }));
             Notify.error('Action Not Available', 'Bulk delete for teachers is not implemented in backend yet.');
         } else {
-            // router.delete(route("admin.teachers.destroy", deleteModal.teacher.id), { ... });
-            setProcessingDelete(false);
-            setDeleteModal(prev => ({ ...prev, show: false }));
-            Notify.error('Action Not Available', 'Delete for teachers is not implemented in backend yet.');
+            router.delete(route("admin.teachers.destroy", deleteModal.teacher.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setProcessingDelete(false);
+                    setDeleteModal(prev => ({ ...prev, show: false }));
+                    Notify.success('Success', 'Teacher deleted successfully');
+                },
+                onError: () => {
+                    setProcessingDelete(false);
+                }
+            });
         }
     };
 

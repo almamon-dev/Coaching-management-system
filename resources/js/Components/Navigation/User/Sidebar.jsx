@@ -33,8 +33,6 @@ const TEACHER_MENU = [
     {
         title: "",
         items: [
-            { key: "students", label: "Students", icon: Users, getPath: () => '#' },
-            { key: "teachers", label: "Teachers", icon: GraduationCap, getPath: () => '#' },
             { key: "attendance", label: "Attendance", icon: ClipboardCheck, getPath: () => route('user.mark-attendance') },
             { key: "examinations", label: "Examinations", icon: FileText, getPath: () => '#' },
             { key: "results", label: "Results", icon: Award, getPath: () => '#' },

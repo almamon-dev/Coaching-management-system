@@ -17,8 +17,8 @@ class TeacherSeeder extends Seeder
      */
     public function run(): void
     {
-        $departments = ['Science', 'Humanities', 'Commerce', 'Mathematics', 'Languages', 'Physical Education', 'Arts'];
-        $designations = ['Senior Teacher', 'Assistant Teacher', 'Lecturer', 'Head of Department', 'Instructor'];
+        $departments = \App\Models\Department::pluck('name')->toArray() ?: ['Science', 'Humanities', 'Commerce'];
+        $designations = \App\Models\Designation::pluck('name')->toArray() ?: ['Senior Teacher', 'Assistant Teacher', 'Lecturer'];
         
         // Get all subject IDs to randomly assign as specializations
         $subjectIds = Subject::pluck('id')->toArray();
@@ -45,8 +45,6 @@ class TeacherSeeder extends Seeder
             // Determine random specializations (1 to 3 subjects)
             shuffle($subjectIds);
             $specializations = array_slice($subjectIds, 0, rand(1, 3));
-            
-            // Convert to strings to match how the frontend sends/expects them if necessary
             $specializations = array_map('strval', $specializations);
 
             // Create Profile

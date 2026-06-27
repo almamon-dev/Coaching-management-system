@@ -4,7 +4,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import Notify from '@/Utils/Notify';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
-import { Save, User, Briefcase, Lock, CheckCircle2 } from 'lucide-react';
+import { Save, User, Briefcase, Lock, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 export default function Create({ auth, subjects, departments, designations }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -21,6 +21,20 @@ export default function Create({ auth, subjects, departments, designations }) {
     });
 
     const [activeTab, setActiveTab] = useState('general');
+    const [showPassword, setShowPassword] = useState(false);
+
+    const generatePassword = () => {
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+        let pass = '';
+        for (let i = 0; i < 12; i++) {
+            pass += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        setData(prev => ({
+            ...prev,
+            password: pass,
+            password_confirmation: pass
+        }));
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -249,28 +263,57 @@ export default function Create({ auth, subjects, departments, designations }) {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">New Password</label>
-                                        <TextInput
-                                            type="password"
-                                            value={data.password}
-                                            onChange={e => setData('password', e.target.value)}
-                                            className="w-full"
-                                            placeholder="Minimum 8 characters"
-                                            required={activeTab === 'security'}
-                                        />
+                                        <div className="flex items-center justify-between mb-1.5">
+                                            <label className="block text-[12px] font-bold text-slate-700">New Password</label>
+                                            <button 
+                                                type="button" 
+                                                onClick={generatePassword}
+                                                className="text-[11px] text-[#008060] font-bold hover:underline"
+                                            >
+                                                Generate Password
+                                            </button>
+                                        </div>
+                                        <div className="relative">
+                                            <TextInput
+                                                type={showPassword ? "text" : "password"}
+                                                value={data.password}
+                                                onChange={e => setData('password', e.target.value)}
+                                                className="w-full pr-8"
+                                                placeholder="Minimum 8 characters"
+                                                required={activeTab === 'security'}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-2.5 top-[8px] text-slate-400 hover:text-slate-600 transition-colors"
+                                                tabIndex="-1"
+                                            >
+                                                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                                            </button>
+                                        </div>
                                         {errors.password && <div className="text-red-500 text-[11px] mt-1">{errors.password}</div>}
                                     </div>
 
                                     <div>
                                         <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Confirm Password</label>
-                                        <TextInput
-                                            type="password"
-                                            value={data.password_confirmation}
-                                            onChange={e => setData('password_confirmation', e.target.value)}
-                                            className="w-full"
-                                            placeholder="Re-enter password"
-                                            required={activeTab === 'security'}
-                                        />
+                                        <div className="relative">
+                                            <TextInput
+                                                type={showPassword ? "text" : "password"}
+                                                value={data.password_confirmation}
+                                                onChange={e => setData('password_confirmation', e.target.value)}
+                                                className="w-full pr-8"
+                                                placeholder="Re-enter password"
+                                                required={activeTab === 'security'}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-2.5 top-[8px] text-slate-400 hover:text-slate-600 transition-colors"
+                                                tabIndex="-1"
+                                            >
+                                                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                                            </button>
+                                        </div>
                                     </div>
                                     
                                     <div className="md:col-span-2 bg-[#f0f9f7] border border-[#008060]/20 rounded-[4px] p-4 flex items-start gap-3 mt-4">

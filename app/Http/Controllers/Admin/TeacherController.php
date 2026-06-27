@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\TeacherProfile;
 use App\Models\Subject;
+use App\Models\Department;
+use App\Models\Designation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -61,23 +63,8 @@ class TeacherController extends Controller
     {
         $subjects = Subject::all();
 
-        $departments = [
-            ['id' => 'Science', 'name' => 'Science'],
-            ['id' => 'Humanities', 'name' => 'Humanities'],
-            ['id' => 'Commerce', 'name' => 'Commerce'],
-            ['id' => 'Mathematics', 'name' => 'Mathematics'],
-            ['id' => 'Languages', 'name' => 'Languages'],
-            ['id' => 'Physical Education', 'name' => 'Physical Education'],
-            ['id' => 'Arts', 'name' => 'Arts'],
-        ];
-
-        $designations = [
-            ['id' => 'Senior Teacher', 'name' => 'Senior Teacher'],
-            ['id' => 'Assistant Teacher', 'name' => 'Assistant Teacher'],
-            ['id' => 'Lecturer', 'name' => 'Lecturer'],
-            ['id' => 'Head of Department', 'name' => 'Head of Department'],
-            ['id' => 'Instructor', 'name' => 'Instructor'],
-        ];
+        $departments = Department::pluck('name')->map(function($name) { return ['id' => $name, 'name' => $name]; });
+        $designations = Designation::pluck('name')->map(function($name) { return ['id' => $name, 'name' => $name]; });
 
         return Inertia::render('Admin/Teachers/Create', [
             'subjects' => $subjects,
@@ -134,5 +121,77 @@ class TeacherController extends Controller
         });
 
         return redirect()->route('admin.teachers.index')->with('success', 'Teacher registered successfully.');
+    }
+
+    public function edit($id)
+    {
+        $teacher = TeacherProfile::with('user')->findOrFail($id);
+        
+        $subjects = Subject::all();
+
+        $departments = Department::pluck('name')->map(function($name) { return ['id' => $name, 'name' => $name]; });
+        $designations = Designation::pluck('name')->map(function($name) { return ['id' => $name, 'name' => $name]; });
+
+        return Inertia::render('Admin/Teachers/Edit', [
+            'teacher' => $teacher,
+            'subjects' => $subjects,
+            'departments' => $departments,
+            'designations' => $designations,
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $teacher = TeacherProfile::with('user')->findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $teacher->user_id,
+            'phone' => 'required|string|max:20',
+            'password' => 'nullable|string|min:8|confirmed',
+            'designation' => 'required|string|max:255',
+            'department' => 'nullable|string|max:255',
+            'joining_date' => 'nullable|date',
+            'qualifications' => 'nullable|string',
+            'specializations' => 'nullable|array',
+            'specializations.*' => 'exists:subjects,id',
+        ]);
+
+        DB::transaction(function () use ($validated, $teacher) {
+            $userData = [
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+            ];
+
+            if (!empty($validated['password'])) {
+                $userData['password'] = Hash::make($validated['password']);
+            }
+
+            $teacher->user->update($userData);
+
+            $teacher->update([
+                'designation' => $validated['designation'],
+                'department' => $validated['department'],
+                'joining_date' => $validated['joining_date'],
+                'qualifications' => $validated['qualifications'],
+                'specializations' => $validated['specializations'] ?? [],
+            ]);
+        });
+
+        return redirect()->route('admin.teachers.index')->with('success', 'Teacher updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $teacher = TeacherProfile::with('user')->findOrFail($id);
+        
+        DB::transaction(function () use ($teacher) {
+            $userId = $teacher->user_id;
+            $teacher->delete();
+            User::where('id', $userId)->delete();
+        });
+
+        return redirect()->route('admin.teachers.index')->with('success', 'Teacher deleted successfully.');
     }
 }

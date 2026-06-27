@@ -124,12 +124,13 @@ const TeacherTable = ({
 
                                     <td className="py-2 px-4 text-right select-none">
                                         <div className="flex items-center justify-end gap-1">
-                                            <button
+                                            <Link
+                                                href={route('admin.teachers.edit', profile.id)}
                                                 className="h-[26px] w-[26px] flex items-center justify-center bg-[#3151fe] text-white rounded-[2px] hover:bg-[#1a39d1] transition-all cursor-pointer"
                                                 title="Edit Teacher"
                                             >
                                                 <SquarePen size={12} />
-                                            </button>
+                                            </Link>
                                             <button
                                                 onClick={() => handleDelete(profile)}
                                                 className="h-[26px] w-[26px] flex items-center justify-center rounded-[2px] transition-all border-none bg-[#ff4d4f] text-white hover:bg-[#cf1322] cursor-pointer"

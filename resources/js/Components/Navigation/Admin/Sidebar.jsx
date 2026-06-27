@@ -58,7 +58,6 @@ const RAW_MENU_GROUPS = [
                 icon: UserCheck,
                 children: [
                     { label: "Teachers", getPath: () => route('admin.teachers.index') },
-                    { label: "Class Assignment", getPath: () => '#' },
                     { label: "Departments", getPath: () => route('admin.departments.index') },
                     { label: "Designations", getPath: () => route('admin.designations.index') },
                 ],

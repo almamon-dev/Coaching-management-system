@@ -163,7 +163,6 @@ export default function Index({ auth, classes, sections, subjects, teachers, all
                                                     onChange={(e) => handleAssignmentChange(assignment.id, 'teacher_id', e.target.value)}
                                                     disabled={!assignment.subject_id}
                                                     options={[{ id: '', name: '-- Select Teacher --' }, ...teachers
-                                                        .filter(t => t.specializations && t.specializations.map(s => s.toString()).includes(assignment.subject_id))
                                                         .map(t => ({ id: t.id.toString(), name: t.name }))
                                                     ]}
                                                 />
