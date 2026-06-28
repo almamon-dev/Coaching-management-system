@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Users, FileMinus, Search, ChevronRight, BookOpen, AlertCircle } from 'lucide-react';
-import SelectInput from '@/Components/SelectInput';
+import SelectInput from '@/Components/Form/SelectInput';
 import { toast } from 'react-toastify';
 
 export default function StudentTransfer({ auth, classes, sections, sessions, students, filters }) {

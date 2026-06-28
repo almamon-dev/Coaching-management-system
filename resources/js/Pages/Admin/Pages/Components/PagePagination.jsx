@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from '@inertiajs/react';
-import SelectInput from '@/Components/SelectInput';
+import SelectInput from '@/Components/Form/SelectInput';
 
 const PagePagination = ({ pages, filters, total, handlePerPageChange }) => {
     const fromIdx = pages.from || 0;

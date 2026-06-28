@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tag, Gift, List } from 'lucide-react';
-import TextInput from '@/Components/TextInput';
+import TextInput from '@/Components/Form/TextInput';
 
 const OrderSummary = ({ cart, agreeTerms, onTermsChange, onConfirm, isSubmitting, isValid, paymentMethod }) => {
     const [couponType, setCouponType] = useState('coupon');

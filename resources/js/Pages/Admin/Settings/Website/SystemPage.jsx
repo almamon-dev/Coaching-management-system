@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
 import SettingsLayout from '../Layouts/SettingsLayout';
 import { useForm } from '@inertiajs/react';
-import TextInput from '@/Components/TextInput';
-import SelectInput from '@/Components/SelectInput';
+import TextInput from '@/Components/Form/TextInput';
+import SelectInput from '@/Components/Form/SelectInput';
 import { 
     Globe, 
     Image as ImageIcon, 

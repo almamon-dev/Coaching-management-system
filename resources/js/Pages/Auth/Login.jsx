@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
+import InputError from '@/Components/Form/InputError';
+import InputLabel from '@/Components/Form/InputLabel';
+import TextInput from '@/Components/Form/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';

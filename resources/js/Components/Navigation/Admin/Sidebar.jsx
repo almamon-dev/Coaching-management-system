@@ -76,10 +76,10 @@ const RAW_MENU_GROUPS = [
                 icon: ClipboardCheck,
                 children: [
                     { label: "Student Attendance", getPath: () => route('admin.attendance.index') },
-                    { label: "Teacher Attendance", getPath: () => '#' },
-                    { label: "Daily Report", getPath: () => '#' },
-                    { label: "Monthly Report", getPath: () => '#' },
-                    { label: "Attendance Analytics", getPath: () => '#' },
+                    { label: "Teacher Attendance", getPath: () => route('admin.teacher_attendance.index') },
+                    { label: "Daily Report", getPath: () => route('admin.attendance.daily_report') },
+                    { label: "Monthly Report", getPath: () => route('admin.attendance.monthly_report') },
+                    { label: "Attendance Analytics", getPath: () => route('admin.attendance.analytics') },
                 ],
             },
             {
@@ -87,7 +87,7 @@ const RAW_MENU_GROUPS = [
                 label: "Examination Management",
                 icon: BookOpen,
                 children: [
-                    { label: "Exams", getPath: () => '#' },
+                    { label: "Exams", getPath: () => route('admin.exams.index') },
                     { label: "Marks Entry", getPath: () => '#' },
                     { label: "Grade Setup", getPath: () => '#' },
                     { label: "Result Generation", getPath: () => '#' },

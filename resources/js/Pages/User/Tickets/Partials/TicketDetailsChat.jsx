@@ -2,8 +2,8 @@ import React from 'react';
 import { 
     Send, X, FileText, Paperclip, ExternalLink, ShieldCheck, AlertTriangle, User, Shield 
 } from 'lucide-react';
-import RichTextEditor from '@/Components/RichTextEditor';
-import InputError from '@/Components/InputError';
+import RichTextEditor from '@/Components/Form/RichTextEditor';
+import InputError from '@/Components/Form/InputError';
 
 /**
  * Component: TicketDetailsChat

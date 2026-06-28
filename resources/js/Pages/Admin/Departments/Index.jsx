@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Plus, SquarePen, Trash2, Search, X, SlidersHorizontal, RotateCcw, AlertTriangle } from 'lucide-react';
-import Modal from '@/Components/Modal';
+import Modal from '@/Components/Modal/Modal';
 import Notify from '@/Utils/Notify';
-import TextInput from '@/Components/TextInput';
-import SelectInput from '@/Components/SelectInput';
+import TextInput from '@/Components/Form/TextInput';
+import SelectInput from '@/Components/Form/SelectInput';
 import ColumnManager from '../AcademicClasses/Components/ColumnManager';
 
 import AcademicClassStats from '../AcademicClasses/Components/AcademicClassStats';

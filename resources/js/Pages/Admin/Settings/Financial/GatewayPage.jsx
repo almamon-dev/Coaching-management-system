@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SettingsLayout from '../Layouts/SettingsLayout';
 import { useForm } from '@inertiajs/react';
-import TextInput from '@/Components/TextInput';
+import TextInput from '@/Components/Form/TextInput';
 import {
     CreditCard,
     Eye,

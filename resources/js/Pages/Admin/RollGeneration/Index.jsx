@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Search, Save, Settings2, RefreshCw, BookOpen } from 'lucide-react';
-import SelectInput from '@/Components/SelectInput';
+import SelectInput from '@/Components/Form/SelectInput';
 import { toast } from 'react-toastify';
 
 export default function Index({ sessions, classes, sections, students, filters }) {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, RotateCcw, Trash2, X, SlidersHorizontal } from 'lucide-react';
-import SelectInput from "@/Components/SelectInput";
-import TextInput from "@/Components/TextInput";
+import SelectInput from "@/Components/Form/SelectInput";
+import TextInput from "@/Components/Form/TextInput";
 import { cn } from '@/lib/utils';
 import UserBulkActionBar from './UserBulkActionBar';
 import ColumnManager from './ColumnManager';

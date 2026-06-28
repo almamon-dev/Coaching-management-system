@@ -1,6 +1,6 @@
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from '@/Components/ui/radio-group';
-import InputLabel from '@/Components/InputLabel';
+import InputLabel from '@/Components/Form/InputLabel';
 
 const DeliveryMethods = ({ formData, setFormData }) => {
     const methods = [

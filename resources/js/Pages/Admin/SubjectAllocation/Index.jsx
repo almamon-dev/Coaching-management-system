@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import SelectInput from '@/Components/SelectInput';
+import SelectInput from '@/Components/Form/SelectInput';
 import Notify from '@/Utils/Notify';
 import { Save, AlertTriangle, BookOpen, User, Trash2, Search, X, Check, SlidersHorizontal, RotateCcw, Edit } from 'lucide-react';
 import ColumnManager from '../AcademicClasses/Components/ColumnManager';

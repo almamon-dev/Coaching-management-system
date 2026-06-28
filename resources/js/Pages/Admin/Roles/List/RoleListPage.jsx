@@ -16,8 +16,8 @@ import RoleStats from './Components/RoleStats';
 import RolePagination from './Components/RolePagination';
 
 // Shared Components
-import DeleteConfirmModal from '@/Components/DeleteConfirmModal';
-import TextInput from '@/Components/TextInput';
+import DeleteConfirmModal from '@/Components/Modal/DeleteConfirmModal';
+import TextInput from '@/Components/Form/TextInput';
 
 const RoleListPage = ({ auth, roles, filters, stats }) => {
     // --- Column Management ---

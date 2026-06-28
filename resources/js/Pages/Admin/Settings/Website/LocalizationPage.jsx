@@ -3,7 +3,7 @@ import SettingsLayout from '../Layouts/SettingsLayout';
 import { useForm } from '@inertiajs/react';
 import { Globe2, Clock, Calendar, Coins, Hash } from 'lucide-react';
 import { toast } from 'react-toastify';
-import SelectInput from '@/Components/SelectInput';
+import SelectInput from '@/Components/Form/SelectInput';
 
 export default function Localization({ settings = {} }) {
     const { data, setData, post, processing } = useForm({

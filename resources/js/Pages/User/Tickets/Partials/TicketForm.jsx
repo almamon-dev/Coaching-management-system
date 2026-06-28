@@ -4,11 +4,11 @@ import {
     Send, Upload, X, FileText, ShoppingBag, CreditCard,
     ShieldCheck, HelpCircle, Check, ArrowRight, ArrowLeft, Info
 } from 'lucide-react';
-import TextInput from '@/Components/TextInput';
-import SelectInput from '@/Components/SelectInput';
-import RichTextEditor from '@/Components/RichTextEditor';
-import InputLabel from '@/Components/InputLabel';
-import InputError from '@/Components/InputError';
+import TextInput from '@/Components/Form/TextInput';
+import SelectInput from '@/Components/Form/SelectInput';
+import RichTextEditor from '@/Components/Form/RichTextEditor';
+import InputLabel from '@/Components/Form/InputLabel';
+import InputError from '@/Components/Form/InputError';
 import { cn } from '@/lib/utils';
 
 /**

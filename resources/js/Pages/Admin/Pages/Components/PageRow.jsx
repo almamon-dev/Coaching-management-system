@@ -2,7 +2,7 @@ import React from 'react';
 import { Check, Trash2, SquarePen, FileText, Globe } from 'lucide-react';
 import { Link, router } from '@inertiajs/react';
 import { cn } from '@/lib/utils';
-import StatusDropdown from '@/Components/StatusDropdown';
+import StatusDropdown from '@/Components/Common/StatusDropdown';
 
 const PageRow = ({
     page,

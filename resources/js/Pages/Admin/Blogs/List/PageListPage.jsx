@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Plus } from 'lucide-react';
-import DeleteConfirmModal from '@/Components/DeleteConfirmModal';
+import DeleteConfirmModal from '@/Components/Modal/DeleteConfirmModal';
 import Notify from '@/Utils/Notify';
 
 // Local Components

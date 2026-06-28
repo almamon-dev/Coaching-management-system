@@ -7,8 +7,8 @@
  */
 import React, { useState } from 'react';
 import { Search, RotateCcw, Trash2, X, SlidersHorizontal, Users, Key } from 'lucide-react';
-import TextInput from "@/Components/TextInput";
-import SelectInput from "@/Components/SelectInput";
+import TextInput from "@/Components/Form/TextInput";
+import SelectInput from "@/Components/Form/SelectInput";
 import { cn } from '@/lib/utils';
 import ColumnManager from './ColumnManager';
 

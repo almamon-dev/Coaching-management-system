@@ -1,10 +1,10 @@
 import React from 'react';
-import TextInput from '@/Components/TextInput';
-import TextArea from '@/Components/TextArea';
-import SelectInput from '@/Components/SelectInput';
-import InputLabel from '@/Components/InputLabel';
-import InputError from '@/Components/InputError';
-import Checkbox from '@/Components/Checkbox';
+import TextInput from '@/Components/Form/TextInput';
+import TextArea from '@/Components/Form/TextArea';
+import SelectInput from '@/Components/Form/SelectInput';
+import InputLabel from '@/Components/Form/InputLabel';
+import InputError from '@/Components/Form/InputError';
+import Checkbox from '@/Components/Form/Checkbox';
 
 const ShippingForm = ({ formData, setFormData, errors = {} }) => {
     const handleChange = (e) => {

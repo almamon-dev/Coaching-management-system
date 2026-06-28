@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import SelectInput from '@/Components/SelectInput';
+import SelectInput from '@/Components/Form/SelectInput';
 import Notify from '@/Utils/Notify';
 import { Users, Search, ArrowRight, CheckCircle2, CheckSquare, Square } from 'lucide-react';
 

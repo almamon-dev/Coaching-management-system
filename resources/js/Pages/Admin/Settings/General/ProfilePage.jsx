@@ -1,7 +1,7 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import TextArea from '@/Components/TextArea';
-import TextInput from '@/Components/TextInput';
+import InputError from '@/Components/Form/InputError';
+import InputLabel from '@/Components/Form/InputLabel';
+import TextArea from '@/Components/Form/TextArea';
+import TextInput from '@/Components/Form/TextInput';
 import { router, useForm } from '@inertiajs/react';
 import { Camera, Contact, Mail, Phone, User } from 'lucide-react';
 import { useRef } from 'react';

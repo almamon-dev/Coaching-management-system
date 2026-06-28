@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Head, useForm, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Notify from '@/Utils/Notify';
-import SelectInput from '@/Components/SelectInput';
-import TextInput from '@/Components/TextInput';
+import SelectInput from '@/Components/Form/SelectInput';
+import TextInput from '@/Components/Form/TextInput';
 import { Save, User, Briefcase, Lock, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 export default function Create({ auth, subjects, departments, designations }) {

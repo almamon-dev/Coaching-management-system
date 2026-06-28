@@ -1,7 +1,7 @@
 import { Check, Trash2, SquarePen, Monitor, Calendar, FileText } from 'lucide-react';
 import { Link, router } from '@inertiajs/react';
 import { cn } from '@/lib/utils';
-import StatusDropdown from '@/Components/StatusDropdown';
+import StatusDropdown from '@/Components/Common/StatusDropdown';
 
 const CounterRow = ({ counter, isSelected, toggleSelect, handleDelete, visibleColumns }) => {
     return (

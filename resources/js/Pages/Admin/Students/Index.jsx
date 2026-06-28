@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Plus } from 'lucide-react';
-import DeleteConfirmModal from '@/Components/DeleteConfirmModal';
+import DeleteConfirmModal from '@/Components/Modal/DeleteConfirmModal';
 import StudentTable from './Components/StudentTable';
 import StudentToolbar from './Components/StudentToolbar';
 import StudentPagination from './Components/StudentPagination';

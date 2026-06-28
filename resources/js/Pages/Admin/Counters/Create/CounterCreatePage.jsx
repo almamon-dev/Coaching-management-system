@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 
 // Shared Components
-import TextInput from "@/Components/TextInput";
-import InputLabel from "@/Components/InputLabel";
-import InputError from "@/Components/InputError";
+import TextInput from "@/Components/Form/TextInput";
+import InputLabel from "@/Components/Form/InputLabel";
+import InputError from "@/Components/Form/InputError";
 import Notify from '@/Utils/Notify';
 
 const CounterCreatePage = ({ auth }) => {

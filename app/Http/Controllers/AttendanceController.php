@@ -15,8 +15,8 @@ class AttendanceController extends Controller
         // For now, let's fetch students for attendance marking.
         $date = $request->input('date', Carbon::today()->toDateString());
         
-        // Fetch users who are students (assuming 'user_type' == 'user' means student)
-        $students = User::where('user_type', 'user')
+        // Fetch users who are students
+        $students = User::whereIn('id', \App\Models\StudentProfile::select('user_id'))
             ->select('id', 'name', 'email')
             ->orderBy('name')
             ->get();
@@ -39,16 +39,17 @@ class AttendanceController extends Controller
             ];
         });
 
-        return Inertia::render('Admin/Attendance/Index', [
+        return Inertia::render('Admin/Attendance/Student/Index', [
             'date' => $date,
             'students' => $studentsData,
+            'isAttendanceTaken' => $attendances->isNotEmpty(),
         ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'date' => 'required|date',
+            'date' => 'required|date|before_or_equal:today',
             'attendances' => 'required|array',
             'attendances.*.id' => 'required|exists:users,id',
             'attendances.*.status' => 'required|in:present,absent,late,half_day,on_leave',

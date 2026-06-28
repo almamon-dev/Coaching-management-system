@@ -12,7 +12,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import { Plus } from 'lucide-react';
 
 // Shared Components
-import DeleteConfirmModal from '@/Components/DeleteConfirmModal';
+import DeleteConfirmModal from '@/Components/Modal/DeleteConfirmModal';
 
 // Local Components
 import CounterTable from '../Components/CounterTable';

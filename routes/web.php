@@ -61,6 +61,21 @@ Route::middleware('auth')->group(function () {
         // Attendance Management
         Route::get('attendance', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('attendance.index');
         Route::post('attendance', [\App\Http\Controllers\AttendanceController::class, 'store'])->name('attendance.store');
+        
+        // Attendance Reports
+        Route::get('attendance/daily-report', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'dailyReport'])->name('attendance.daily_report');
+        Route::get('attendance/monthly-report', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'monthlyReport'])->name('attendance.monthly_report');
+        Route::get('attendance/analytics', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'analytics'])->name('attendance.analytics');
+        Route::get('attendance/export-daily', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'exportDaily'])->name('attendance.export_daily');
+        Route::get('attendance/export-monthly', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'exportMonthly'])->name('attendance.export_monthly');
+
+        // Teacher Attendance
+        Route::get('teacher-attendance', [\App\Http\Controllers\Admin\TeacherAttendanceController::class, 'index'])->name('teacher_attendance.index');
+        Route::post('teacher-attendance', [\App\Http\Controllers\Admin\TeacherAttendanceController::class, 'store'])->name('teacher_attendance.store');
+
+        // Examination Management
+        Route::post('exams/bulk-destroy', [\App\Http\Controllers\Admin\ExamController::class, 'bulkDestroy'])->name('exams.bulk-destroy');
+        Route::resource('exams', \App\Http\Controllers\Admin\ExamController::class);
 
         // Academic Setup
         Route::post('classes/bulk-destroy', [\App\Http\Controllers\Admin\AcademicClassController::class, 'bulkDestroy'])->name('classes.bulk-destroy');
