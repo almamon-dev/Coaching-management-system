@@ -29,11 +29,22 @@ class SectionController extends Controller
         }
 
         $sections = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
-        
+        $assignedSections = Section::with('academicClass')->whereNotNull('class_teacher_id')->get()->keyBy('class_teacher_id');
+        $teachers = User::where('user_type', 'teacher')->get()->map(function($teacher) use ($assignedSections) {
+            if ($assignedSections->has($teacher->id)) {
+                $sec = $assignedSections->get($teacher->id);
+                $className = $sec->academicClass ? $sec->academicClass->name : '';
+                $teacher->assigned_label = trim($className . ' ' . $sec->name);
+            } else {
+                $teacher->assigned_label = null;
+            }
+            return $teacher;
+        });
+
         return Inertia::render('Admin/Sections/Index', [
             'sections' => $sections,
             'classes' => AcademicClass::orderBy('numeric_value')->get(),
-            'teachers' => User::where('user_type', 'teacher')->get(),
+            'teachers' => $teachers,
             'filters' => $request->only(['search', 'per_page', 'class_id']),
             'stats' => [
                 'all' => Section::count(),

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\StudentProfile;
 use App\Models\AcademicClass;
 use App\Models\Section;
+use App\Models\StudentProfile;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class StudentController extends Controller
@@ -17,33 +17,63 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $classId = $request->input('class_id');
+        $sectionId = $request->input('section_id');
+        $status = $request->input('status');
 
-        $students = StudentProfile::with(['user', 'currentEnrollment.academicClass', 'currentEnrollment.section'])
-            ->when($search, function ($query, $search) {
-                $query->where('student_id', 'like', "%{$search}%")
-                    ->orWhereHas('user', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%")
-                          ->orWhere('email', 'like', "%{$search}%");
+        $query = StudentProfile::with(['user', 'latestEnrollment.academicClass', 'latestEnrollment.section']);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('student_id', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
                     });
-            })
-            ->latest()
-            ->paginate(15)
+            });
+        }
+
+        if ($classId || $sectionId || $status) {
+            $query->whereHas('latestEnrollment', function ($q) use ($classId, $sectionId, $status) {
+                if ($classId) $q->where('academic_class_id', $classId);
+                if ($sectionId) $q->where('section_id', $sectionId);
+                if ($status) $q->where('status', $status);
+            });
+        }
+
+        $students = $query->orderBy(
+            \App\Models\Enrollment::selectRaw('CASE WHEN roll_number IS NULL THEN 1 ELSE 0 END')
+                ->whereColumn('student_profile_id', 'student_profiles.id')
+                ->orderByDesc('id')
+                ->limit(1)
+        )->orderBy(
+            \App\Models\Enrollment::select('roll_number')
+                ->whereColumn('student_profile_id', 'student_profiles.id')
+                ->orderByDesc('id')
+                ->limit(1)
+        )->orderBy('student_id', 'asc')
+            ->paginate($request->input('per_page', 10))
             ->withQueryString();
 
         $stats = [
             'all' => StudentProfile::count(),
-            'active' => StudentProfile::whereHas('currentEnrollment', function ($q) {
+            'active' => StudentProfile::whereHas('latestEnrollment', function ($q) {
                 $q->where('status', 'active');
             })->count(),
-            'suspended' => StudentProfile::whereHas('currentEnrollment', function ($q) {
-                $q->whereIn('status', ['failed', 'transferred']);
+            'suspended' => StudentProfile::whereHas('latestEnrollment', function ($q) {
+                $q->whereIn('status', ['failed', 'transferred', 'suspended']);
             })->count(),
         ];
+
+        $classes = AcademicClass::orderBy('numeric_value')->get();
+        $sections = Section::all();
 
         return Inertia::render('Admin/Students/Index', [
             'students' => $students,
             'stats' => $stats,
-            'filters' => $request->only(['search'])
+            'classes' => $classes,
+            'sections' => $sections,
+            'filters' => $request->only(['search', 'per_page', 'class_id', 'section_id', 'status'])
         ]);
     }
 
@@ -60,7 +90,7 @@ class StudentController extends Controller
 
     public function create()
     {
-        $classes = AcademicClass::with('sections')->get();
+        $classes = AcademicClass::with('sections')->orderBy('numeric_value')->get();
         return Inertia::render('Admin/Students/Create', [
             'classes' => $classes
         ]);
@@ -128,5 +158,25 @@ class StudentController extends Controller
         });
 
         return redirect()->route('admin.students.index')->with('success', 'Student registered successfully.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:student_profiles,id'
+        ]);
+
+        try {
+            DB::transaction(function () use ($validated) {
+                $userIds = \App\Models\StudentProfile::whereIn('id', $validated['ids'])->pluck('user_id');
+                \App\Models\StudentProfile::whereIn('id', $validated['ids'])->delete();
+                \App\Models\User::whereIn('id', $userIds)->delete();
+            });
+
+            return back()->with('success', count($validated['ids']) . ' students deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error deleting students: ' . $e->getMessage());
+        }
     }
 }

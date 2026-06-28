@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // e.g., "Class 6"
             $table->integer('numeric_value'); // e.g., 6
+            $table->boolean('is_grouped')->default(false);
             $table->timestamps();
         });
     }

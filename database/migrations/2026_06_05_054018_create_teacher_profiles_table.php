@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('department')->nullable();
             $table->date('joining_date')->nullable();
             $table->text('qualifications')->nullable();
+            $table->json('specializations')->nullable();
             $table->timestamps();
         });
     }

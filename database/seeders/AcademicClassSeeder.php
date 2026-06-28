@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\AcademicClass;
 use App\Models\Section;
+use App\Models\AcademicGroup;
 
 class AcademicClassSeeder extends Seeder
 {
@@ -14,11 +15,6 @@ class AcademicClassSeeder extends Seeder
     public function run(): void
     {
         $classes = [
-            ['name' => 'Class One', 'numeric_value' => 1],
-            ['name' => 'Class Two', 'numeric_value' => 2],
-            ['name' => 'Class Three', 'numeric_value' => 3],
-            ['name' => 'Class Four', 'numeric_value' => 4],
-            ['name' => 'Class Five', 'numeric_value' => 5],
             ['name' => 'Class Six', 'numeric_value' => 6],
             ['name' => 'Class Seven', 'numeric_value' => 7],
             ['name' => 'Class Eight', 'numeric_value' => 8],
@@ -27,21 +23,48 @@ class AcademicClassSeeder extends Seeder
         ];
 
         foreach ($classes as $classData) {
+
             $class = AcademicClass::updateOrCreate(
                 ['numeric_value' => $classData['numeric_value']],
-                ['name' => $classData['name']]
+                [
+                    'name' => $classData['name'],
+                ]
             );
 
-            // Add sections A and B to each class if they don't exist
-            $sections = ['A', 'B'];
-            foreach ($sections as $sectionName) {
+            // If class is grouped, create groups and sections for each group
+            if ($class->is_grouped) {
+                // For classes that have groups
+                $groups = [
+                    ['name' => 'Science', 'code' => 'SCI'],
+                    ['name' => 'Business Studies', 'code' => 'BUS'],
+                    ['name' => 'Humanities', 'code' => 'HUM'],
+                ];
+                
+                foreach ($groups as $groupData) {
+                    $group = \App\Models\AcademicGroup::firstOrCreate(
+                        ['academic_class_id' => $class->id, 'code' => $groupData['code']],
+                        ['name' => $groupData['name']]
+                    );
+                    
+                    // Create a single default section under this group
+                    Section::firstOrCreate([
+                        'academic_class_id' => $class->id,
+                        'academic_group_id' => $group->id,
+                        'name' => 'A',
+                    ], [
+                        'capacity' => 40
+                    ]);
+                }
+            } else {
+                // Not grouped, just create a single default section
                 Section::firstOrCreate([
                     'academic_class_id' => $class->id,
-                    'name' => $sectionName,
+                    'name' => 'A',
                 ], [
                     'capacity' => 40
                 ]);
             }
+
         }
     }
 }

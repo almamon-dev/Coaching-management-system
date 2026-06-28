@@ -93,7 +93,7 @@ export default function SelectInput({
                 {({ open }) => (
                     <div className="relative h-full">
                         <Listbox.Button className={cn(
-                            "relative w-full h-full min-h-[32px] cursor-pointer rounded-[3px] border border-[#d1d1d1] bg-white py-1 pr-10 text-left text-[12px] font-medium text-[#202223] focus:outline-none focus:border-[#008060] transition-all",
+                            "relative w-full h-full min-h-[32px] cursor-pointer rounded-[3px] border border-[#d1d1d1] bg-white py-1 pr-10 text-left text-[12px] font-medium text-[#202223] focus:outline-none focus:border-[#008060] transition-all flex items-center",
                             Icon ? "pl-9" : "pl-3"
                         )}>
                             {Icon && (
@@ -112,6 +112,8 @@ export default function SelectInput({
                             show={open}
                             as={Fragment}
                             afterLeave={() => setSearchQuery('')}
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
                         >
                             <Listbox.Options className={cn(
                                 "absolute z-[100] max-h-64 w-full overflow-hidden rounded-[3px] bg-white text-[12px] shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_1px_rgba(0,0,0,0.1)] border border-[#ebebeb] focus:outline-none flex flex-col",

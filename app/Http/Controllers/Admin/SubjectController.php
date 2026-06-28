@@ -14,20 +14,40 @@ class SubjectController extends Controller
         $query = Subject::query();
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%')
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('code', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('group') && $request->group !== 'all') {
+            $groupMap = [
+                'common' => 'Common',
+                'science' => 'Science',
+                'business_studies' => 'Business Studies',
+                'humanities' => 'Humanities',
+                'optional' => 'Optional',
+            ];
+            if (isset($groupMap[$request->group])) {
+                $query->where('group', $groupMap[$request->group]);
+            }
         }
 
         $subjects = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
 
+        $stats = [
+            'all' => Subject::count(),
+            'common' => Subject::where('group', 'Common')->count(),
+            'science' => Subject::where('group', 'Science')->count(),
+            'business_studies' => Subject::where('group', 'Business Studies')->count(),
+            'humanities' => Subject::where('group', 'Humanities')->count(),
+            'optional' => Subject::where('group', 'Optional')->count(),
+        ];
+
         return Inertia::render('Admin/Subjects/Index', [
             'subjects' => $subjects,
-            'filters' => $request->only(['search', 'per_page']),
-            'stats' => [
-                'all' => Subject::count(),
-                'active' => Subject::count(),
-                'inactive' => 0,
-            ],
+            'filters' => $request->only(['search', 'per_page', 'group']),
+            'stats' => $stats,
         ]);
     }
 
@@ -36,6 +56,7 @@ class SubjectController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:subjects',
+            'group' => 'required|string|max:100',
             'type' => 'required|in:theory,practical',
         ]);
 
@@ -49,6 +70,7 @@ class SubjectController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:subjects,code,' . $subject->id,
+            'group' => 'required|string|max:100',
             'type' => 'required|in:theory,practical',
         ]);
 

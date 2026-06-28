@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils';
  */
 const AcademicClassStats = ({ stats, activeTab = 'all', onTabChange }) => {
     const tabs = [
-        { key: 'all',       label: 'All Class',     count: stats.all },
+        { key: 'all',       label: 'All Classes',     count: stats.all },
         { key: 'active',    label: 'Active',        count: stats.active },
-        { key: 'inactive',  label: 'Suspended',     count: stats.inactive },
+        { key: 'inactive',  label: 'Inactive',     count: stats.inactive },
     ];
 
     return (

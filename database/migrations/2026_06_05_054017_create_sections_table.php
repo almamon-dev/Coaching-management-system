@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
             $table->foreignId('academic_class_id')->constrained()->cascadeOnDelete();
-            $table->string('name'); // e.g., "A", "B", "Science"
+            $table->foreignId('academic_group_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->string('name'); 
             $table->integer('capacity')->default(50);
             $table->foreignId('class_teacher_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

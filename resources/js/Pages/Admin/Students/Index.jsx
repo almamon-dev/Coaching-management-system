@@ -9,11 +9,11 @@ import StudentPagination from './Components/StudentPagination';
 import StudentStats from './Components/StudentStats';
 import Notify from '@/Utils/Notify';
 
-export default function Index({ auth, students, filters, stats }) {
+export default function Index({ auth, students, classes, sections, filters, stats }) {
     const allColumns = [
         { id: 'student_id', label: 'Student ID' },
         { id: 'name', label: 'Student Detail' },
-        { id: 'class', label: 'Class & Section' },
+        { id: 'class', label: 'Class & Section' },  
         { id: 'roll_number', label: 'Roll No.' },
     ];
 
@@ -181,6 +181,8 @@ export default function Index({ auth, students, filters, stats }) {
                     filters={filters}
                     handleFilterChange={handleFilterChange}
                     handleReset={handleReset}
+                    classes={classes}
+                    sections={sections}
                     selectedIds={selectedIds}
                     selectAllAcrossPages={selectAllAcrossPages}
                     totalCount={totalCount}

@@ -12,9 +12,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('student_id')->unique();
-            $table->foreignId('academic_class_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('section_id')->constrained()->cascadeOnDelete();
-            $table->integer('roll_number');
             $table->string('guardian_name');
             $table->string('guardian_phone');
             $table->string('guardian_email')->nullable();
@@ -24,8 +21,6 @@ return new class extends Migration
             $table->string('blood_group')->nullable();
             $table->text('address')->nullable();
             $table->timestamps();
-
-            $table->unique(['academic_class_id', 'section_id', 'roll_number']);
         });
     }
 

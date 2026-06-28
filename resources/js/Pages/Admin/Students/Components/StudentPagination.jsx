@@ -14,11 +14,12 @@ const StudentPagination = ({ students, filters, total, handlePerPageChange, hand
             <div className="flex items-center gap-2">
                 <div className="w-[75px]">
                     <SelectInput
-                        value={filters?.per_page || 15}
+                        value={filters?.per_page || 10}
                         onChange={handlePerPageChange}
                         showSearch={false}
                         direction="up"
                         options={[
+                            { id: '10', name: '10' },
                             { id: '15', name: '15' },
                             { id: '30', name: '30' },
                             { id: '50', name: '50' },

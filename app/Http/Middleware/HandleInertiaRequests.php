@@ -55,16 +55,14 @@ class HandleInertiaRequests extends Middleware
                     'permissions' => \Illuminate\Support\Facades\Cache::remember("user_permissions_{$request->user()->id}", 300, function () use ($request) {
                         return $request->user()->getAllPermissions()->pluck('name')->toArray();
                     }),
-                    'open_tickets_count' => $request->user()->user_type === 'admin'
-                        ? \Illuminate\Support\Facades\Cache::remember("open_tickets_count", 60, function () {
-                            return \App\Models\Ticket::whereIn('status', ['open', 'in_progress'])->count();
-                        })
-                        : 0,
                 ] : null,
             ],
             'settings' => [
-                'site_name' => config('app.name', 'Admin Panel'),
+                'site_name' => config('app.name', 'School Management'),
             ],
+            'current_academic_session' => \Illuminate\Support\Facades\Cache::remember('current_academic_session', 3600, function () {
+                return \App\Models\AcademicSession::where('is_current', true)->first();
+            }),
             'locale' => app()->getLocale(),
             'translations' => \Illuminate\Support\Facades\Cache::remember('lang_' . app()->getLocale(), 600, function () {
                 $path = base_path('lang/' . app()->getLocale() . '.json');

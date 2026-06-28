@@ -64,7 +64,7 @@ export default function Modal({
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                     <DialogPanel
-                        className={`relative transform overflow-hidden rounded-[2px] bg-white shadow-2xl transition-all sm:mx-auto sm:w-full ${maxWidthClass}`}
+                        className={`relative transform overflow-visible rounded-[2px] bg-white shadow-2xl transition-all sm:mx-auto sm:w-full ${maxWidthClass}`}
                     >
                         {/* Custom Close Button from your design */}
                         {closeable && (

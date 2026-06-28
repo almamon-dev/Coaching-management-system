@@ -46,10 +46,10 @@ const RAW_MENU_GROUPS = [
                 children: [
                     { label: "Students", getPath: () => route('admin.students.index') },
                     { label: "New Admission", getPath: () => route('admin.students.create') },
-                    { label: "Enrollments", getPath: () => '#' },
-                    { label: "Student Promotion", getPath: () => '#' },
-                    { label: "Roll Generation", getPath: () => '#' },
-                    { label: "Student Transfer", getPath: () => '#' },
+                    { label: "Enrollments", getPath: () => route('admin.enrollments.index') },
+                    { label: "Student Promotion", getPath: () => route('admin.student-promotion.index') },
+                    { label: "Roll Generation", getPath: () => route('admin.roll-generation.index') },
+                    { label: "Student Transfer", getPath: () => route('admin.student-transfer.index') },
                 ],
             },
             {
@@ -314,7 +314,7 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
     return (
         <div className="w-full h-full flex flex-col bg-white border-r border-slate-200/60 relative select-none">
             {/* BRANDING HEADER */}
-            <div className="h-[60px] flex items-center px-4 shrink-0 bg-white border-b border-slate-200/60 overflow-hidden relative">
+            <div className="h-[70px] flex items-center px-4 shrink-0 bg-white border-b border-slate-200/60 overflow-hidden relative">
                 {!isCollapsed && (
                     <Link href="/dashboard" className="flex-shrink-0 flex items-center gap-2 h-[45px]">
                         <div className="relative text-[#008060] bg-[#e6f2ef] p-1.5 rounded-lg">

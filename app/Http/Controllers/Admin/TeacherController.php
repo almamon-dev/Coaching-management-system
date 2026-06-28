@@ -40,7 +40,7 @@ class TeacherController extends Controller
             $query->where('designation', $designation);
         }
 
-        $teachers = $query->latest()->paginate($perPage)->withQueryString();
+        $teachers = $query->latest()->paginate($request->input('per_page', 10))->withQueryString();
 
         // Get unique options for filters
         $departments = TeacherProfile::whereNotNull('department')->distinct()->pluck('department')->map(function($dept) {
@@ -193,5 +193,25 @@ class TeacherController extends Controller
         });
 
         return redirect()->route('admin.teachers.index')->with('success', 'Teacher deleted successfully.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:teacher_profiles,id'
+        ]);
+
+        try {
+            DB::transaction(function () use ($validated) {
+                $userIds = \App\Models\TeacherProfile::whereIn('id', $validated['ids'])->pluck('user_id');
+                \App\Models\TeacherProfile::whereIn('id', $validated['ids'])->delete();
+                \App\Models\User::whereIn('id', $userIds)->delete();
+            });
+
+            return back()->with('success', count($validated['ids']) . ' teachers deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error deleting teachers: ' . $e->getMessage());
+        }
     }
 }

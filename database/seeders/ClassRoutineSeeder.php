@@ -13,9 +13,11 @@ class ClassRoutineSeeder extends Seeder
 {
     public function run(): void
     {
-        $classes = AcademicClass::all();
+        // Only generate for Class 6 to 10
+        $classes = AcademicClass::whereBetween('numeric_value', [6, 10])->get();
         $subjects = Subject::all();
-        $teachers = User::where('user_type', 'teacher')->get();
+        // Fetch teachers properly via TeacherProfile as user_type is 'admin' for them
+        $teachers = \App\Models\TeacherProfile::with('user')->get()->map(function($p) { return $p->user; })->filter();
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
         if ($classes->isEmpty() || $subjects->isEmpty() || $teachers->isEmpty()) {
@@ -30,6 +32,9 @@ class ClassRoutineSeeder extends Seeder
             ['11:30:00', '12:15:00'],
             ['12:15:00', '13:00:00'],
         ];
+
+        // Clear existing routines
+        ClassRoutine::truncate();
 
         foreach ($classes as $class) {
             $sections = Section::where('academic_class_id', $class->id)->get();

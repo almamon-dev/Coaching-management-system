@@ -23,10 +23,14 @@ const StudentToolbar = ({
     setShowOnlySelected,
     allColumns,
     visibleColumns,
-    toggleColumn
+    toggleColumn,
+    classes,
+    sections
 }) => {
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const activeFilterCount = 0; // No advanced filters yet for students
+    
+    // Check if any advanced filter is active
+    const activeFilterCount = [filters?.class_id, filters?.section_id, filters?.status].filter(Boolean).length;
 
     return (
         <div className="border-b border-[#ebebeb] bg-white relative z-30">
@@ -81,6 +85,11 @@ const StudentToolbar = ({
                         >
                             <SlidersHorizontal size={14} />
                             Filters
+                            {activeFilterCount > 0 && (
+                                <span className="ml-1 w-4 h-4 rounded-full bg-[#008060] text-white flex items-center justify-center text-[10px] leading-none">
+                                    {activeFilterCount}
+                                </span>
+                            )}
                         </button>
 
                         {/* Reset Button */}
@@ -106,9 +115,48 @@ const StudentToolbar = ({
             
             {/* Advanced Filters Drawer */}
             {showAdvanced && (
-                <div className="px-3 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 animate-in slide-in-from-top-1 duration-150 border-t border-[#ebebeb] pt-3 bg-[#f9fafb]">
-                    <div className="text-[12px] text-slate-500 italic p-2">
-                        Advanced filters for students will appear here.
+                <div className="px-3 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 animate-in slide-in-from-top-1 duration-150 border-t border-[#ebebeb] pt-3 bg-[#f9fafb]">
+                    <div>
+                        <label className="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Class</label>
+                        <SelectInput
+                            value={filters?.class_id || ''}
+                            onChange={(e) => handleFilterChange('class_id', e.target.value)}
+                            options={[
+                                { id: '', name: 'All Classes' },
+                                ...(classes || []).map(c => ({ id: c.id, name: c.name }))
+                            ]}
+                            className="h-[32px] text-[12px]"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Section</label>
+                        <SelectInput
+                            value={filters?.section_id || ''}
+                            onChange={(e) => handleFilterChange('section_id', e.target.value)}
+                            options={[
+                                { id: '', name: 'All Sections' },
+                                ...(sections || []).map(s => ({ id: s.id, name: s.name }))
+                            ]}
+                            className="h-[32px] text-[12px]"
+                        />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Status</label>
+                        <SelectInput
+                            value={filters?.status || ''}
+                            onChange={(e) => handleFilterChange('status', e.target.value)}
+                            options={[
+                                { id: '', name: 'All Status' },
+                                { id: 'active', name: 'Active' },
+                                { id: 'promoted', name: 'Promoted' },
+                                { id: 'graduated', name: 'Graduated' },
+                                { id: 'transferred', name: 'Transferred' },
+                                { id: 'failed', name: 'Failed' },
+                            ]}
+                            className="h-[32px] text-[12px]"
+                        />
                     </div>
                 </div>
             )}

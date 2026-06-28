@@ -16,12 +16,13 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PageSeeder::class,
             AcademicClassSeeder::class,
+            \Database\Seeders\AcademicSessionSeeder::class,
             SubjectSeeder::class,
-            ClassRoutineSeeder::class,
-            StudentSeeder::class,
             DepartmentSeeder::class,
             DesignationSeeder::class,
             TeacherSeeder::class,
+            ClassRoutineSeeder::class,
+            StudentSeeder::class,
         ]);
     }
 }

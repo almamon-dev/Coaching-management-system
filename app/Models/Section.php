@@ -9,7 +9,12 @@ class Section extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['academic_class_id', 'name', 'capacity', 'class_teacher_id'];
+    protected $fillable = ['academic_class_id', 'academic_group_id', 'name', 'capacity', 'class_teacher_id'];
+
+    public function academicGroup()
+    {
+        return $this->belongsTo(AcademicGroup::class);
+    }
 
     public function academicClass()
     {

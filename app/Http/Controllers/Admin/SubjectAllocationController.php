@@ -50,15 +50,52 @@ class SubjectAllocationController extends Controller
                 ->toArray();
         }
 
+        $search = $request->get('search');
+        $teacherFilterId = $request->get('teacher_id');
+
+        $allAllocations = DB::table('subject_teacher')
+            ->join('academic_classes', 'subject_teacher.academic_class_id', '=', 'academic_classes.id')
+            ->join('sections', 'subject_teacher.section_id', '=', 'sections.id')
+            ->join('subjects', 'subject_teacher.subject_id', '=', 'subjects.id')
+            ->join('users', 'subject_teacher.user_id', '=', 'users.id')
+            ->select(
+                'subject_teacher.id',
+                'subject_teacher.academic_class_id',
+                'subject_teacher.section_id',
+                'academic_classes.name as class_name',
+                'sections.name as section_name',
+                'subjects.name as subject_name',
+                'subjects.code as subject_code',
+                'users.name as teacher_name'
+            )
+            ->when($teacherFilterId, function ($query, $teacherFilterId) {
+                $query->where('subject_teacher.user_id', $teacherFilterId);
+            })
+            ->when($search, function ($query, $search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('subjects.name', 'like', "%{$search}%")
+                      ->orWhere('users.name', 'like', "%{$search}%")
+                      ->orWhere('academic_classes.name', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('academic_classes.numeric_value')
+            ->orderBy('sections.name')
+            ->orderBy('subjects.name')
+            ->paginate($request->per_page ?? 15)
+            ->withQueryString();
+
         return Inertia::render('Admin/SubjectAllocation/Index', [
             'classes' => $classes,
             'sections' => $sections,
             'subjects' => $subjects,
             'teachers' => $teachers,
-            'allocations' => (object)$allocations, // Ensure empty object if no allocations
+            'allocations' => (object)$allocations,
+            'all_allocations' => $allAllocations,
             'filters' => [
                 'class_id' => $selectedClassId,
                 'section_id' => $selectedSectionId,
+                'search' => $search,
+                'teacher_id' => $teacherFilterId,
             ]
         ]);
     }
@@ -102,5 +139,18 @@ class SubjectAllocationController extends Controller
         });
 
         return redirect()->back()->with('success', 'Subject allocations updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        DB::table('subject_teacher')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Allocation removed successfully.');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate(['ids' => 'required|array']);
+        DB::table('subject_teacher')->whereIn('id', $request->ids)->delete();
+        return redirect()->back()->with('success', 'Selected allocations removed successfully.');
     }
 }

@@ -44,6 +44,13 @@ class StudentProfile extends Model
         return $this->hasOne(Enrollment::class)
             ->whereHas('academicSession', function ($q) {
                 $q->where('is_current', true);
-            });
+            })
+            ->where('status', 'active')
+            ->latest();
+    }
+
+    public function latestEnrollment()
+    {
+        return $this->hasOne(Enrollment::class)->latestOfMany();
     }
 }

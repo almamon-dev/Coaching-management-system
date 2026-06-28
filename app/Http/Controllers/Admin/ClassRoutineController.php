@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ClassRoutine;
 use App\Models\AcademicClass;
+use App\Models\ClassRoutine;
 use App\Models\Section;
 use App\Models\Subject;
-use App\Models\User;
+use App\Models\TeacherProfile;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -19,15 +19,30 @@ class ClassRoutineController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->whereHas('subject', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            })->orWhereHas('academicClass', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            })->orWhereHas('section', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            })->orWhereHas('teacher', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->whereHas('subject', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })->orWhereHas('academicClass', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })->orWhereHas('section', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })->orWhereHas('teacher', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
             });
+        }
+
+        if ($request->filled('class_id')) {
+            $query->where('academic_class_id', $request->class_id);
+        }
+        if ($request->filled('section_id')) {
+            $query->where('section_id', $request->section_id);
+        }
+        if ($request->filled('teacher_id')) {
+            $query->where('teacher_id', $request->teacher_id);
+        }
+        if ($request->filled('day')) {
+            $query->where('day', $request->day);
         }
 
         $routines = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
@@ -37,12 +52,13 @@ class ClassRoutineController extends Controller
             'classes' => AcademicClass::orderBy('numeric_value')->get(),
             'sections' => Section::orderBy('name')->get(),
             'subjects' => Subject::orderBy('name')->get(),
-            'teachers' => User::where('user_type', 'teacher')->orderBy('name')->get(),
-            'filters' => $request->only(['search', 'per_page']),
+            'teachers' => TeacherProfile::with('user')->get()->map(function($profile) { return $profile->user; })->filter()->values(),
+            'filters' => $request->only(['search', 'per_page', 'class_id', 'section_id', 'teacher_id', 'day']),
+            'allocations' => \Illuminate\Support\Facades\DB::table('subject_teacher')->get(),
             'stats' => [
                 'all' => ClassRoutine::count(),
-                'active' => ClassRoutine::count(),
-                'inactive' => 0,
+                'today' => ClassRoutine::where('day', now()->format('l'))->count(),
+                'teachers' => ClassRoutine::distinct('teacher_id')->count('teacher_id'),
             ],
         ]);
     }

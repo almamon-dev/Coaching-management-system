@@ -7,7 +7,7 @@ import Notify from '@/Utils/Notify';
 import TextInput from '@/Components/TextInput';
 import SelectInput from '@/Components/SelectInput';
 import ColumnManager from '../AcademicClasses/Components/ColumnManager';
-import AcademicClassStats from '../AcademicClasses/Components/AcademicClassStats';
+import SubjectStats from './Components/SubjectStats';
 
 import { ChevronDown, Check } from 'lucide-react';
 
@@ -136,15 +136,17 @@ export default function Index({ auth, subjects, filters, stats }) {
     const allColumns = [
         { id: 'name', label: 'Subject Name' },
         { id: 'code', label: 'Subject Code' },
+        { id: 'group', label: 'Group' },
         { id: 'type', label: 'Type' },
         { id: 'created_at', label: 'Created At' },
         { id: 'updated_at', label: 'Updated At' },
     ];
-    const [visibleColumns, setVisibleColumns] = useState(['name', 'code', 'type', 'created_at', 'updated_at']);
+    const [visibleColumns, setVisibleColumns] = useState(['name', 'code', 'group', 'type', 'created_at', 'updated_at']);
     const toggleColumn = (id) => setVisibleColumns(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
 
     // Data Management
     const [search, setSearch] = useState(filters?.search || '');
+    const [activeGroup, setActiveGroup] = useState(filters?.group || 'all');
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
     
@@ -155,6 +157,7 @@ export default function Index({ auth, subjects, filters, stats }) {
     const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
         name: '',
         code: '',
+        group: 'Common',
         type: 'theory',
     });
 
@@ -167,12 +170,18 @@ export default function Index({ auth, subjects, filters, stats }) {
         return () => clearTimeout(timer);
     }, [search]);
 
+    const handleTabChange = (group) => {
+        setActiveGroup(group);
+        router.get(route('admin.subjects.index'), { ...filters, group, page: 1 }, { preserveState: true, preserveScroll: true, replace: true });
+    };
+
     const handlePerPageChange = (val) => {
         router.get(route('admin.subjects.index'), { ...filters, per_page: val, page: 1 }, { preserveState: true, preserveScroll: true, replace: true });
     };
 
     const handleReset = () => {
         setSearch('');
+        setActiveGroup('all');
         router.get(route('admin.subjects.index'), {}, { preserveState: true, preserveScroll: true, replace: true });
     };
 
@@ -203,12 +212,14 @@ export default function Index({ auth, subjects, filters, stats }) {
             setData({
                 name: subject.name,
                 code: subject.code,
+                group: subject.group || '',
                 type: subject.type,
             });
         } else {
             setEditingSubject(null);
             reset();
             setData('type', 'theory');
+            setData('group', 'Common');
         }
         setIsModalOpen(true);
     };
@@ -252,16 +263,19 @@ export default function Index({ auth, subjects, filters, stats }) {
                     <h1 className="text-[20px] font-bold text-[#202223] tracking-tight">Subject Management</h1>
                     <p className="text-[#6d7175] text-[13px] mt-0.5 font-medium">Manage academic subjects, codes, and type.</p>
                 </div>
-                <button
-                    onClick={() => openModal()}
-                    className="px-4 py-1.5 bg-[#008060] text-white rounded-[3px] font-bold text-[12px] hover:bg-[#006e52] transition-all flex items-center gap-2 shadow-sm"
-                >
-                    <Plus size={14} /> Add Subject
-                </button>
+                <div className="flex items-center gap-2">
+                   
+                    <button
+                        onClick={() => openModal()}
+                        className="px-4 py-1.5 bg-[#008060] text-white rounded-[3px] font-bold text-[12px] hover:bg-[#006e52] transition-all flex items-center gap-2 shadow-sm"
+                    >
+                        <Plus size={14} /> Add Subject
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)]">
-                {stats && <AcademicClassStats stats={stats} />}
+                {stats && <SubjectStats stats={stats} activeTab={activeGroup} onTabChange={handleTabChange} />}
                 <SubjectToolbar 
                     search={search} setSearch={setSearch} handleReset={handleReset}
                     showAdvanced={showAdvanced} setShowAdvanced={setShowAdvanced}
@@ -280,6 +294,7 @@ export default function Index({ auth, subjects, filters, stats }) {
                                 </th>
                                 {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Subject Name</th>}
                                 {visibleColumns.includes('code') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Subject Code</th>}
+                                {visibleColumns.includes('group') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Group</th>}
                                 {visibleColumns.includes('type') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Type</th>}
                                 {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Created At</th>}
                                 {visibleColumns.includes('updated_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Updated At</th>}
@@ -305,6 +320,13 @@ export default function Index({ auth, subjects, filters, stats }) {
                                             <td className="py-2 px-4 text-[13px] text-slate-600 font-mono">
                                                 <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                                                     {subject.code}
+                                                </span>
+                                            </td>
+                                        )}
+                                        {visibleColumns.includes('group') && (
+                                            <td className="py-2 px-4 text-[13px] text-slate-600">
+                                                <span className="bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded text-[11px] font-bold">
+                                                    {subject.group || '-'}
                                                 </span>
                                             </td>
                                         )}
@@ -369,6 +391,21 @@ export default function Index({ auth, subjects, filters, stats }) {
                                 placeholder="e.g. Mathematics"
                             />
                             {errors.name && <p className="text-[11px] text-red-500 mt-1">{errors.name}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Group / Department <span className="text-red-500">*</span></label>
+                            <select
+                                value={data.group}
+                                onChange={e => setData('group', e.target.value)}
+                                className="w-full border border-slate-300 rounded-[3px] text-[13px] h-[36px] px-3 bg-white"
+                            >
+                                <option value="Common">Common (All Groups)</option>
+                                <option value="Science">Science</option>
+                                <option value="Business Studies">Business Studies</option>
+                                <option value="Humanities">Humanities</option>
+                                <option value="Optional">Optional</option>
+                            </select>
+                            {errors.group && <p className="text-[11px] text-red-500 mt-1">{errors.group}</p>}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>

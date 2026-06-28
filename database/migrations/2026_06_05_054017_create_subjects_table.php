@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('code')->unique();
+            $table->string('group')->nullable()->comment('E.g., Science, Humanities, Business Studies');
             $table->enum('type', ['theory', 'practical'])->default('theory');
             $table->timestamps();
         });

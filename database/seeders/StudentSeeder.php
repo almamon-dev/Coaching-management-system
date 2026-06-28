@@ -33,48 +33,58 @@ class StudentSeeder extends Seeder
             return;
         }
 
-        // Generate 3000 students
+        // Generate 30 students ONLY for Class Six
         $currentYear = date('y');
         $baseCount = StudentProfile::count();
+        $studentIndex = 1;
 
-        for ($i = 1; $i <= 300; $i++) {
-            $user = User::create([
-                'name' => $faker->name,
-                'username' => 'student' . $i,
-                'email' => 'student' . $i . '@sms.com',
-                'phone' => '017' . str_pad($i, 8, '0', STR_PAD_LEFT),
-                'password' => Hash::make('password'),
-                'user_type' => 'user',
-            ]);
+        foreach ($classes as $academicClass) {
+            // Only seed students for Class Six (numeric_value 6)
+            if ($academicClass->numeric_value !== 6) {
+                continue;
+            }
 
-            $studentId = $currentYear . str_pad($baseCount + $i, 4, '0', STR_PAD_LEFT);
+            $sections = $academicClass->sections;
+            if ($sections->isEmpty()) continue;
 
-            $profile = StudentProfile::create([
-                'user_id' => $user->id,
-                'student_id' => $studentId,
-                'guardian_name' => $faker->name,
-                'guardian_phone' => '018' . str_pad($i, 8, '0', STR_PAD_LEFT),
-                'guardian_relation' => $faker->randomElement(['Father', 'Mother', 'Uncle']),
-                'guardian_email' => 'guardian' . $i . '@sms.com',
-                'dob' => $faker->date('Y-m-d', '-12 years'),
-                'gender' => $faker->randomElement(['male', 'female']),
-                'blood_group' => $faker->randomElement(['A+', 'O+', 'B+', 'AB+']),
-                'address' => $faker->address,
-            ]);
+            for ($i = 1; $i <= 30; $i++) {
+                $user = User::create([
+                    'name' => $faker->name,
+                    'username' => 'student' . $studentIndex,
+                    'email' => 'student' . $studentIndex . '@sms.com',
+                    'phone' => '017' . str_pad($studentIndex, 8, '0', STR_PAD_LEFT),
+                    'password' => Hash::make('password'),
+                    'user_type' => 'user',
+                ]);
 
-            // Assign to a random class and section
-            $randomClass = $classes->random();
-            $randomSection = $randomClass->sections->isNotEmpty() ? $randomClass->sections->random() : null;
+                $studentId = $currentYear . str_pad($baseCount + $studentIndex, 4, '0', STR_PAD_LEFT);
 
-            if ($randomSection) {
+                $profile = StudentProfile::create([
+                    'user_id' => $user->id,
+                    'student_id' => $studentId,
+                    'guardian_name' => $faker->name,
+                    'guardian_phone' => '018' . str_pad($studentIndex, 8, '0', STR_PAD_LEFT),
+                    'guardian_relation' => $faker->randomElement(['Father', 'Mother', 'Uncle']),
+                    'guardian_email' => 'guardian' . $studentIndex . '@sms.com',
+                    'dob' => $faker->date('Y-m-d', '-12 years'),
+                    'gender' => $faker->randomElement(['male', 'female']),
+                    'blood_group' => $faker->randomElement(['A+', 'O+', 'B+', 'AB+']),
+                    'address' => $faker->address,
+                ]);
+
+                // Assign to the current class and a random section within that class
+                $randomSection = $sections->random();
+
                 Enrollment::create([
                     'student_profile_id' => $profile->id,
                     'academic_session_id' => $session->id,
-                    'academic_class_id' => $randomClass->id,
+                    'academic_class_id' => $academicClass->id,
                     'section_id' => $randomSection->id,
                     'status' => 'active',
-                    'roll_number' => rand(1, 100),
+                    'roll_number' => $i, // Sequential roll number from 1 to 30
                 ]);
+
+                $studentIndex++;
             }
         }
     }

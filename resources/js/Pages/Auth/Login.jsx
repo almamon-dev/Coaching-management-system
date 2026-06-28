@@ -39,7 +39,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
     if (isAdmin) {
         return (
             <div className="min-h-screen bg-[#030712] flex items-center justify-center p-4 relative overflow-hidden bg-[linear-gradient(to_right,#1f293708_1px,transparent_1px),linear-gradient(to_bottom,#1f293708_1px,transparent_1px)] bg-[size:24px_24px]">
-                <Head title="Admin Access | Gadget Store" />
+                <Head title="Admin Access | School Management" />
 
                 {/* Subtle Radial Glows for Premium Vibe */}
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none"></div>
@@ -58,7 +58,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                             </div>
                             <div>
                                 <h1 className="text-base font-semibold text-slate-100 tracking-tight">Admin Portal</h1>
-                                <p className="text-[11px] text-slate-400 font-medium">Gadget Store Management</p>
+                                <p className="text-[11px] text-slate-400 font-medium">School Management System</p>
                             </div>
                         </div>
 
@@ -85,7 +85,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                                         value={data.email}
                                         onChange={(e) => setData('email', e.target.value)}
                                         className="w-full h-10 bg-slate-950/40 border border-slate-800 focus:border-indigo-500/80 focus:ring-4 focus:ring-indigo-500/10 rounded-lg pl-9 pr-3 text-slate-200 placeholder-slate-600 transition-all text-xs outline-none shadow-none"
-                                        placeholder="admin@getitmoving.com"
+                                        placeholder="admin@school.com"
                                         required
                                     />
                                 </div>
@@ -139,7 +139,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Quick Fill:</span>
                             <button
                                 type="button"
-                                onClick={() => handleQuickLogin('admin@getitmoving.com', 'admin123')}
+                                onClick={() => handleQuickLogin('admin@school.com', 'admin123')}
                                 className="inline-flex items-center gap-1.5 py-1 px-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 hover:border-indigo-500/40 rounded-full text-[10px] text-indigo-400 font-medium transition-all group cursor-pointer"
                             >
                                 <svg className={`w-3 h-3 transition-colors ${copied ? 'text-emerald-400' : 'text-indigo-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -9,10 +9,15 @@ class AcademicClass extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'numeric_value'];
+    protected $fillable = ['name', 'numeric_value', 'is_grouped'];
 
     public function sections()
     {
         return $this->hasMany(Section::class);
+    }
+
+    public function academicGroups()
+    {
+        return $this->hasMany(AcademicGroup::class);
     }
 }

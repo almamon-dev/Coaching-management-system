@@ -3,6 +3,7 @@
 use App\Http\Controllers\User\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Admin\RollGenerationController;
 
 Route::get('/', [\App\Http\Controllers\Frontend\HomeController::class, 'index'])->name('home');
 
@@ -36,14 +37,6 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     Route::get('/user/attendance', [\App\Http\Controllers\AttendanceController::class, 'myAttendance'])->name('user.attendance');
     Route::get('/user/mark-attendance', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('user.mark-attendance');
 
-    // Customer Support Tickets
-    Route::prefix('user/tickets')->name('dashboard.tickets.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\User\TicketController::class, 'index'])->name('index');
-        Route::get('/create', [\App\Http\Controllers\User\TicketController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\User\TicketController::class, 'store'])->name('store');
-        Route::get('/{ticket}', [\App\Http\Controllers\User\TicketController::class, 'show'])->name('show');
-        Route::post('/{ticket}/reply', [\App\Http\Controllers\User\TicketController::class, 'reply'])->name('reply');
-    });
 });
 
 Route::middleware('auth')->group(function () {
@@ -81,12 +74,29 @@ Route::middleware('auth')->group(function () {
         Route::resource('subjects', \App\Http\Controllers\Admin\SubjectController::class);
         Route::get('subject-allocation', [\App\Http\Controllers\Admin\SubjectAllocationController::class, 'index'])->name('subject-allocation.index');
         Route::post('subject-allocation', [\App\Http\Controllers\Admin\SubjectAllocationController::class, 'store'])->name('subject-allocation.store');
+        Route::delete('subject-allocation/{id}', [\App\Http\Controllers\Admin\SubjectAllocationController::class, 'destroy'])->name('subject-allocation.destroy');
+        Route::post('subject-allocation/bulk-delete', [\App\Http\Controllers\Admin\SubjectAllocationController::class, 'bulkDelete'])->name('subject-allocation.bulk-delete');
+        Route::get('class_routines/print', [\App\Http\Controllers\Admin\ClassRoutinePrintController::class, 'index'])->name('class_routines.print');
         Route::resource('class_routines', \App\Http\Controllers\Admin\ClassRoutineController::class);
 
         // Student Management
+        Route::post('students/bulk-delete', [\App\Http\Controllers\Admin\StudentController::class, 'bulkDestroy'])->name('students.bulk-delete');
         Route::resource('students', \App\Http\Controllers\Admin\StudentController::class);
+        Route::get('student-promotion', [\App\Http\Controllers\Admin\StudentPromotionController::class, 'index'])->name('student-promotion.index');
+        Route::post('student-promotion', [\App\Http\Controllers\Admin\StudentPromotionController::class, 'store'])->name('student-promotion.store');
+        
+        // Student Transfer
+        Route::get('student-transfer', [\App\Http\Controllers\Admin\StudentTransferController::class, 'index'])->name('student-transfer.index');
+        Route::post('student-transfer', [\App\Http\Controllers\Admin\StudentTransferController::class, 'store'])->name('student-transfer.store');
+        
+        Route::post('enrollments/bulk-delete', [\App\Http\Controllers\Admin\EnrollmentController::class, 'bulkDestroy'])->name('enrollments.bulk-delete');
+        Route::get('enrollments', [\App\Http\Controllers\Admin\EnrollmentController::class, 'index'])->name('enrollments.index');
+        
+        Route::get('roll-generation', [RollGenerationController::class, 'index'])->name('roll-generation.index');
+        Route::post('roll-generation', [RollGenerationController::class, 'store'])->name('roll-generation.store');
 
         // Teacher Management
+        Route::post('teachers/bulk-delete', [\App\Http\Controllers\Admin\TeacherController::class, 'bulkDestroy'])->name('teachers.bulk-delete');
         Route::resource('teachers', \App\Http\Controllers\Admin\TeacherController::class);
 
         Route::get('/dashboard', [\App\Http\Controllers\Admin\Dashboard\DashboardController::class, 'index'])->name('dashboard');
@@ -164,15 +174,6 @@ Route::middleware('auth')->group(function () {
             Route::post('roles/bulk-destroy', [\App\Http\Controllers\Admin\Roles\RoleController::class, 'bulkDestroy'])->name('roles.bulk-destroy');
             Route::resource('roles', \App\Http\Controllers\Admin\Roles\RoleController::class);
             Route::post('permissions', [\App\Http\Controllers\Admin\Roles\RoleController::class, 'storePermission'])->name('permissions.store');
-        });
-
-        // Administrative Support Tickets (Accessible by Super Admin and Customer Support roles)
-        Route::middleware('role_or_permission:Super Admin|Customer Support')->group(function () {
-            Route::post('tickets/{ticket}/reply', [\App\Http\Controllers\Admin\Tickets\TicketController::class, 'reply'])->name('tickets.reply');
-            Route::patch('tickets/{ticket}/assign', [\App\Http\Controllers\Admin\Tickets\TicketController::class, 'assign'])->name('tickets.assign');
-            Route::patch('tickets/{ticket}/status', [\App\Http\Controllers\Admin\Tickets\TicketController::class, 'updateStatus'])->name('tickets.status');
-            Route::patch('tickets/{ticket}/priority', [\App\Http\Controllers\Admin\Tickets\TicketController::class, 'updatePriority'])->name('tickets.priority');
-            Route::resource('tickets', \App\Http\Controllers\Admin\Tickets\TicketController::class)->only(['index', 'show']);
         });
 
         // Notifications

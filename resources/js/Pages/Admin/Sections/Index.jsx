@@ -158,11 +158,10 @@ export default function Index({ auth, sections, classes, teachers, filters, stat
         { id: 'class', label: 'Class' },
         { id: 'name', label: 'Section Name' },
         { id: 'capacity', label: 'Capacity' },
-        { id: 'teacher', label: 'Class Teacher' },
         { id: 'created_at', label: 'Created At' },
         { id: 'updated_at', label: 'Updated At' },
     ];
-    const [visibleColumns, setVisibleColumns] = useState(['class', 'name', 'capacity', 'teacher', 'created_at', 'updated_at']);
+    const [visibleColumns, setVisibleColumns] = useState(['class', 'name', 'capacity', 'created_at', 'updated_at']);
     const toggleColumn = (id) => setVisibleColumns(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
 
     // Data Management
@@ -431,20 +430,6 @@ export default function Index({ auth, sections, classes, teachers, filters, stat
                                 />
                                 {errors.capacity && <p className="text-[11px] text-red-500 mt-1">{errors.capacity}</p>}
                             </div>
-                        </div>
-                        <div>
-                            <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Class Teacher</label>
-                            <select
-                                value={data.class_teacher_id}
-                                onChange={e => setData('class_teacher_id', e.target.value)}
-                                className="w-full border border-slate-300 rounded-[3px] text-[13px] h-[36px] px-3 bg-white"
-                            >
-                                <option value="">No Teacher Assigned</option>
-                                {teachers.map(t => (
-                                    <option key={t.id} value={t.id}>{t.name}</option>
-                                ))}
-                            </select>
-                            {errors.class_teacher_id && <p className="text-[11px] text-red-500 mt-1">{errors.class_teacher_id}</p>}
                         </div>
                         <div className="flex justify-end gap-2 pt-4">
                             <button
