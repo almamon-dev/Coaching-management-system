@@ -4,6 +4,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import SelectInput from '@/Components/Form/SelectInput';
 import TextInput from '@/Components/Form/TextInput';
 import Notify from '@/Utils/Notify';
+import ConfirmModal from '@/Components/Modal/ConfirmModal';
 import { Search, Save, AlertTriangle, FileSpreadsheet } from 'lucide-react';
 
 export default function MarksEntry({ auth, exams, classes, sections, subjects, students, existingMarks, filters }) {
@@ -56,8 +57,22 @@ export default function MarksEntry({ auth, exams, classes, sections, subjects, s
         setData('marks', newMarks);
     };
 
+    const [showConfirm, setShowConfirm] = useState(false);
+
     const submit = (e) => {
         e.preventDefault();
+        
+        // If there are existing marks, ask for confirmation first
+        if (Object.keys(existingMarks).length > 0) {
+            setShowConfirm(true);
+            return;
+        }
+        
+        executeSave();
+    };
+
+    const executeSave = () => {
+        setShowConfirm(false);
         post(route('admin.marks.store'), {
             onSuccess: () => {
                 Notify.success('Success', 'Marks saved successfully.');
@@ -103,7 +118,7 @@ export default function MarksEntry({ auth, exams, classes, sections, subjects, s
                         <SelectInput
                             value={data.section_id}
                             onChange={(e) => handleFilterChange('section_id', e.target.value)}
-                            options={sections}
+                            options={sections.filter(s => String(s.academic_class_id) === String(data.academic_class_id))}
                             placeholder="Select Section"
                         />
                         {errors.section_id && <p className="text-[11px] text-red-500 mt-1">{errors.section_id}</p>}
@@ -215,6 +230,17 @@ export default function MarksEntry({ auth, exams, classes, sections, subjects, s
                     </p>
                 </div>
             )}
+
+            <ConfirmModal
+                show={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={executeSave}
+                title="Update Existing Marks?"
+                message="Marks for this exam and subject have already been generated/entered. Are you sure you want to update them with these new values?"
+                type="warning"
+                confirmText="Yes, Update Marks"
+                processing={processing}
+            />
         </AdminLayout>
     );
 }

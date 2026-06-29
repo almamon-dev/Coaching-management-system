@@ -54,26 +54,18 @@ const STUDENT_MENU = [
         items: [
             {
                 key: "attendance",
-                label: "Attendance",
+                label: "My Attendance",
                 icon: ClipboardCheck,
-                children: [
-                    { label: "Attendance History", getPath: () => '#' },
-                    { label: "Attendance Summary", getPath: () => '#' },
-                ],
+                getPath: () => route('user.attendance')
             },
             {
                 key: "results",
-                label: "Results",
+                label: "My Results",
                 icon: FileText,
-                children: [
-                    { label: "Exam Results", getPath: () => '#' },
-                    { label: "GPA History", getPath: () => '#' },
-                    { label: "Academic History", getPath: () => '#' },
-                ],
+                getPath: () => route('user.results.index')
             },
             { key: "notices", label: "Notices", icon: Bell, getPath: () => '#' },
-            { key: "profile", label: "My Profile", icon: Settings, getPath: () => '#' },
-            { key: "settings", label: "Settings", icon: KeyRound, getPath: () => '#' },
+            { key: "profile", label: "My Profile", icon: Settings, getPath: () => route('profile.edit') },
             { key: "logout", label: "Logout", icon: LogOut, getPath: () => "/logout", method: "post" },
         ],
     },
@@ -237,7 +229,12 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
     const isTeacher = props.auth?.user?.user_type === 'teacher' || userRoles.includes('teacher');
 
     const filteredMenuGroups = useMemo(() => {
-        let menuGroupsToUse = TEACHER_MENU; // Force the detailed menu by default so you can see it!
+        let menuGroupsToUse = STUDENT_MENU;
+        if (props.auth?.user?.user_type === 'teacher') {
+            menuGroupsToUse = TEACHER_MENU;
+        } else if (props.auth?.user?.user_type === 'guardian') {
+            menuGroupsToUse = GUARDIAN_MENU;
+        }
 
         const processed = [];
         for (let g = 0; g < menuGroupsToUse.length; g++) {

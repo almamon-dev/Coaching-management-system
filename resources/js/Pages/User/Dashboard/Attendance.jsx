@@ -1,111 +1,210 @@
-import React from 'react';
-import { Head } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { Head, router } from '@inertiajs/react';
 import UserLayout from '@/Layouts/UserLayout';
-import { ClipboardCheck, Calendar as CalendarIcon, CheckCircle2, XCircle, Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Pagination from '@/Components/ui/Pagination';
+import { CheckCircle, XCircle, Clock, Calendar as CalendarIcon, FileText, PieChart as PieChartIcon } from 'lucide-react';
+import SelectInput from '@/Components/Form/SelectInput';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
-export default function MyAttendance({ auth, attendances }) {
-    const getStatusConfig = (status) => {
-        switch (status) {
+export default function Attendance({ auth, attendances, stats, filters }) {
+    
+    const [selectedMonth, setSelectedMonth] = useState(filters?.month || new Date().getMonth() + 1);
+    const [selectedYear, setSelectedYear] = useState(filters?.year || new Date().getFullYear());
+
+    const handleFilterChange = (month, year) => {
+        router.get(route('user.attendance'), { month, year }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
+        });
+    };
+
+    const getStatusStyle = (status) => {
+        switch(status) {
             case 'present':
-                return { color: 'text-green-700', bg: 'bg-green-50', border: 'border-green-200', icon: CheckCircle2, label: 'Present' };
+                return 'bg-emerald-100 text-emerald-800 border-emerald-200';
             case 'absent':
-                return { color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-200', icon: XCircle, label: 'Absent' };
+                return 'bg-red-100 text-red-800 border-red-200';
             case 'late':
-                return { color: 'text-orange-700', bg: 'bg-orange-50', border: 'border-orange-200', icon: Clock, label: 'Late' };
+                return 'bg-amber-100 text-amber-800 border-amber-200';
+            case 'on_leave':
             case 'half_day':
-                return { color: 'text-yellow-700', bg: 'bg-yellow-50', border: 'border-yellow-200', icon: Clock, label: 'Half Day' };
+                return 'bg-blue-100 text-blue-800 border-blue-200';
             default:
-                return { color: 'text-slate-700', bg: 'bg-slate-50', border: 'border-slate-200', icon: CalendarIcon, label: status };
+                return 'bg-slate-100 text-slate-800 border-slate-200';
         }
     };
 
+    const formatStatus = (status) => {
+        if (!status) return 'Unknown';
+        return status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    };
+
+    const months = [
+        { id: 1, name: 'January' }, { id: 2, name: 'February' }, { id: 3, name: 'March' },
+        { id: 4, name: 'April' }, { id: 5, name: 'May' }, { id: 6, name: 'June' },
+        { id: 7, name: 'July' }, { id: 8, name: 'August' }, { id: 9, name: 'September' },
+        { id: 10, name: 'October' }, { id: 11, name: 'November' }, { id: 12, name: 'December' }
+    ];
+
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({length: 5}, (_, i) => ({ id: currentYear - i, name: (currentYear - i).toString() }));
+
+    // Chart Data Preparation
+    const chartData = [
+        { name: 'Present', value: stats?.total_present || 0, color: '#059669' },
+        { name: 'Absent', value: stats?.total_absent || 0, color: '#DC2626' },
+        { name: 'Late', value: stats?.total_late || 0, color: '#D97706' },
+        { name: 'Leave', value: stats?.total_leave || 0, color: '#2563EB' },
+    ].filter(item => item.value > 0);
+
+    const hasData = chartData.length > 0;
+    const currentMonthName = months.find(m => m.id === selectedMonth)?.name;
+
+    // Calendar Generation Logic
+    const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+    const firstDayOfMonth = new Date(selectedYear, selectedMonth - 1, 1).getDay();
+    
+    const calendarDays = [];
+    // Add empty slots for days before the 1st
+    for (let i = 0; i < firstDayOfMonth; i++) {
+        calendarDays.push(null);
+    }
+    // Add the days of the month
+    for (let i = 1; i <= daysInMonth; i++) {
+        calendarDays.push(i);
+    }
+
+    // Map attendances to a fast lookup dictionary by day
+    const attendanceMap = {};
+    if (attendances && attendances.length > 0) {
+        attendances.forEach(record => {
+            const d = new Date(record.date);
+            attendanceMap[d.getDate()] = record;
+        });
+    }
+
+    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
     return (
-        <UserLayout user={auth.user}>
+        <UserLayout user={auth?.user}>
             <Head title="My Attendance" />
 
-            <div className="space-y-6">
-                <div className="flex items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div className="w-14 h-14 rounded-full bg-[#008060]/10 flex items-center justify-center text-[#008060]">
-                        <ClipboardCheck size={28} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">My Attendance</h1>
-                        <p className="text-slate-500 text-sm font-medium mt-1">View your daily attendance history and remarks.</p>
+            <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-[20px] font-bold text-[#202223] tracking-tight">Attendance Record</h1>
+                    <p className="text-[#6d7175] text-[13px] mt-0.5 font-medium">Track your presence and attendance history.</p>
+                </div>
+            </div>
+
+            <div className="bg-white rounded-[6px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
+                
+                {/* Left side: Title and Custom Date Picker */}
+                <div className="flex flex-col">
+                    <h2 className="text-[16px] font-bold text-[#202223] mb-1">Attendance Calendar</h2>
+                    <div className="relative inline-flex items-center">
+                        <select
+                            value={`${selectedYear}-${selectedMonth}`}
+                            onChange={(e) => {
+                                const [y, m] = e.target.value.split('-');
+                                setSelectedMonth(parseInt(m));
+                                setSelectedYear(parseInt(y));
+                                handleFilterChange(parseInt(m), parseInt(y));
+                            }}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        >
+                            {years.map(y => (
+                                <optgroup key={y.id} label={y.name}>
+                                    {months.map(m => (
+                                        <option key={`${y.id}-${m.id}`} value={`${y.id}-${m.id}`}>
+                                            {m.name} {y.name}
+                                        </option>
+                                    ))}
+                                </optgroup>
+                            ))}
+                        </select>
+                        <div className="flex items-center gap-2 text-[14px] text-slate-600 font-medium cursor-pointer hover:text-slate-800 transition-colors">
+                            {currentMonthName} {selectedYear}
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                        <h3 className="font-bold text-slate-800 uppercase tracking-wider text-xs flex items-center gap-2">
-                            <CalendarIcon size={14} className="text-slate-400" />
-                            Attendance Records
-                        </h3>
+                {/* Right side: Vertical Bordered Stats */}
+                <div className="flex flex-wrap items-center gap-6 lg:gap-8">
+                    <div className="flex flex-col pl-3 border-l-4 border-slate-300">
+                        <span className="text-[15px] font-bold text-slate-800 leading-tight">{daysInMonth}</span>
+                        <span className="text-[12px] text-slate-500 font-medium">Total Days</span>
                     </div>
-                    
-                    <div className="overflow-x-auto">
-                        {attendances.data.length > 0 ? (
-                            <table className="w-full text-left text-sm">
-                                <thead className="bg-slate-50 border-b border-slate-100">
-                                    <tr>
-                                        <th className="px-6 py-4 font-bold text-slate-600 uppercase tracking-wider text-[11px]">Date</th>
-                                        <th className="px-6 py-4 font-bold text-slate-600 uppercase tracking-wider text-[11px]">Status</th>
-                                        <th className="px-6 py-4 font-bold text-slate-600 uppercase tracking-wider text-[11px]">Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {attendances.data.map((record) => {
-                                        const config = getStatusConfig(record.status);
-                                        const StatusIcon = config.icon;
-                                        
-                                        return (
-                                            <tr key={record.id} className="hover:bg-slate-50/50 transition-colors">
-                                                <td className="px-6 py-4">
-                                                    <span className="font-bold text-slate-900 flex items-center gap-2">
-                                                        <CalendarIcon size={14} className="text-slate-400" />
-                                                        {new Date(record.date).toLocaleDateString('en-GB', { 
-                                                            weekday: 'short', 
-                                                            day: 'numeric', 
-                                                            month: 'long', 
-                                                            year: 'numeric' 
-                                                        })}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className={cn(
-                                                        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border",
-                                                        config.bg, config.color, config.border
-                                                    )}>
-                                                        <StatusIcon size={12} strokeWidth={3} />
-                                                        {config.label}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className="text-slate-600 font-medium">
-                                                        {record.remarks || <span className="text-slate-300 italic">No remarks</span>}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <div className="p-12 text-center">
-                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-                                    <ClipboardCheck size={28} className="text-slate-300" />
-                                </div>
-                                <p className="text-slate-500 font-medium text-sm">No attendance records found.</p>
-                            </div>
-                        )}
+                    <div className="flex flex-col pl-3 border-l-4 border-[#059669]">
+                        <span className="text-[15px] font-bold text-slate-800 leading-tight">{stats?.total_present || 0}</span>
+                        <span className="text-[12px] text-slate-500 font-medium">Present</span>
                     </div>
+                    <div className="flex flex-col pl-3 border-l-4 border-[#D97706]">
+                        <span className="text-[15px] font-bold text-slate-800 leading-tight">{stats?.total_late || 0}</span>
+                        <span className="text-[12px] text-slate-500 font-medium">Late</span>
+                    </div>
+                    <div className="flex flex-col pl-3 border-l-4 border-[#8B5CF6]">
+                        <span className="text-[15px] font-bold text-slate-800 leading-tight">0</span>
+                        <span className="text-[12px] text-slate-500 font-medium">Half Day</span>
+                    </div>
+                    <div className="flex flex-col pl-3 border-l-4 border-[#3B82F6]">
+                        <span className="text-[15px] font-bold text-slate-800 leading-tight">{stats?.total_leave || 0}</span>
+                        <span className="text-[12px] text-slate-500 font-medium">Leave</span>
+                    </div>
+                    <div className="flex flex-col pl-3 border-l-4 border-[#DC2626]">
+                        <span className="text-[15px] font-bold text-slate-800 leading-tight">{stats?.total_absent || 0}</span>
+                        <span className="text-[12px] text-slate-500 font-medium">Absent</span>
+                    </div>
+                </div>
+            </div>
 
-                    {attendances.last_page > 1 && (
-                        <div className="p-4 border-t border-slate-100">
-                            <Pagination links={attendances.links} />
+            {/* Calendar Grid */}
+            <div className="bg-white rounded-[6px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] overflow-hidden">
+                {/* Days Header */}
+                <div className="grid grid-cols-7 border-b border-[#ebebeb] bg-[#f9fbfb]">
+                    {weekDays.map((day, idx) => (
+                        <div key={idx} className="py-3 px-2 text-center text-[11px] font-bold text-[#6d7175] uppercase tracking-wider border-r border-[#ebebeb] last:border-0">
+                            {day}
                         </div>
-                    )}
+                    ))}
+                </div>
+
+                {/* Calendar Body */}
+                <div className="grid grid-cols-7">
+                    {calendarDays.map((day, index) => {
+                        const record = day ? attendanceMap[day] : null;
+                        const isToday = day && new Date().getDate() === day && new Date().getMonth() + 1 === selectedMonth && new Date().getFullYear() === selectedYear;
+
+                        return (
+                            <div 
+                                key={index} 
+                                className={`min-h-[110px] p-2 border-b border-r border-[#ebebeb] flex flex-col relative transition-colors ${!day ? 'bg-slate-50' : 'bg-white hover:bg-[#f9fbfb]'}`}
+                            >
+                                {day && (
+                                    <>
+                                        <span className={`text-[13px] font-bold mb-2 flex items-center justify-center w-7 h-7 rounded-full ${isToday ? 'bg-[#008060] text-white shadow-sm' : 'text-slate-700'}`}>
+                                            {day}
+                                        </span>
+                                        
+                                        {record ? (
+                                            <div className={`mt-auto w-full text-center py-1.5 px-1 rounded-[4px] border ${getStatusStyle(record.status)} flex flex-col items-center justify-center`}>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">{formatStatus(record.status)}</span>
+                                                {record.remarks && (
+                                                    <span className="text-[9px] font-medium opacity-80 mt-0.5 truncate w-full px-1" title={record.remarks}>
+                                                        {record.remarks}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="mt-auto flex items-center justify-center py-1">
+                                                <span className="text-[10px] text-slate-300 font-medium">-</span>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </UserLayout>

@@ -25,4 +25,19 @@ class Mark extends Model
     {
         return $this->belongsTo(Exam::class);
     }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
+    public function academicClass()
+    {
+        return $this->belongsTo(AcademicClass::class);
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
 }

@@ -9,9 +9,9 @@ export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     
     const topBarLinks = [
-        { name: 'Students', url: route('coming.soon') },
+        { name: 'Students', url: route('login') },
         { name: 'Admissions', url: route('admissions') },
-        { name: 'Staff Faculty Portal', url: route('portals.index') },
+        { name: 'Staff Faculty Portal', url: route('login') },
         { name: 'Library', url: route('coming.soon') },
         { name: 'Notice', url: '/#notice-board' },
         { name: 'News', url: route('events') },

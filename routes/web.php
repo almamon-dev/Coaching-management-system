@@ -37,6 +37,9 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     Route::get('/user/attendance', [\App\Http\Controllers\AttendanceController::class, 'myAttendance'])->name('user.attendance');
     Route::get('/user/mark-attendance', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('user.mark-attendance');
 
+    // Results
+    Route::get('/user/results', [\App\Http\Controllers\User\ResultController::class, 'index'])->name('user.results.index');
+    Route::get('/user/results/{result}/report-card', [\App\Http\Controllers\User\ResultController::class, 'reportCard'])->name('user.results.report-card');
 });
 
 Route::middleware('auth')->group(function () {
@@ -76,7 +79,7 @@ Route::middleware('auth')->group(function () {
         // Examination Management
         Route::post('exams/bulk-destroy', [\App\Http\Controllers\Admin\ExamController::class, 'bulkDestroy'])->name('exams.bulk-destroy');
         Route::resource('exams', \App\Http\Controllers\Admin\ExamController::class);
-        
+        Route::post('grades/bulk-destroy', [\App\Http\Controllers\Admin\GradeController::class, 'bulkDestroy'])->name('grades.bulk-destroy');
         Route::resource('grades', \App\Http\Controllers\Admin\GradeController::class)->except(['create', 'edit', 'show']);
         
         Route::get('marks-entry', [\App\Http\Controllers\Admin\MarksEntryController::class, 'index'])->name('marks.entry');
@@ -86,6 +89,7 @@ Route::middleware('auth')->group(function () {
         Route::post('results/generate', [\App\Http\Controllers\Admin\ResultController::class, 'generate'])->name('results.generate');
         Route::get('results/publish', [\App\Http\Controllers\Admin\ResultController::class, 'publishIndex'])->name('results.publish');
         Route::post('results/publish', [\App\Http\Controllers\Admin\ResultController::class, 'publish'])->name('results.doPublish');
+        Route::get('results/{result}/report-card', [\App\Http\Controllers\Admin\ResultController::class, 'reportCard'])->name('results.report-card');
 
         // Academic Setup
         Route::post('classes/bulk-destroy', [\App\Http\Controllers\Admin\AcademicClassController::class, 'bulkDestroy'])->name('classes.bulk-destroy');

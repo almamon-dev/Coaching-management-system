@@ -10,8 +10,39 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
+        
+        $academicPerformance = [];
+        $latestExamName = 'No Exam Data';
+        
+        if ($user->user_type === 'user' || $user->user_type === 'student') {
+            // Fetch the most recently published result
+            $latestResult = \App\Models\Result::with(['exam'])
+                ->where('student_id', $user->id)
+                ->where('is_published', true)
+                ->orderBy('created_at', 'desc')
+                ->first();
+                
+            if ($latestResult) {
+                $latestExamName = $latestResult->exam->name;
+                
+                // Fetch marks for this result
+                $marks = \App\Models\Mark::with(['subject'])
+                    ->where('exam_id', $latestResult->exam_id)
+                    ->where('student_id', $user->id)
+                    ->get();
+                    
+                foreach ($marks as $mark) {
+                    $academicPerformance[] = [
+                        'subject' => $mark->subject->name ?? 'Unknown',
+                        'score' => $mark->marks,
+                    ];
+                }
+            }
+        }
 
         return Inertia::render('User/Dashboard/Overview', [
+            'academicPerformance' => $academicPerformance,
+            'latestExamName' => $latestExamName,
             'stats' => [
                 'points' => $user->points ?? 0,
             ],

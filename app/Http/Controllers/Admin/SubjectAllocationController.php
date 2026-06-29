@@ -16,7 +16,7 @@ class SubjectAllocationController extends Controller
 {
     public function index(Request $request)
     {
-        $classes = AcademicClass::all();
+        $classes = AcademicClass::orderBy('numeric_value')->get();
         
         $selectedClassId = $request->get('class_id');
         $selectedSectionId = $request->get('section_id');

@@ -5,7 +5,7 @@ import { Plus } from 'lucide-react';
 import DeleteConfirmModal from '@/Components/Modal/DeleteConfirmModal';
 import ExamTable from './Components/ExamTable';
 import ExamToolbar from './Components/ExamToolbar';
-import Pagination from '@/Components/Common/Pagination';
+import ExamPagination from './Components/ExamPagination';
 import ExamStats from './Components/ExamStats';
 import Notify from '@/Utils/Notify';
 
@@ -76,6 +76,8 @@ export default function Index({ auth, exams, sessions, filters, stats }) {
     const handlePageChange = (url) => {
         if (url) router.get(url, {}, { preserveState: true, preserveScroll: true });
     };
+
+    const handlePerPageChange = (e) => handleFilterChange('per_page', e.target.value);
 
     const availableBulkIds = useMemo(() => exams?.data?.map(u => u.id) || [], [exams?.data]);
 
@@ -219,11 +221,13 @@ export default function Index({ auth, exams, sessions, filters, stats }) {
                     visibleColumns={visibleColumns}
                 />
 
-                {exams?.data?.length > 0 && (
-                    <div className="border-t border-[#ebebeb] p-3 bg-slate-50/50">
-                        <Pagination links={exams.links} />
-                    </div>
-                )}
+                <ExamPagination
+                    exams={exams}
+                    filters={filters}
+                    total={totalCount}
+                    handlePerPageChange={handlePerPageChange}
+                    handlePageChange={handlePageChange}
+                />
             </div>
 
             <DeleteConfirmModal

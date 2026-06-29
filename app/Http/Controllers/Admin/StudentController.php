@@ -160,6 +160,63 @@ class StudentController extends Controller
         return redirect()->route('admin.students.index')->with('success', 'Student registered successfully.');
     }
 
+    public function edit(StudentProfile $student)
+    {
+        $student->load(['user', 'latestEnrollment.academicClass', 'latestEnrollment.section']);
+        $classes = AcademicClass::with('sections')->orderBy('numeric_value')->get();
+        return Inertia::render('Admin/Students/Edit', [
+            'student' => $student,
+            'classes' => $classes
+        ]);
+    }
+
+    public function update(Request $request, StudentProfile $student)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $student->user_id,
+            'phone' => 'required|string|max:20',
+            'password' => 'nullable|string|min:8|confirmed',
+            'academic_class_id' => 'required|exists:academic_classes,id',
+            'section_id' => 'required|exists:sections,id',
+            'guardian_name' => 'required|string|max:255',
+            'guardian_phone' => 'required|string|max:20',
+            'guardian_relation' => 'required|string|max:50',
+            'gender' => 'required|in:male,female,other',
+        ]);
+
+        DB::transaction(function () use ($request, $student, $validated) {
+            $user = User::findOrFail($student->user_id);
+            $user->name = $validated['name'];
+            $user->email = $validated['email'];
+            $user->phone = $validated['phone'];
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+            $user->save();
+
+            $student->update([
+                'guardian_name' => $validated['guardian_name'],
+                'guardian_phone' => $validated['guardian_phone'],
+                'guardian_email' => $request->guardian_email,
+                'guardian_relation' => $validated['guardian_relation'],
+                'dob' => $request->dob,
+                'gender' => $validated['gender'],
+                'blood_group' => $request->blood_group,
+                'address' => $request->address,
+            ]);
+
+            if ($student->latestEnrollment) {
+                $student->latestEnrollment->update([
+                    'academic_class_id' => $validated['academic_class_id'],
+                    'section_id' => $validated['section_id'],
+                ]);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Student updated successfully.');
+    }
+
     public function bulkDestroy(Request $request)
     {
         $validated = $request->validate([

@@ -61,4 +61,16 @@ class GradeController extends Controller
         $grade->delete();
         return redirect()->back()->with('success', 'Grade deleted successfully.');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:grades,id',
+        ]);
+
+        Grade::whereIn('id', $request->ids)->delete();
+
+        return redirect()->back()->with('success', 'Selected grades deleted successfully.');
+    }
 }

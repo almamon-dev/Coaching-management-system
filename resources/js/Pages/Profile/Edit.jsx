@@ -10,22 +10,22 @@ export default function Edit({ auth, mustVerifyEmail, status }) {
 
             <div className="space-y-5">
                 {/* Header */}
-                <div className="bg-white p-5 rounded-[1px] border border-slate-200 shadow-sm">
-                    <h1 className="text-[20px] font-bold text-[#081621] tracking-tight">Account Settings</h1>
-                    <p className="text-slate-400 text-[11px] font-medium mt-1">Update your profile information and security settings</p>
+                <div className="bg-white p-6 rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)]">
+                    <h1 className="text-[20px] font-bold text-[#202223] tracking-tight">Account Settings</h1>
+                    <p className="text-[#6d7175] text-[13px] font-medium mt-1">Update your profile information and security settings</p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-5">
-                    {/* Profile Information */}
-                    <div className="bg-white p-5 rounded-sm border border-slate-100 shadow-sm">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Profile Information - Left Side */}
+                    <div className="bg-white p-6 rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] h-full">
                         <UpdateProfileInformationForm
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
                         />
                     </div>
 
-                    {/* Update Password */}
-                    <div className="bg-white p-5 rounded-[1px] border border-slate-200 shadow-sm">
+                    {/* Update Password - Right Side */}
+                    <div className="bg-white p-6 rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] h-full">
                         <UpdatePasswordForm />
                     </div>
                 </div>

@@ -26,7 +26,8 @@ class ExamController extends Controller
             $query->where('academic_session_id', $request->session_id);
         }
 
-        $exams = $query->paginate(10)->withQueryString();
+        $perPage = $request->input('per_page', 10);
+        $exams = $query->paginate($perPage)->withQueryString();
         
         // Calculate stats for tabs
         $stats = [
@@ -43,7 +44,7 @@ class ExamController extends Controller
             'exams' => $exams,
             'sessions' => $sessions,
             'stats' => $stats,
-            'filters' => $request->only(['search', 'status', 'session_id']),
+            'filters' => $request->only(['search', 'status', 'session_id', 'per_page']),
         ]);
     }
 

@@ -18,7 +18,7 @@ class MarksEntryController extends Controller
     public function index(Request $request)
     {
         $exams = Exam::orderBy('start_date', 'desc')->get();
-        $classes = AcademicClass::orderBy('name')->get();
+        $classes = AcademicClass::orderBy('numeric_value')->get();
         $sections = Section::orderBy('name')->get();
         $subjects = Subject::orderBy('name')->get();
 
@@ -27,7 +27,8 @@ class MarksEntryController extends Controller
 
         if ($request->filled(['exam_id', 'academic_class_id', 'section_id', 'subject_id'])) {
             $students = DB::table('enrollments')
-                ->join('users', 'enrollments.student_id', '=', 'users.id')
+                ->join('student_profiles', 'enrollments.student_profile_id', '=', 'student_profiles.id')
+                ->join('users', 'student_profiles.user_id', '=', 'users.id')
                 ->where('enrollments.academic_class_id', $request->academic_class_id)
                 ->where('enrollments.section_id', $request->section_id)
                 ->where('enrollments.status', 'active')
@@ -35,7 +36,7 @@ class MarksEntryController extends Controller
                 ->orderBy('enrollments.roll_number')
                 ->get();
 
-            $existingMarks = Mark::where('exam_id', $request->exam_id)
+            $existingMarks = Mark::query()->where('exam_id', $request->exam_id)
                 ->where('academic_class_id', $request->academic_class_id)
                 ->where('section_id', $request->section_id)
                 ->where('subject_id', $request->subject_id)

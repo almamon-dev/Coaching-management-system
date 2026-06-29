@@ -3,7 +3,6 @@ import { Link, usePage } from "@inertiajs/react";
 import {
     LayoutDashboard,
     ChevronRight,
-    ChevronsLeft,
     GraduationCap,
     Users,
     UserCheck,
@@ -14,7 +13,6 @@ import {
     FileText,
     Settings,
     LogOut,
-    ShoppingCart
 } from "lucide-react";
 
 /*
