@@ -107,8 +107,20 @@ class AttendanceReportController extends Controller
 
     public function analytics(Request $request)
     {
-        $startDate = Carbon::today()->subDays(29);
+        $period = $request->input('period', '30_days');
         $endDate = Carbon::today();
+        
+        if ($period === '7_days') {
+            $startDate = Carbon::today()->subDays(6);
+        } elseif ($period === 'this_month') {
+            $startDate = Carbon::today()->startOfMonth();
+        } elseif ($period === 'last_month') {
+            $startDate = Carbon::today()->subMonth()->startOfMonth();
+            $endDate = Carbon::today()->subMonth()->endOfMonth();
+        } else {
+            // default to last 30 days
+            $startDate = Carbon::today()->subDays(29);
+        }
         
         $type = $request->input('type', 'student');
 
@@ -149,6 +161,7 @@ class AttendanceReportController extends Controller
 
         return Inertia::render('Admin/Attendance/Reports/Analytics', [
             'type' => $type,
+            'period' => $period,
             'stats' => $chartData,
         ]);
     }

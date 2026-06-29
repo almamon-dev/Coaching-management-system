@@ -88,10 +88,10 @@ const RAW_MENU_GROUPS = [
                 icon: BookOpen,
                 children: [
                     { label: "Exams", getPath: () => route('admin.exams.index') },
-                    { label: "Marks Entry", getPath: () => '#' },
-                    { label: "Grade Setup", getPath: () => '#' },
-                    { label: "Result Generation", getPath: () => '#' },
-                    { label: "Result Publish", getPath: () => '#' },
+                    { label: "Marks Entry", getPath: () => route('admin.marks.entry') },
+                    { label: "Grade Setup", getPath: () => route('admin.grades.index') },
+                    { label: "Result Generation", getPath: () => route('admin.results.generation') },
+                    { label: "Result Publish", getPath: () => route('admin.results.publish') },
                 ],
             },
             {
