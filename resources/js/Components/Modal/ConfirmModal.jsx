@@ -1,11 +1,42 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { AlertTriangle, X, CheckCircle } from 'lucide-react';
+import { X, CheckCircle, AlertTriangle, Info } from 'lucide-react';
 
-const ConfirmModal = ({ show, onClose, onConfirm, title, message, processing, type = 'warning', confirmText = 'Confirm' }) => {
+const ConfirmModal = ({ show, onClose, onConfirm, title, message, type = 'warning', confirmText = 'Confirm', processing }) => {
     
-    const isWarning = type === 'warning';
-    
+    const getIcon = () => {
+        switch (type) {
+            case 'success':
+                return <CheckCircle className="h-6 w-6 text-emerald-600" strokeWidth={2} />;
+            case 'warning':
+                return <AlertTriangle className="h-6 w-6 text-amber-600" strokeWidth={2} />;
+            case 'info':
+            default:
+                return <Info className="h-6 w-6 text-blue-600" strokeWidth={2} />;
+        }
+    };
+
+    const getIconBg = () => {
+        switch (type) {
+            case 'success': return 'bg-emerald-100 ring-emerald-50';
+            case 'warning': return 'bg-amber-100 ring-amber-50';
+            case 'info':
+            default: return 'bg-blue-100 ring-blue-50';
+        }
+    };
+
+    const getButtonClass = () => {
+        switch (type) {
+            case 'success':
+                return 'bg-[#008060] hover:bg-[#006e52] shadow-emerald-200';
+            case 'warning':
+                return 'bg-amber-500 hover:bg-amber-600 shadow-amber-200';
+            case 'info':
+            default:
+                return 'bg-blue-600 hover:bg-blue-700 shadow-blue-200';
+        }
+    };
+
     return (
         <Transition show={show} as={Fragment}>
             <Dialog as="div" className="relative z-[1000]" onClose={onClose}>
@@ -34,7 +65,6 @@ const ConfirmModal = ({ show, onClose, onConfirm, title, message, processing, ty
                         >
                             <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-100">
 
-                                {/* Close Button */}
                                 <button
                                     onClick={onClose}
                                     className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 transition-colors p-1 z-10"
@@ -44,12 +74,8 @@ const ConfirmModal = ({ show, onClose, onConfirm, title, message, processing, ty
 
                                 <div className="bg-white px-4 pt-5 pb-4 sm:p-7 sm:pb-5">
                                     <div className="sm:flex sm:items-start">
-                                        <div className={`mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-11 sm:w-11 ring-8 ${isWarning ? 'bg-amber-100 ring-amber-50' : 'bg-blue-100 ring-blue-50'}`}>
-                                            {isWarning ? (
-                                                <AlertTriangle className="h-6 w-6 text-amber-600" strokeWidth={2} />
-                                            ) : (
-                                                <CheckCircle className="h-6 w-6 text-blue-600" strokeWidth={2} />
-                                            )}
+                                        <div className={`mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-11 sm:w-11 ring-8 ${getIconBg()}`}>
+                                            {getIcon()}
                                         </div>
 
                                         <div className="mt-4 text-center sm:mt-0 sm:ml-5 sm:text-left">
@@ -70,7 +96,7 @@ const ConfirmModal = ({ show, onClose, onConfirm, title, message, processing, ty
                                         type="button"
                                         disabled={processing}
                                         onClick={onConfirm}
-                                        className={`inline-flex w-full h-[36px] justify-center items-center rounded-[4px] px-5 text-[12px] font-bold text-white shadow-lg sm:w-auto transition-all active:scale-[0.98] disabled:opacity-50 flex gap-2 ${isWarning ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-200'}`}
+                                        className={`inline-flex w-full h-[36px] justify-center rounded-[4px] px-5 text-[12px] font-bold text-white shadow-lg sm:w-auto transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2 ${getButtonClass()}`}
                                     >
                                         {processing ? (
                                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

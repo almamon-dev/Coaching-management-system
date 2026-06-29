@@ -10,6 +10,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        if (auth()->user()->user_type !== 'admin') {
+            return redirect()->route('user.dashboard');
+        }
+
         $usersCount = User::count();
 
         return Inertia::render('Admin/Dashboard/Index', [

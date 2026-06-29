@@ -113,8 +113,9 @@ class RoleAndPermissionSeeder extends Seeder
         // Give some permissions if needed, or all
         $principalRole->givePermissionTo(Permission::all());
 
-        // C. Teacher
-        $teacherRole = Role::findOrCreate('Teacher', 'web');
+        // C. Staff & Employee
+        $staffRole = Role::findOrCreate('staff', 'web');
+        $employeeRole = Role::findOrCreate('employee', 'web');
         
         // 5. Assign the Super Admin role to the default admin user
         $adminUser = User::where('email', 'admin@school.com')->first();

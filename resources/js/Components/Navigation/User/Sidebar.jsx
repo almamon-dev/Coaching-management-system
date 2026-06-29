@@ -33,7 +33,7 @@ const TEACHER_MENU = [
     {
         title: "",
         items: [
-            { key: "attendance", label: "Attendance", icon: ClipboardCheck, getPath: () => route('user.mark-attendance') },
+            { key: "attendance", label: "Attendance", icon: ClipboardCheck, getPath: () => route('teacher.mark-attendance') },
             { key: "examinations", label: "Examinations", icon: FileText, getPath: () => '#' },
             { key: "results", label: "Results", icon: Award, getPath: () => '#' },
             { key: "assignments", label: "Assignments", icon: BookOpen, getPath: () => '#' },
@@ -226,11 +226,11 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
 
     const userRoles = useMemo(() => props.auth?.user?.roles || [], [props.auth?.user?.roles]);
     const openTicketsCount = props.auth?.user?.open_tickets_count || 0;
-    const isTeacher = props.auth?.user?.user_type === 'teacher' || userRoles.includes('teacher');
+    const isStaff = props.auth?.user?.user_type === 'staff' || props.auth?.user?.user_type === 'employee' || userRoles.includes('staff') || userRoles.includes('employee');
 
     const filteredMenuGroups = useMemo(() => {
         let menuGroupsToUse = STUDENT_MENU;
-        if (props.auth?.user?.user_type === 'teacher') {
+        if (isStaff) {
             menuGroupsToUse = TEACHER_MENU;
         } else if (props.auth?.user?.user_type === 'guardian') {
             menuGroupsToUse = GUARDIAN_MENU;
