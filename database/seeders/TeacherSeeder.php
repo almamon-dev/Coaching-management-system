@@ -34,6 +34,7 @@ class TeacherSeeder extends Seeder
                 'email' => "teacher" . uniqid() . "@school.com",
                 'phone' => fake()->phoneNumber(),
                 'password' => Hash::make('password'),
+                'user_type' => 'admin',
                 'email_verified_at' => now(),
                 'remember_token' => Str::random(10),
             ]);
