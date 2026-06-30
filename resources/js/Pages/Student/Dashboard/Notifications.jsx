@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import UserLayout from '@/Layouts/UserLayout';
+import StudentLayout from '@/Layouts/StudentLayout';
 import { Head, router } from '@inertiajs/react';
 import { Bell, Check, RotateCcw, ShoppingBag, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -51,7 +51,7 @@ const Notifications = ({ auth, notifications }) => {
     };
 
     return (
-        <UserLayout user={user}>
+        <StudentLayout user={user}>
             <Head title="My Notifications" />
 
             {/* Header */}
@@ -190,7 +190,7 @@ const Notifications = ({ auth, notifications }) => {
                     </div>
                 )}
             </div>
-        </UserLayout>
+        </StudentLayout>
     );
 };
 

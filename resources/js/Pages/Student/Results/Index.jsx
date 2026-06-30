@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head } from '@inertiajs/react';
-import UserLayout from '@/Layouts/UserLayout';
+import StudentLayout from '@/Layouts/StudentLayout';
 import { Printer, FileText, BarChart2, BookOpen, User as UserIcon, Calendar, GraduationCap } from 'lucide-react';
 import SelectInput from '@/Components/Form/SelectInput';
 
@@ -16,7 +16,7 @@ export default function Index({ auth, results }) {
     const activeResult = results?.find(r => r.id === selectedExamId);
 
     return (
-        <UserLayout user={auth?.user}>
+        <StudentLayout user={auth?.user}>
             <Head title="My Results" />
 
             <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -210,6 +210,6 @@ export default function Index({ auth, results }) {
                     </p>
                 </div>
             )}
-        </UserLayout>
+        </StudentLayout>
     );
 }

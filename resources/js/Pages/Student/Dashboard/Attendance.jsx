@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import UserLayout from '@/Layouts/UserLayout';
+import StudentLayout from '@/Layouts/StudentLayout';
 import { CheckCircle, XCircle, Clock, Calendar as CalendarIcon, FileText, PieChart as PieChartIcon } from 'lucide-react';
 import SelectInput from '@/Components/Form/SelectInput';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
@@ -86,7 +86,7 @@ export default function Attendance({ auth, attendances, stats, filters }) {
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     return (
-        <UserLayout user={auth?.user}>
+        <StudentLayout user={auth?.user}>
             <Head title="My Attendance" />
 
             <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -207,6 +207,6 @@ export default function Attendance({ auth, attendances, stats, filters }) {
                     })}
                 </div>
             </div>
-        </UserLayout>
+        </StudentLayout>
     );
 }

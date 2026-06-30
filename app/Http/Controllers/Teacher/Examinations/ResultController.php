@@ -56,34 +56,47 @@ class ResultController extends Controller
                 ->where('academic_class_id', $request->class_id)
                 ->where('section_id', $request->section_id)
                 ->get();
-            
             if ($marks->isNotEmpty()) {
                 // Get unique subjects
                 $subjectsList = $marks->pluck('subject')->unique('id')->values();
 
-                // Group by student_id
-                $grouped = $marks->groupBy('student_id');
+                // Fetch all active students in this class and section
+                $students = DB::table('enrollments')
+                    ->join('student_profiles', 'enrollments.student_profile_id', '=', 'student_profiles.id')
+                    ->join('users', 'student_profiles.user_id', '=', 'users.id')
+                    ->where('enrollments.academic_class_id', $request->class_id)
+                    ->where('enrollments.section_id', $request->section_id)
+                    ->where('enrollments.status', 'active')
+                    ->select('users.id', 'users.name', 'users.email', 'enrollments.roll_number')
+                    ->orderBy('enrollments.roll_number')
+                    ->get();
+
+                // Group marks by student_id
+                $groupedMarks = $marks->groupBy('student_id');
                 $previewData = [];
                 
-                foreach ($grouped as $student_id => $studentMarks) {
-                    $studentInfo = $studentMarks->first()->student;
+                foreach ($students as $studentInfo) {
+                    $studentMarks = $groupedMarks->get($studentInfo->id, collect());
                     $subjectMarks = [];
                     $totalRawMarks = 0;
                     
                     foreach ($studentMarks as $m) {
-                        $subjectMarks[$m->subject_id] = $m->mark;
-                        $totalRawMarks += $m->mark;
+                        $subjectMarks[$m->subject_id] = $m->marks;
+                        $totalRawMarks += $m->marks;
                     }
                     
                     $previewData[] = [
                         'student' => $studentInfo,
-                        'marks' => $subjectMarks,
+                        'marks' => (object)$subjectMarks,
                         'total_raw_marks' => $totalRawMarks
                     ];
                 }
 
-                // Sort by total raw marks descending
+                // Sort by total raw marks descending, then roll_number
                 usort($previewData, function ($a, $b) {
+                    if ($b['total_raw_marks'] == $a['total_raw_marks']) {
+                        return $a['student']->roll_number <=> $b['student']->roll_number;
+                    }
                     return $b['total_raw_marks'] <=> $a['total_raw_marks'];
                 });
             }
@@ -127,6 +140,14 @@ class ResultController extends Controller
             return redirect()->back()->with('error', 'No marks found for the selected criteria. Please enter marks first.');
         }
 
+        // Fetch all active students in this class and section
+        $studentIds = DB::table('enrollments')
+            ->join('student_profiles', 'enrollments.student_profile_id', '=', 'student_profiles.id')
+            ->where('enrollments.academic_class_id', $class_id)
+            ->where('enrollments.section_id', $section_id)
+            ->where('enrollments.status', 'active')
+            ->pluck('student_profiles.user_id');
+
         // Group marks by student
         $studentMarks = $marks->groupBy('student_id');
 
@@ -139,7 +160,8 @@ class ResultController extends Controller
                 ->where('is_published', false)
                 ->delete();
 
-            foreach ($studentMarks as $student_id => $marksForStudent) {
+            foreach ($studentIds as $student_id) {
+                $marksForStudent = $studentMarks->get($student_id, collect());
                 $totalMarks = 0;
                 $totalGpa = 0;
                 $subjectCount = $marksForStudent->count();
@@ -166,7 +188,7 @@ class ResultController extends Controller
                 $cgpa = $subjectCount > 0 ? ($totalGpa / $subjectCount) : 0;
                 $cgpa = round($cgpa, 2);
 
-                if ($hasFailedSubject) {
+                if ($hasFailedSubject || $subjectCount == 0) {
                     $finalGrade = 'F';
                     $status = 'Failed';
                     $cgpa = 0.00;

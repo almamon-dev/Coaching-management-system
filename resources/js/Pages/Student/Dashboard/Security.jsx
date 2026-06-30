@@ -1,11 +1,11 @@
 import React from 'react';
-import UserLayout from '@/Layouts/UserLayout';
+import StudentLayout from '@/Layouts/StudentLayout';
 import { Head } from '@inertiajs/react';
 import { Lock, Shield, Smartphone, History, Monitor } from 'lucide-react';
  
 const Security = ({ auth, two_factor_enabled, last_login }) => {
     return (
-        <UserLayout user={auth.user}>
+        <StudentLayout user={auth.user}>
             <Head title="Security Settings" />
             <div className="space-y-6">
                 <div className="bg-white p-6 rounded-[1px] border border-slate-200 shadow-sm">
@@ -78,7 +78,7 @@ const Security = ({ auth, two_factor_enabled, last_login }) => {
                     </div>
                 </div>
             </div>
-        </UserLayout>
+        </StudentLayout>
     );
 };
  

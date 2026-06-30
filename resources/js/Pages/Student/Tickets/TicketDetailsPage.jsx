@@ -1,6 +1,6 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import UserLayout from '@/Layouts/UserLayout';
+import StudentLayout from '@/Layouts/StudentLayout';
 import { ArrowLeft } from 'lucide-react';
 
 // Custom Hooks
@@ -33,7 +33,7 @@ const TicketDetailsPage = ({ auth, ticket }) => {
     } = useTicketDetails(ticket);
 
     return (
-        <UserLayout user={auth?.user}>
+        <StudentLayout user={auth?.user}>
             <Head title={`Ticket #${ticket.ticket_id} - ${ticket.subject}`} />
 
             <div className="space-y-4">
@@ -113,7 +113,7 @@ const TicketDetailsPage = ({ auth, ticket }) => {
                 </div>
 
             </div>
-        </UserLayout>
+        </StudentLayout>
     );
 };
 

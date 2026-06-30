@@ -1,6 +1,6 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import UserLayout from '@/Layouts/UserLayout';
+import StudentLayout from '@/Layouts/StudentLayout';
 import { Headset, Plus } from 'lucide-react';
 
 // Custom Hooks
@@ -25,7 +25,7 @@ const TicketListPage = ({ auth, tickets, stats }) => {
     } = useTicketList();
 
     return (
-        <UserLayout user={auth?.user}>
+        <StudentLayout user={auth?.user}>
             <Head title="My Support Tickets" />
 
             <div className="space-y-6">
@@ -60,7 +60,7 @@ const TicketListPage = ({ auth, tickets, stats }) => {
                     formatTicketDate={formatTicketDate}
                 />
             </div>
-        </UserLayout>
+        </StudentLayout>
     );
 };
 

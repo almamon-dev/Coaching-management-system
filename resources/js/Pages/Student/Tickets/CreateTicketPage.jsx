@@ -1,6 +1,6 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import UserLayout from '@/Layouts/UserLayout';
+import StudentLayout from '@/Layouts/StudentLayout';
 import { ArrowLeft } from 'lucide-react';
 
 // Custom Hooks
@@ -35,7 +35,7 @@ const CreateTicketPage = ({ auth }) => {
     } = useCreateTicket();
 
     return (
-        <UserLayout user={auth?.user}>
+        <StudentLayout user={auth?.user}>
             <Head title="Open Support Ticket" />
 
             <div className="max-w-full mx-auto space-y-6">
@@ -65,7 +65,7 @@ const CreateTicketPage = ({ auth }) => {
                     handleSubmit={handleSubmit}
                 />
             </div>
-        </UserLayout>
+        </StudentLayout>
     );
 };
 
