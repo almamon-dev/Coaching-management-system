@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
 
             // User Type & Basic Info
-            $table->enum('user_type', ['user', 'admin', 'staff', 'employee'])->default('user');
+            $table->enum('user_type', ['user', 'admin', 'staff', 'teacher'])->default('user');
             $table->enum('status', ['active', 'disabled'])->default('active');
             $table->timestamp('deletion_requested_at')->nullable();
             $table->string('company_name')->nullable();

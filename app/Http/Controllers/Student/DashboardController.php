@@ -40,11 +40,46 @@ class DashboardController extends Controller
             }
         }
 
-        if ($user->user_type === 'staff' || $user->user_type === 'employee' || $user->hasRole('staff') || $user->hasRole('employee')) {
+        if ($user->user_type === 'staff' || $user->user_type === 'teacher' || $user->hasRole('staff') || $user->hasRole('teacher')) {
+            $today = now()->format('l'); // e.g. "Monday"
+            
+            $classesToday = \App\Models\ClassRoutine::with(['academicClass', 'section', 'subject'])
+                ->where('teacher_id', $user->id)
+                ->where('day', $today)
+                ->orderBy('start_time')
+                ->get()
+                ->map(function ($routine) {
+                    $now = now()->format('H:i:s');
+                    $status = 'UPCOMING';
+                    $statusColor = 'bg-slate-100 text-slate-600';
+                    
+                    if ($now > $routine->end_time) {
+                        $status = 'COMPLETED';
+                        $statusColor = 'bg-slate-200 text-slate-600';
+                    } elseif ($now >= $routine->start_time && $now <= $routine->end_time) {
+                        $status = 'ONGOING';
+                        $statusColor = 'bg-[#008060] text-white ring-4 ring-[#008060]/20';
+                    }
+
+                    return [
+                        'time' => \Carbon\Carbon::parse($routine->start_time)->format('h:i A') . ' - ' . \Carbon\Carbon::parse($routine->end_time)->format('h:i A'),
+                        'subject' => ($routine->subject->name ?? 'Unknown') . ' (' . ($routine->academicClass->name ?? '') . ' - ' . ($routine->section->name ?? '') . ')',
+                        'room' => 'Room ' . ($routine->room_number ?? 'N/A'),
+                        'status' => $status,
+                        'statusColor' => $statusColor,
+                    ];
+                });
+
             return Inertia::render('Teacher/Dashboard/TeacherOverview', [
+                'schedule' => $classesToday,
                 'stats' => [
-                    'classes_today' => 4,
+                    'classes_today' => $classesToday->count(),
+                    'total_classes' => \App\Models\ClassRoutine::where('teacher_id', $user->id)->count(),
                     'pending_tasks' => 2,
+                ],
+                'notices' => [
+                    ['title' => 'Submit Term 1 Result Sheets', 'time' => '1 day ago'],
+                    ['title' => 'Monthly Staff Meeting', 'time' => '3 days ago'],
                 ]
             ]);
         }

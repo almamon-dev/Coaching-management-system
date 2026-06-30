@@ -20,8 +20,13 @@ Route::get('invitations/accept/{user}', [\App\Http\Controllers\Admin\Users\UserC
     ->name('admin.invitations.accept');
 
 Route::get('/dashboard', function () {
-    if (auth()->user()->user_type === 'admin') {
+    $user = auth()->user();
+    if ($user->user_type === 'admin') {
         return redirect()->route('admin.dashboard');
+    }
+    
+    if (in_array($user->user_type, ['staff', 'teacher'])) {
+        return redirect()->route('teacher.dashboard');
     }
 
     return redirect()->route('user.dashboard');
@@ -33,15 +38,15 @@ Route::middleware('auth')->group(function () {
 });
 // Portals Route
 Route::get('/staff-faculty-portal', function () {
-    return \Inertia\Inertia::render('Frontend/Portals');
+    return Inertia::render('Frontend/Portals');
 })->name('portals.index');
 
 Route::get('/school-offices', function () {
-    return \Inertia\Inertia::render('Frontend/SchoolOffices');
+    return Inertia::render('Frontend/SchoolOffices');
 })->name('school-offices');
 
 Route::get('/school-offices/{id}', function ($id) {
-    return \Inertia\Inertia::render('Frontend/SchoolOfficeDetails', [
+    return Inertia::render('Frontend/SchoolOfficeDetails', [
         'id' => $id
     ]);
 })->name('school-offices.show');
@@ -52,21 +57,21 @@ Route::get('/faculties/{id}', [\App\Http\Controllers\Frontend\FacultyController:
 
 // Gallery & Events Routes
 Route::get('/gallery', function () {
-    return \Inertia\Inertia::render('Frontend/Gallery');
+    return Inertia::render('Frontend/Gallery');
 })->name('gallery');
 
 Route::get('/admissions', function () {
-    return \Inertia\Inertia::render('Frontend/Admissions');
+    return Inertia::render('Frontend/Admissions');
 })->name('admissions');
 
 Route::get('/events', function () {
-    return \Inertia\Inertia::render('Frontend/Events');
+    return Inertia::render('Frontend/Events');
 })->name('events');
 
 Route::get('/notices/{id}', [\App\Http\Controllers\Frontend\NoticeController::class, 'show'])->name('notices.show');
 
 Route::get('/coming-soon', function () {
-    return \Inertia\Inertia::render('Errors/ComingSoon');
+    return Inertia::render('Errors/ComingSoon');
 })->name('coming.soon');
 
 require __DIR__.'/auth.php';

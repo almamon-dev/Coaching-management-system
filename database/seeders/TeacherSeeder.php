@@ -34,13 +34,13 @@ class TeacherSeeder extends Seeder
                 'email' => "teacher" . uniqid() . "@school.com",
                 'phone' => fake()->phoneNumber(),
                 'password' => Hash::make('password'),
-                'user_type' => 'staff',
+                'user_type' => 'teacher',
                 'email_verified_at' => now(),
                 'remember_token' => Str::random(10),
             ]);
 
-            // Assign Staff Role
-            $role = \Spatie\Permission\Models\Role::findOrCreate('staff', 'web');
+            // Assign Teacher Role
+            $role = \Spatie\Permission\Models\Role::findOrCreate('teacher', 'web');
             $user->assignRole($role);
 
             // Determine random specializations (1 to 3 subjects)

@@ -100,13 +100,15 @@ class TeacherController extends Controller
                 'email_verified_at' => now(),
             ]);
 
-            // Assign role later
-            // $user->assignRole('Teacher');
 
             // 2. Generate Employee ID
             $year = date('Y');
-            $count = TeacherProfile::whereYear('created_at', $year)->count() + 1;
-            $employeeId = 'EMP-' . $year . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+            $latestTeacher = TeacherProfile::whereYear('created_at', $year)->orderBy('id', 'desc')->first();
+            $sequence = 1;
+            if ($latestTeacher && preg_match('/EMP-\d{4}-(\d+)/', $latestTeacher->employee_id, $matches)) {
+                $sequence = intval($matches[1]) + 1;
+            }
+            $employeeId = 'EMP-' . $year . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
 
             // 3. Create Teacher Profile
             TeacherProfile::create([

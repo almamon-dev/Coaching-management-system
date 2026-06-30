@@ -1,11 +1,11 @@
-import UserLayout from '@/Layouts/UserLayout';
+import StudentLayout from '@/Layouts/StudentLayout';
 import { Head, usePage } from '@inertiajs/react';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 
 export default function Edit({ auth, mustVerifyEmail, status }) {
     return (
-        <UserLayout user={auth.user}>
+        <StudentLayout user={auth.user}>
             <Head title="Account Settings" />
 
             <div className="space-y-5">
@@ -30,6 +30,6 @@ export default function Edit({ auth, mustVerifyEmail, status }) {
                     </div>
                 </div>
             </div>
-        </UserLayout>
+        </StudentLayout>
     );
 }

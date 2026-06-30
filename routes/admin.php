@@ -74,8 +74,8 @@ use Illuminate\Support\Facades\Route;
     Route::post('enrollments/bulk-delete', [\App\Http\Controllers\Admin\Students\EnrollmentController::class, 'bulkDestroy'])->name('enrollments.bulk-delete');
     Route::get('enrollments', [\App\Http\Controllers\Admin\Students\EnrollmentController::class, 'index'])->name('enrollments.index');
     
-    Route::get('roll-generation', [RollGenerationController::class, 'index'])->name('roll-generation.index');
-    Route::post('roll-generation', [RollGenerationController::class, 'store'])->name('roll-generation.store');
+    Route::get('roll-generation', [\App\Http\Controllers\Admin\Examinations\RollGenerationController::class, 'index'])->name('roll-generation.index');
+    Route::post('roll-generation', [\App\Http\Controllers\Admin\Examinations\RollGenerationController::class, 'store'])->name('roll-generation.store');
 
     // Teacher Management
     Route::post('teachers/bulk-delete', [\App\Http\Controllers\Admin\Staff\TeacherController::class, 'bulkDestroy'])->name('teachers.bulk-delete');

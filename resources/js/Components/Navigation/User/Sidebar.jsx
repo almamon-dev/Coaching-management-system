@@ -34,16 +34,25 @@ const TEACHER_MENU = [
         title: "",
         items: [
             { key: "attendance", label: "Attendance", icon: ClipboardCheck, getPath: () => route('teacher.mark-attendance') },
-            { key: "examinations", label: "Examinations", icon: FileText, getPath: () => '#' },
-            { key: "results", label: "Results", icon: Award, getPath: () => '#' },
-            { key: "assignments", label: "Assignments", icon: BookOpen, getPath: () => '#' },
+            {
+                key: "examinations",
+                label: "Examinations",
+                icon: Award,
+                children: [
+                    { label: "Marks Entry", getPath: () => route('teacher.marks.entry') },
+                    { label: "Results Generate", getPath: () => route('teacher.results.generation') },
+                    { label: "Results Publish", getPath: () => route('teacher.results.publishIndex') },
+                ]
+            },
+            { key: "assignments", label: "Assignments", icon: BookOpen, getPath: () => route('teacher.assignments.index') },
             { key: "fees", label: "Fees & Payments", icon: Wallet, getPath: () => '#' },
             { key: "notices", label: "Notices", icon: Bell, getPath: () => '#' },
             { key: "messages", label: "Messages", icon: MessageSquare, getPath: () => '#' },
-            { key: "events", label: "Events", icon: Calendar, getPath: () => '#' },
+            { key: "routine", label: "Class Routine", icon: Calendar, getPath: () => route('teacher.routine.index') },
             { key: "library", label: "Library", icon: Library, getPath: () => '#' },
             { key: "reports", label: "Reports", icon: BarChart2, getPath: () => '#' },
             { key: "settings", label: "Settings", icon: Settings, getPath: () => '#' },
+            { key: "logout", label: "Logout", icon: LogOut, getPath: () => "/logout", method: "post" },
         ],
     },
 ];
@@ -173,7 +182,7 @@ const NavItem = React.memo(({ item, isCollapsed, currentPath, openTicketsCount }
                     {!isCollapsed && (
                         <div className="grid grid-rows-[0fr] peer-checked:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
                             <div className="overflow-hidden">
-                                <div className="ml-5 space-y-0.5 mt-0.5 border-l-2 border-slate-100 pl-1 py-1">
+                                <div className="ml-5 space-y-0.5 mt-0.5 pl-1 py-1">
                                     {item.children.map((child) => (
                                         <SubMenuItem key={child.label} child={child} currentPath={currentPath} />
                                     ))}
@@ -226,7 +235,7 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
 
     const userRoles = useMemo(() => props.auth?.user?.roles || [], [props.auth?.user?.roles]);
     const openTicketsCount = props.auth?.user?.open_tickets_count || 0;
-    const isStaff = props.auth?.user?.user_type === 'staff' || props.auth?.user?.user_type === 'employee' || userRoles.includes('staff') || userRoles.includes('employee');
+    const isStaff = props.auth?.user?.user_type === 'staff' || props.auth?.user?.user_type === 'teacher' || userRoles.includes('staff') || userRoles.includes('teacher');
 
     const filteredMenuGroups = useMemo(() => {
         let menuGroupsToUse = STUDENT_MENU;
@@ -272,17 +281,17 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
 
             {/* MAIN NAVIGATION SCROLL AREA */}
             <div className="flex-1 overflow-y-auto no-scrollbar pb-6 flex flex-col">
-                
+
                 {/* QUICK LINK: DASHBOARD */}
                 <div className="p-3 pb-0 shrink-0">
                     <Link
-                        href={route('user.dashboard')}
+                        href={isStaff ? route('teacher.dashboard') : route('user.dashboard')}
                         prefetch={["hover", "mount"]}
                         showProgress={false}
                         className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-150 group
-                            ${currentPath === "/user/dashboard" ? "bg-blue-50 text-blue-700 font-bold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium"}`}
+                            ${(currentPath === "/user/dashboard" || currentPath === "/teacher/dashboard") ? "bg-blue-50 text-blue-700 font-bold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium"}`}
                     >
-                        <LayoutDashboard size={16} className={currentPath === "/user/dashboard" ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"} />
+                        <LayoutDashboard size={16} className={(currentPath === "/user/dashboard" || currentPath === "/teacher/dashboard") ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"} />
                         {!isCollapsed && <span className="text-[13px] tracking-tight">Dashboard</span>}
                     </Link>
                 </div>
