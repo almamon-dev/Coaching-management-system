@@ -162,43 +162,43 @@ export default function MarksEntry({ auth, exams, classes, sections, subjects, s
                         </button>
                     </div>
                     <div className="overflow-x-auto custom-scrollbar">
-                        <table className="w-full text-left border-collapse min-w-[600px]">
+                        <table className="w-full text-left border-collapse font-sans min-w-[600px] border-t-0 [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0 [&_tr:last-child>td]:border-b-0">
                             <thead>
-                                <tr className="bg-slate-50/50 border-b border-[#ebebeb]">
-                                    <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-[100px]">Roll No</th>
-                                    <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Student Name</th>
-                                    <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-[180px]">Marks Obtained</th>
-                                    <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Comments / Remarks</th>
+                                <tr className="bg-[#0bd462] text-white">
+                                    <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] w-[100px]">Roll No</th>
+                                    <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px]">Student Name</th>
+                                    <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] w-[180px]">Marks Obtained</th>
+                                    <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px]">Comments / Remarks</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-[#ebebeb]">
+                            <tbody>
                                 {students.map((student, index) => (
-                                    <tr key={student.id} className="hover:bg-slate-50/40 transition-colors group">
-                                        <td className="py-2 px-4 text-[13px] font-bold text-slate-800">
+                                    <tr key={student.id} className="bg-white hover:bg-slate-50/40 transition-colors group">
+                                        <td className="py-1.5 px-2 border border-[#e5e7e5] text-[12.5px] font-bold text-[#333]">
                                             {student.roll_number || '-'}
                                         </td>
-                                        <td className="py-2 px-4">
-                                            <div className="text-[13px] font-bold text-[#008060]">{student.name}</div>
-                                            <div className="text-[11px] text-slate-500">{student.email}</div>
+                                        <td className="py-1.5 px-2 border border-[#e5e7e5]">
+                                            <div className="text-[12.5px] font-medium text-[#333]">{student.name}</div>
+                                            <div className="text-[11.5px] text-[#666]">{student.email}</div>
                                         </td>
-                                        <td className="py-2 px-4">
+                                        <td className="py-1.5 px-2 border border-[#e5e7e5]">
                                             <TextInput
                                                 type="number"
                                                 step="0.01"
                                                 value={data.marks[index]?.marks ?? ''}
                                                 onChange={(e) => handleMarkChange(index, 'marks', e.target.value)}
                                                 onBlur={handleAutoSave}
-                                                className="w-full text-[13px] h-[34px] font-bold text-center"
+                                                className="w-full text-[13px] h-[30px] font-bold text-center border-[#d1d1d1] focus:border-[#0bd462] focus:ring-[#0bd462] shadow-none rounded-[3px]"
                                                 placeholder="0.00"
                                             />
                                         </td>
-                                        <td className="py-2 px-4">
+                                        <td className="py-1.5 px-2 border border-[#e5e7e5]">
                                             <TextInput
                                                 type="text"
                                                 value={data.marks[index]?.comments ?? ''}
                                                 onChange={(e) => handleMarkChange(index, 'comments', e.target.value)}
                                                 onBlur={handleAutoSave}
-                                                className="w-full text-[13px] h-[34px]"
+                                                className="w-full text-[13px] h-[30px] border-[#d1d1d1] focus:border-[#0bd462] focus:ring-[#0bd462] shadow-none rounded-[3px]"
                                                 placeholder="Optional comment"
                                             />
                                         </td>

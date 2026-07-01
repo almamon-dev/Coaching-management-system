@@ -325,12 +325,12 @@ export default function Index({ auth, designations, filters, stats }) {
                                         )}
                                         {visibleColumns.includes('created_at') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {new Date(designation.created_at).toLocaleDateString()}
+                                                {new Date(designation.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </td>
                                         )}
                                         {visibleColumns.includes('updated_at') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {new Date(designation.updated_at).toLocaleDateString()}
+                                                {new Date(designation.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </td>
                                         )}
                                         <td className="py-2 px-4 text-right">

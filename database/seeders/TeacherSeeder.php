@@ -17,8 +17,11 @@ class TeacherSeeder extends Seeder
      */
     public function run(): void
     {
-        $departments = \App\Models\Department::pluck('name')->toArray() ?: ['Science', 'Humanities', 'Commerce'];
-        $designations = \App\Models\Designation::pluck('name')->toArray() ?: ['Senior Teacher', 'Assistant Teacher', 'Lecturer'];
+        $departments = \App\Models\Department::pluck('name')->toArray() ?: ['Science (বিজ্ঞান)', 'Arts (মানবিক)', 'Commerce (ব্যবসায় শিক্ষা)'];
+        $designations = \App\Models\Designation::whereIn('name', ['Principal (অধ্যক্ষ)', 'Vice Principal (উপাধ্যক্ষ)', 'Head of Department (বিভাগীয় প্রধান)', 'Senior Teacher (সিনিয়র শিক্ষক)', 'Assistant Teacher (সহকারী শিক্ষক)'])->pluck('name')->toArray();
+        if (empty($designations)) {
+            $designations = ['Senior Teacher (সিনিয়র শিক্ষক)', 'Assistant Teacher (সহকারী শিক্ষক)', 'Lecturer (প্রভাষক)'];
+        }
         
         // Get all subject IDs to randomly assign as specializations
         $subjectIds = Subject::pluck('id')->toArray();
@@ -27,11 +30,11 @@ class TeacherSeeder extends Seeder
             $subjectIds = [1, 2, 3];
         }
 
-        for ($i = 1; $i <= 15; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             // Create User
             $user = User::create([
                 'name' => "Teacher $i " . fake()->lastName(),
-                'email' => "teacher" . uniqid() . "@school.com",
+                'email' => "teacher{$i}@gmail.com",
                 'phone' => fake()->phoneNumber(),
                 'password' => Hash::make('password'),
                 'user_type' => 'teacher',

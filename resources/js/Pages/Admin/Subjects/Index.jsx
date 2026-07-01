@@ -339,12 +339,12 @@ export default function Index({ auth, subjects, filters, stats }) {
                                         )}
                                         {visibleColumns.includes('created_at') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {subject.created_at ? new Date(subject.created_at).toLocaleDateString() : '-'}
+                                                {subject.created_at ? new Date(subject.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                                             </td>
                                         )}
                                         {visibleColumns.includes('updated_at') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {subject.updated_at ? new Date(subject.updated_at).toLocaleDateString() : '-'}
+                                                {subject.updated_at ? new Date(subject.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                                             </td>
                                         )}
                                         <td className="py-2 px-4 text-right">

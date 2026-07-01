@@ -112,7 +112,7 @@ const UserTable = ({
                                                             <span>
                                                                 {(user.email_verified_at || user.is_verified) ? 'Invited by ' : 'Sent by '}
                                                                 <span className="text-slate-700 font-semibold">{user.invited_by.name}</span>
-                                                                {!(user.email_verified_at || user.is_verified) && ` on ${new Date(user.created_at).toLocaleDateString()}`}
+                                                                {!(user.email_verified_at || user.is_verified) && ` on ${new Date(user.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}`}
                                                             </span>
                                                         ) : (
                                                             <span>System Auto</span>
@@ -121,7 +121,7 @@ const UserTable = ({
                                                         {user.email_verified_at || user.is_verified ? (
                                                             <span className="text-slate-500 flex items-center gap-1">
                                                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-                                                                {user.last_login_at ? `Active ${new Date(user.last_login_at).toLocaleDateString()}` : 'Joined'}
+                                                                {user.last_login_at ? `Active ${new Date(user.last_login_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}` : 'Joined'}
                                                             </span>
                                                         ) : (
                                                             <span className="text-amber-600 font-bold flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/40 leading-none">
@@ -196,7 +196,7 @@ const UserTable = ({
                                         <td className="py-2 px-4 text-[12.5px] text-slate-500">
                                             <div className="flex items-center gap-1.5">
                                                 <Calendar size={13} className="text-slate-400" />
-                                                <span>{new Date(user.created_at).toLocaleDateString()}</span>
+                                                <span>{new Date(user.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                                             </div>
                                         </td>
                                     )}

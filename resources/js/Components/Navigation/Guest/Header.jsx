@@ -7,11 +7,11 @@ export default function Header() {
     const { auth } = usePage().props;
     const { t } = useTranslation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    
+
     const topBarLinks = [
         { name: 'Students', url: route('login') },
         { name: 'Admissions', url: route('admissions') },
-        { name: 'Staff Faculty Portal', url: route('login') },
+        { name: 'Staff Faculty Portal', url: route('portals.index') },
         { name: 'Library', url: route('coming.soon') },
         { name: 'Notice', url: '/#notice-board' },
         { name: 'News', url: route('events') },
@@ -45,13 +45,13 @@ export default function Header() {
             {/* Top Bar (Cyan) */}
             <div className="bg-[#16a34a] text-white text-[11px] font-bold hidden lg:block">
                 <div className="container mx-auto px-4 flex items-center justify-between">
-                    
+
                     {/* Left side links */}
                     <div className="flex items-center">
                         {topBarLinks.map((link, index) => {
                             const isHashLink = link.url.includes('#');
                             const linkClasses = "px-2.5 py-2 hover:bg-white/10 transition-colors border-r border-white/20 last:border-r-0";
-                            
+
                             return isHashLink ? (
                                 <a key={index} href={link.url} className={linkClasses}>
                                     {link.name}
@@ -66,30 +66,30 @@ export default function Header() {
 
                     {/* Right side actions */}
                     <div className="flex items-center h-full">
-                        <button 
+                        <button
                             onClick={() => alert('Search functionality will be implemented soon!')}
                             className="flex items-center gap-1 px-3 py-2 border-r border-white/20 hover:bg-white/10 cursor-pointer"
                         >
                             <Search size={12} strokeWidth={2.5} />
                             <span>Search</span>
                         </button>
-                        <button 
+                        <button
                             onClick={handleShare}
                             className="px-3 py-2 border-r border-white/20 hover:bg-white/10 flex items-center justify-center"
                             title="Share this page"
                         >
                             <Share2 size={12} strokeWidth={2.5} />
                         </button>
-                        <a 
-                            href="tel:+8801711000000" 
+                        <a
+                            href="tel:+8801711000000"
                             className="px-3 py-2 border-r border-white/20 hover:bg-white/10 flex items-center justify-center"
                             title="Call Administration"
                         >
                             <Phone size={12} strokeWidth={2.5} />
                         </a>
-                        <a 
-                            href="https://youtube.com" 
-                            target="_blank" 
+                        <a
+                            href="https://youtube.com"
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="px-3 py-2 hover:bg-white/10 flex items-center justify-center"
                             title="Watch Campus Video"
@@ -107,9 +107,9 @@ export default function Header() {
                     {/* Logo */}
                     <Link href="/" className="flex-shrink-0 flex items-center gap-3">
                         {/* School Logo */}
-                        <img 
-                            src="/images/logo_final.png" 
-                            alt="Lohadi High School Logo" 
+                        <img
+                            src="/images/logo_final.png"
+                            alt="Lohadi High School Logo"
                             className="h-10 md:h-12 w-auto object-contain"
                         />
 
@@ -136,7 +136,7 @@ export default function Header() {
 
                     {/* Mobile Menu Toggle */}
                     <div className="lg:hidden flex items-center">
-                        <button 
+                        <button
                             className="text-slate-800 p-2 hover:bg-slate-50 rounded-md"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         >
@@ -153,7 +153,7 @@ export default function Header() {
                         {topBarLinks.map((link, index) => {
                             const isHashLink = link.url.includes('#');
                             const linkClasses = "p-2 border border-white/20 rounded hover:bg-white/10";
-                            
+
                             return isHashLink ? (
                                 <a key={index} href={link.url} className={linkClasses}>
                                     {link.name}
@@ -169,8 +169,8 @@ export default function Header() {
                         {mainNavLinks.map((link, index) => {
                             if (link === 'Admission') {
                                 return (
-                                    <Link 
-                                        key={index} 
+                                    <Link
+                                        key={index}
                                         href={route('admissions')}
                                         className="flex items-center justify-between px-5 py-3 text-[15px] font-bold text-slate-700 hover:bg-[#16a34a]/5 hover:text-[#16a34a] border-b border-slate-50 last:border-0 cursor-pointer"
                                         onClick={() => setMobileMenuOpen(false)}
@@ -180,8 +180,8 @@ export default function Header() {
                                 );
                             }
                             return (
-                                <div 
-                                    key={index} 
+                                <div
+                                    key={index}
                                     className="flex items-center justify-between px-5 py-3 text-[15px] font-bold text-slate-700 hover:bg-[#16a34a]/5 hover:text-[#16a34a] border-b border-slate-50 last:border-0 cursor-pointer"
                                 >
                                     <span>{link}</span>

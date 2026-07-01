@@ -36,6 +36,7 @@ const TeacherTable = ({
                                 )}
                             </div>
                         </th>
+                        <th className="py-2 px-3 text-[12px] font-bold text-slate-700 w-[50px] text-center">SL</th>
                         {visibleColumns.includes('employee_id') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700 w-[80px]">Emp ID</th>}
                         {visibleColumns.includes('name') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Teacher Detail</th>}
                         {visibleColumns.includes('designation') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Designation</th>}
@@ -45,8 +46,9 @@ const TeacherTable = ({
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb]">
                     {teachers.data && teachers.data.length > 0 ? (
-                        teachers.data.map((profile) => {
+                        teachers.data.map((profile, index) => {
                             const isSelected = selectedIds.includes(profile.id);
+                            const serialNumber = (teachers.from || 1) + index;
 
                             return (
                                 <tr 
@@ -70,6 +72,12 @@ const TeacherTable = ({
                                                 <Check size={12} strokeWidth={3} className="text-white" />
                                             )}
                                         </div>
+                                    </td>
+
+                                    <td className="py-1 px-3 text-center">
+                                        <span className="text-[12px] font-bold text-slate-500">
+                                            {serialNumber}
+                                        </span>
                                     </td>
 
                                     {visibleColumns.includes('employee_id') && (
@@ -139,7 +147,7 @@ const TeacherTable = ({
                         })
                     ) : (
                         <tr>
-                            <td colSpan={visibleColumns.length + 2} className="p-12 text-center text-slate-400 bg-white">
+                            <td colSpan={visibleColumns.length + 3} className="p-12 text-center text-slate-400 bg-white">
                                 <AlertTriangle className="mx-auto mb-2.5 text-slate-300" size={32} />
                                 <h5 className="text-[13.5px] font-bold text-slate-700">No teachers found</h5>
                                 <p className="text-[12px] text-[#6d7175] mt-0.5">Start by registering a new teacher.</p>

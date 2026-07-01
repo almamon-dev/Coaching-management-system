@@ -40,7 +40,7 @@ class AuthenticatedSessionController extends Controller
             ? route('admin.dashboard', absolute: false)
             : route('dashboard', absolute: false);
  
-        return redirect()->intended($url);
+        return redirect()->to($url);
     }
 
     /**

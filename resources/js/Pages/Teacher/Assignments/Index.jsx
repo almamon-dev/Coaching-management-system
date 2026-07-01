@@ -97,7 +97,7 @@ export default function Index({ auth, assignments, classes, sections, subjects, 
                 </div>
             </div>
 
-            <div className="bg-white rounded-[6px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col h-auto min-h-[400px]">
+            <div className="bg-white rounded-[6px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col h-auto">
                 <AssignmentToolbar
                     search={search}
                     setSearch={setSearch}
@@ -111,90 +111,87 @@ export default function Index({ auth, assignments, classes, sections, subjects, 
                 />
 
                 <div className="flex-1 overflow-auto bg-white relative custom-scrollbar">
-                    <table className="w-full text-left border-collapse">
-                        <thead className="sticky top-0 z-20 bg-[#f8f9fa] shadow-[0_1px_0_0_#ebebeb]">
-                            <tr>
-                                <th className="py-3 px-4 w-[40px] text-center">
+                    <table className="w-full text-left border-collapse font-sans min-w-[800px] border-t-0 [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0 [&_tr:last-child>td]:border-b-0">
+                        <thead>
+                            <tr className="bg-[#0bd462] text-white">
+                                <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] w-[36px] text-center">
                                     <div className="flex items-center justify-center">
                                         <div
                                             onClick={toggleSelectAll}
-                                            className={`w-[16px] h-[16px] rounded-[3px] border flex items-center justify-center cursor-pointer transition-colors
-                                                ${isAllSelected ? 'bg-[#008060] border-[#008060]' : 'bg-white border-[#8c9196] hover:border-[#5c5f62]'}`}
+                                            className={`w-[14px] h-[14px] rounded-[3px] border flex items-center justify-center cursor-pointer transition-colors
+                                                ${isAllSelected ? 'bg-white text-[#0bd462] border-white' : 'bg-transparent border-white hover:border-white/70'}`}
                                         >
-                                            {isAllSelected && <Check size={12} strokeWidth={3} className="text-white" />}
+                                            {isAllSelected && <Check size={10} strokeWidth={3} className="text-[#0bd462]" />}
                                         </div>
                                     </div>
                                 </th>
-                                {visibleColumns.includes('title') && <th className="py-2.5 px-3 text-[12px] font-semibold text-[#4a4e52] whitespace-nowrap">Title</th>}
-                                {visibleColumns.includes('subject') && <th className="py-2.5 px-3 text-[12px] font-semibold text-[#4a4e52] whitespace-nowrap">Subject</th>}
-                                {visibleColumns.includes('class') && <th className="py-2.5 px-3 text-[12px] font-semibold text-[#4a4e52] whitespace-nowrap">Class & Section</th>}
-                                {visibleColumns.includes('due_date') && <th className="py-2.5 px-3 text-[12px] font-semibold text-[#4a4e52] whitespace-nowrap">Due Date</th>}
-                                {visibleColumns.includes('attachment') && <th className="py-2.5 px-3 text-[12px] font-semibold text-[#4a4e52] whitespace-nowrap">Attachment</th>}
-                                {visibleColumns.includes('created_at') && <th className="py-2.5 px-3 text-[12px] font-semibold text-[#4a4e52] whitespace-nowrap">Created At</th>}
-                                <th className="py-2.5 px-3 text-[12px] font-semibold text-[#4a4e52] w-[80px] text-right">Actions</th>
+                                {visibleColumns.includes('title') && <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] whitespace-nowrap">Title</th>}
+                                {visibleColumns.includes('subject') && <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] whitespace-nowrap">Subject</th>}
+                                {visibleColumns.includes('class') && <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] whitespace-nowrap">Class & Section</th>}
+                                {visibleColumns.includes('due_date') && <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] whitespace-nowrap">Due Date</th>}
+                                {visibleColumns.includes('attachment') && <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] whitespace-nowrap">Attachment</th>}
+                                {visibleColumns.includes('created_at') && <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] whitespace-nowrap">Created At</th>}
+                                <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] w-[70px] text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#ebebeb]">
+                        <tbody>
                             {assignments?.data?.length > 0 ? (
                                 assignments.data.map((assignment) => {
                                     const isSelected = selectedIds.includes(assignment.id);
                                     return (
-                                        <tr key={assignment.id} className={`hover:bg-[#f8f9fa] transition-colors group ${isSelected ? 'bg-[#f1f8f5]' : ''}`}>
-                                            <td className="py-2 px-4 w-[40px] text-center">
+                                        <tr key={assignment.id} className={isSelected ? "bg-[#e8f7e8]" : "bg-white hover:bg-slate-50/40"}>
+                                            <td className="py-1.5 px-2 border border-[#e5e7e5] w-[36px] text-center">
                                                 <div className="flex items-center justify-center">
                                                     <div
                                                         onClick={() => toggleSelect(assignment.id)}
-                                                        className={`w-[16px] h-[16px] rounded-[3px] border flex items-center justify-center cursor-pointer transition-colors
-                                                            ${isSelected ? 'bg-[#008060] border-[#008060]' : 'bg-white border-[#8c9196] group-hover:border-[#5c5f62]'}`}
+                                                        className={`w-[14px] h-[14px] rounded-[3px] border flex items-center justify-center cursor-pointer transition-colors
+                                                            ${isSelected ? 'bg-[#0bd462] border-[#0bd462]' : 'bg-white border-[#8c9196] hover:border-[#5c5f62]'}`}
                                                     >
-                                                        {isSelected && <Check size={12} strokeWidth={3} className="text-white" />}
+                                                        {isSelected && <Check size={10} strokeWidth={3} className="text-white" />}
                                                     </div>
                                                 </div>
                                             </td>
                                             {visibleColumns.includes('title') && (
-                                                <td className="py-2 px-3">
-                                                    <div className="text-[13px] font-bold text-[#202223]">{assignment.title}</div>
-                                                    {assignment.description && <div className="text-[12px] text-[#6d7175] mt-0.5 truncate max-w-[200px]">{assignment.description}</div>}
+                                                <td className="py-1.5 px-2 border border-[#e5e7e5]">
+                                                    <div className="text-[12.5px] text-[#333] font-medium">{assignment.title}</div>
+                                                    {assignment.description && <div className="text-[11.5px] text-[#666] mt-0.5 truncate max-w-[200px]">{assignment.description}</div>}
                                                 </td>
                                             )}
                                             {visibleColumns.includes('subject') && (
-                                                <td className="py-2 px-3 text-[13px] text-[#202223] whitespace-nowrap">
-                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[11px] font-bold bg-[#e4f1ec] text-[#008060]">
-                                                        {assignment.subject?.name}
-                                                    </span>
+                                                <td className="py-1.5 px-2 border border-[#e5e7e5] text-[12.5px] text-[#333] whitespace-nowrap">
+                                                    {assignment.subject?.name}
                                                 </td>
                                             )}
                                             {visibleColumns.includes('class') && (
-                                                <td className="py-2 px-3 text-[13px] text-[#202223] whitespace-nowrap">
-                                                    <span className="font-bold">Class {assignment.academic_class?.name}</span>
-                                                    <span className="text-[#6d7175] ml-1">Sec {assignment.section?.name}</span>
+                                                <td className="py-1.5 px-2 border border-[#e5e7e5] text-[12.5px] text-[#333] whitespace-nowrap">
+                                                    {assignment.academic_class?.name} - {assignment.section?.name}
                                                 </td>
                                             )}
                                             {visibleColumns.includes('due_date') && (
-                                                <td className="py-2 px-3 text-[13px] text-[#202223] whitespace-nowrap">
+                                                <td className="py-1.5 px-2 border border-[#e5e7e5] text-[12.5px] text-[#333] whitespace-nowrap">
                                                     {new Date(assignment.due_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                 </td>
                                             )}
                                             {visibleColumns.includes('attachment') && (
-                                                <td className="py-2 px-3">
+                                                <td className="py-1.5 px-2 border border-[#e5e7e5]">
                                                     {assignment.file_path ? (
-                                                        <a href={`/storage/${assignment.file_path}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] text-blue-600 hover:underline">
-                                                            <FileText size={14} /> View
+                                                        <a href={`/storage/${assignment.file_path}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[11.5px] text-[#008f39] font-bold hover:underline">
+                                                            <FileText size={13} /> View
                                                         </a>
                                                     ) : (
-                                                        <span className="text-[12px] text-[#6d7175]">-</span>
+                                                        <span className="text-[11.5px] text-[#6d7175]">-</span>
                                                     )}
                                                 </td>
                                             )}
                                             {visibleColumns.includes('created_at') && (
-                                                <td className="py-2 px-3 text-[13px] text-[#6d7175] whitespace-nowrap">
+                                                <td className="py-1.5 px-2 border border-[#e5e7e5] text-[12.5px] text-[#6d7175] whitespace-nowrap">
                                                     {new Date(assignment.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                 </td>
                                             )}
-                                            <td className="py-2 px-3 text-right">
-                                                <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <button onClick={() => deleteAssignment(assignment)} className="p-1.5 text-[#6d7175] hover:text-[#bf0711] hover:bg-[#fbeae5] rounded transition-colors" title="Delete">
-                                                        <Trash2 size={15} />
+                                            <td className="py-1.5 px-2 border border-[#e5e7e5] text-right">
+                                                <div className="flex items-center justify-end gap-1">
+                                                    <button onClick={() => deleteAssignment(assignment)} className="p-1 text-[#6d7175] hover:text-[#bf0711] hover:bg-[#fbeae5] rounded transition-colors" title="Delete">
+                                                        <Trash2 size={14} />
                                                     </button>
                                                 </div>
                                             </td>

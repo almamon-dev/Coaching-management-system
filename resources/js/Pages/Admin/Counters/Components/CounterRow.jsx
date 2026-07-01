@@ -59,7 +59,7 @@ const CounterRow = ({ counter, isSelected, toggleSelect, handleDelete, visibleCo
                 <td className="px-4 py-1 text-center whitespace-nowrap text-slate-500 font-medium">
                     <span className="inline-flex items-center gap-1">
                         <Calendar size={12} className="text-slate-400" />
-                        {new Date(counter.created_at).toLocaleDateString()}
+                        {new Date(counter.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </span>
                 </td>
             )}
