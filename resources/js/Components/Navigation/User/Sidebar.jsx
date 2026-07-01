@@ -73,6 +73,7 @@ const STUDENT_MENU = [
                 icon: FileText,
                 getPath: () => route('user.results.index')
             },
+            { key: "routine", label: "Class Routine", icon: Calendar, getPath: () => route('user.routine.index') },
             { key: "notices", label: "Notices", icon: Bell, getPath: () => '#' },
             { key: "profile", label: "My Profile", icon: Settings, getPath: () => route('profile.edit') },
             { key: "logout", label: "Logout", icon: LogOut, getPath: () => "/logout", method: "post" },

@@ -5,13 +5,14 @@ import TextInput from '@/Components/Form/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from '@/Hooks/useTranslation';
 
 export default function Login({ status, canResetPassword, isAdmin }) {
     const { t } = useTranslation();
     const { categories, brands } = usePage().props;
     const [copied, setCopied] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -217,7 +218,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                     </div>
 
                     {/* Right Side - Login Box */}
-                    <div className="bg-white rounded-[4px] p-10 w-full max-w-[400px] relative z-10" style={{ boxShadow: '0px 0px 40px rgba(98,177,70,0.2)' }}>
+                    <div className="bg-white rounded-xl p-10 w-full max-w-[400px] relative z-10 border border-gray-100 shadow-[0_20px_50px_-12px_rgba(0,138,69,0.2)]">
                         <h2 className="text-center text-[32px] font-serif text-[#4a3f35] mb-8">Login</h2>
 
                         {status && (
@@ -226,49 +227,81 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                             </div>
                         )}
 
-                        <form onSubmit={submit} className="space-y-6">
+                        <form onSubmit={submit} className="space-y-6 mt-4">
                             {/* Username Field */}
-                            <div className="relative border-b border-[#a4b0c0] focus-within:border-[#008a45] transition-colors pb-1">
-                                <div className="absolute left-1 top-1/2 -translate-y-1/2 text-[#778ca3]">
-                                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            <div>
+                                <div className="relative border-b border-[#a4b0c0] focus-within:border-[#008a45] transition-colors pb-1 pt-3">
+                                    <div className="absolute left-1 top-1/2 -translate-y-1/2 text-[#778ca3]">
+                                        <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    </div>
+                                    <input 
+                                        id="email"
+                                        type="email"
+                                        name="email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        className="peer w-full pl-9 pr-3 py-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-transparent" 
+                                        placeholder="Username"
+                                    />
+                                    <label 
+                                        htmlFor="email"
+                                        className="absolute left-9 top-1/2 -translate-y-[22px] text-[12px] font-medium text-[#778ca3] transition-all duration-300 ease-out peer-placeholder-shown:text-[15px] peer-placeholder-shown:-translate-y-1/2 peer-focus:-translate-y-[22px] peer-focus:text-[12px] peer-focus:text-[#008a45] pointer-events-none"
+                                    >
+                                        Username
+                                    </label>
                                 </div>
-                                <input 
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
-                                    required
-                                    className="w-full pl-9 pr-3 py-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-[#778ca3]" 
-                                    placeholder="Username"
-                                />
+                                <InputError message={errors.email} className="mt-1 text-xs" />
                             </div>
-                            <InputError message={errors.email} className="mt-1 text-xs" />
 
                             {/* Password Field */}
-                            <div className="relative border-b border-[#a4b0c0] focus-within:border-[#008a45] transition-colors pb-1">
-                                <div className="absolute left-1 top-1/2 -translate-y-1/2 text-[#778ca3]">
-                                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <div>
+                                <div className="relative border-b border-[#a4b0c0] focus-within:border-[#008a45] transition-colors pb-1 pt-3">
+                                    <div className="absolute left-1 top-1/2 -translate-y-1/2 text-[#778ca3]">
+                                        <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                    </div>
+                                    <input 
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        value={data.password}
+                                        onChange={(e) => setData('password', e.target.value)}
+                                        className="peer w-full pl-9 pr-10 py-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-transparent" 
+                                        placeholder="Password"
+                                    />
+                                    <label 
+                                        htmlFor="password"
+                                        className="absolute left-9 top-1/2 -translate-y-[22px] text-[12px] font-medium text-[#778ca3] transition-all duration-300 ease-out peer-placeholder-shown:text-[15px] peer-placeholder-shown:-translate-y-1/2 peer-focus:-translate-y-[22px] peer-focus:text-[12px] peer-focus:text-[#008a45] pointer-events-none"
+                                    >
+                                        Password
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-1 top-1/2 -translate-y-1/2 text-[#778ca3] hover:text-[#008a45] transition-colors focus:outline-none p-1"
+                                        title={showPassword ? "Hide Password" : "Show Password"}
+                                    >
+                                        {showPassword ? <EyeOff size={16} strokeWidth={2} /> : <Eye size={16} strokeWidth={2} />}
+                                    </button>
                                 </div>
-                                <input 
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    required
-                                    className="w-full pl-9 pr-3 py-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-[#778ca3]" 
-                                    placeholder="Password"
-                                />
+                                <InputError message={errors.password} className="mt-1 text-xs" />
                             </div>
-                            <InputError message={errors.password} className="mt-1 text-xs" />
 
                             <button 
                                 type="submit" 
                                 disabled={processing}
-                                className="w-full py-3 mt-4 bg-gradient-to-r from-[#5ca939] to-[#8ac950] hover:from-[#4b8a2e] hover:to-[#74ad42] text-white rounded-[4px] font-medium transition-colors text-[16px] shadow-md"
+                                className="w-full py-3 mt-4 bg-gradient-to-r from-[#5ca939] to-[#8ac950] hover:from-[#4b8a2e] hover:to-[#74ad42] text-white rounded-[4px] font-medium transition-colors text-[16px] shadow-md flex justify-center items-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
                             >
-                                Login
+                                {processing ? (
+                                    <>
+                                        <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Processing...
+                                    </>
+                                ) : (
+                                    'Login'
+                                )}
                             </button>
                         </form>
 

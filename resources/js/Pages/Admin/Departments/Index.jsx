@@ -288,12 +288,12 @@ export default function Index({ auth, departments, filters, stats }) {
                                         {isAllSelected && <Check size={12} strokeWidth={3} className="text-white" />}
                                     </div>
                                 </th>
-                                {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Department Name</th>}
-                                {visibleColumns.includes('description') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Description</th>}
-                                {visibleColumns.includes('status') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Status</th>}
-                                {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Created At</th>}
-                                {visibleColumns.includes('updated_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Updated At</th>}
-                                <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-right w-[120px]">Actions</th>
+                                {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-[240px]">Department Name</th>}
+                                {visibleColumns.includes('description') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-auto">Description</th>}
+                                {visibleColumns.includes('status') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-[100px]">Status</th>}
+                                {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-[120px]">Created At</th>}
+                                {visibleColumns.includes('updated_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-[120px]">Updated At</th>}
+                                <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-right w-[100px]">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#ebebeb]">
@@ -312,7 +312,7 @@ export default function Index({ auth, departments, filters, stats }) {
                                             </td>
                                         )}
                                         {visibleColumns.includes('description') && (
-                                            <td className="py-2 px-4 text-[13px] text-slate-600 truncate max-w-[200px]" title={department.description}>
+                                            <td className="py-2 px-4 text-[13px] text-slate-600 truncate max-w-[450px]" title={department.description}>
                                                 {department.description || '-'}
                                             </td>
                                         )}
@@ -325,12 +325,12 @@ export default function Index({ auth, departments, filters, stats }) {
                                         )}
                                         {visibleColumns.includes('created_at') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {new Date(department.created_at).toLocaleDateString()}
+                                                {new Date(department.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </td>
                                         )}
                                         {visibleColumns.includes('updated_at') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {new Date(department.updated_at).toLocaleDateString()}
+                                                {new Date(department.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </td>
                                         )}
                                         <td className="py-2 px-4 text-right">

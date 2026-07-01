@@ -32,7 +32,7 @@ export default function Portals() {
                         <div className="text-[#00a9cc] mb-2">
                             <MonitorSmartphone size={48} strokeWidth={1} />
                         </div>
-                        <span className="text-xs font-semibold text-gray-700">GUMS</span>
+                        <span className="text-xs font-semibold text-gray-700">Teacher Portal</span>
                     </Link>
 
                     <Link href={route('school-offices')} className="flex flex-col items-center justify-center w-40 h-32 bg-[#efefef] hover:bg-[#e2e2e2] transition-colors">

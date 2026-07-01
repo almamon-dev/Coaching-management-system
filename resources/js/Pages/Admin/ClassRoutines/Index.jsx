@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Plus, SquarePen, Trash2, Search, X, SlidersHorizontal, RotateCcw, AlertTriangle, Printer } from 'lucide-react';
+import { Plus, SquarePen, Trash2, Search, X, SlidersHorizontal, RotateCcw, AlertTriangle, Printer, Clock, MapPin } from 'lucide-react';
 import Modal from '@/Components/Modal/Modal';
 import Notify from '@/Utils/Notify';
 import TextInput from '@/Components/Form/TextInput';
 import SelectInput from '@/Components/Form/SelectInput';
 import ColumnManager from '../AcademicClasses/Components/ColumnManager';
-import { ChevronDown, Check, Filter } from 'lucide-react';
+import { ChevronDown, Check, Filter, Calendar, Users } from 'lucide-react';
 
 const RoutineStats = ({ stats }) => (
-    <div className="flex items-center border-b border-[#ebebeb] px-4 overflow-x-auto scrollbar-hide bg-white">
+    <div className="flex items-center border-b border-[#ebebeb] px-4 overflow-x-auto scrollbar-hide bg-white rounded-t-[4px]">
         <div className="relative py-3.5 px-3 text-[13px] font-medium transition-all whitespace-nowrap flex items-center gap-1.5 min-w-fit border-none bg-transparent text-[#008060] font-bold">
             <span>Total Routines</span>
             <span className="text-[11px] px-1.5 py-0.5 rounded-full font-bold bg-[#e4f1ef] text-[#008060]">{stats.all ?? 0}</span>
@@ -418,42 +418,42 @@ export default function Index({ auth, routines, classes, sections, subjects, tea
                                             </div>
                                         </td>
                                         {visibleColumns.includes('class_section') && (
-                                            <td className="py-1.5 px-3 text-[12px] font-bold text-slate-800">
+                                            <td className="py-2 px-3 text-[12px] font-bold text-slate-800">
                                                 {routine.academic_class?.name} - <span className="text-[#008060]">{routine.section?.name}</span>
                                             </td>
                                         )}
                                         {visibleColumns.includes('subject') && (
-                                            <td className="py-1.5 px-3 text-[12px] font-medium text-slate-700">
+                                            <td className="py-2 px-3 text-[12px] font-medium text-slate-700">
                                                 {routine.subject?.name}
                                                 <div className="text-[10px] text-slate-500 font-mono mt-0.5">{routine.subject?.code}</div>
                                             </td>
                                         )}
                                         {visibleColumns.includes('teacher') && (
-                                            <td className="py-1.5 px-3 text-[12px] text-slate-600">
+                                            <td className="py-2 px-3 text-[12px] text-slate-600">
                                                 {routine.teacher?.name || <span className="text-slate-400 italic">Unassigned</span>}
                                             </td>
                                         )}
                                         {visibleColumns.includes('timing') && (
-                                            <td className="py-1.5 px-3 text-[12px] text-slate-700">
-                                                <div className="font-bold mb-0.5">{routine.day}</div>
-                                                <div className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded inline-block border border-slate-200">
+                                            <td className="py-2 px-3 text-[12px] text-slate-700">
+                                                <div className="font-bold mb-0.5 text-[#202223]">{routine.day}</div>
+                                                <div className="text-[11px] font-bold text-[#008060] bg-[#e4f1ef] px-1.5 py-0.5 rounded inline-block border border-[#008060]/20">
                                                     {formatTime(routine.start_time)} - {formatTime(routine.end_time)}
                                                 </div>
                                             </td>
                                         )}
                                         {visibleColumns.includes('room') && (
-                                            <td className="py-1.5 px-3 text-[12px] text-slate-600 font-medium">
+                                            <td className="py-2 px-3 text-[12px] text-slate-600 font-medium">
                                                 {routine.room_number || '-'}
                                             </td>
                                         )}
                                         {visibleColumns.includes('created_at') && (
                                             <td className="py-1.5 px-3 text-[11px] text-slate-500">
-                                                {routine.created_at ? new Date(routine.created_at).toLocaleDateString() : '-'}
+                                                {routine.created_at ? new Date(routine.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                                             </td>
                                         )}
                                         {visibleColumns.includes('updated_at') && (
                                             <td className="py-1.5 px-3 text-[11px] text-slate-500">
-                                                {routine.updated_at ? new Date(routine.updated_at).toLocaleDateString() : '-'}
+                                                {routine.updated_at ? new Date(routine.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                                             </td>
                                         )}
                                         <td className="py-1.5 px-3 text-right">

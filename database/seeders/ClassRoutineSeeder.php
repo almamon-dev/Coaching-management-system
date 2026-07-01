@@ -15,12 +15,15 @@ class ClassRoutineSeeder extends Seeder
     {
         // Only generate for Class 6 to 10
         $classes = AcademicClass::whereBetween('numeric_value', [6, 10])->get();
-        $subjects = Subject::all();
+        
+        $commonSubjects = Subject::where('group', 'Common')->get();
+        $allSubjects = Subject::all();
+
         // Fetch teachers properly via TeacherProfile as user_type is 'admin' for them
         $teachers = \App\Models\TeacherProfile::with('user')->get()->map(function($p) { return $p->user; })->filter();
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-        if ($classes->isEmpty() || $subjects->isEmpty() || $teachers->isEmpty()) {
+        if ($classes->isEmpty() || $allSubjects->isEmpty() || $teachers->isEmpty()) {
             return;
         }
 
@@ -38,13 +41,17 @@ class ClassRoutineSeeder extends Seeder
 
         foreach ($classes as $class) {
             $sections = Section::where('academic_class_id', $class->id)->get();
+            
+            // For Class 6 to 8, they only get Common subjects. Class 9 and 10 get a mix.
+            $classSubjects = ($class->numeric_value <= 8) ? $commonSubjects : $allSubjects;
+
             foreach ($sections as $section) {
                 foreach ($days as $day) {
                     // Create 4 random periods per day per section
-                    $dailyPeriods = collect($periods)->random(4);
+                    $dailyPeriods = collect($periods)->random(4)->sort();
                     
                     foreach ($dailyPeriods as $period) {
-                        $subject = $subjects->random();
+                        $subject = $classSubjects->random();
                         $teacher = $teachers->random();
 
                         ClassRoutine::create([

@@ -99,7 +99,7 @@ const PageRow = ({
             {visibleColumns.includes('updated_at') && (
                 <td className="px-4 py-1 text-center whitespace-nowrap">
                     <span className="text-[11px] text-[#6d7175]">
-                        {new Date(page.updated_at).toLocaleDateString()}
+                        {new Date(page.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </span>
                 </td>
             )}

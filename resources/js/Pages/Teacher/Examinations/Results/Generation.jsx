@@ -195,38 +195,38 @@ export default function Generation({ auth, exams, classes, sections, filters, ex
                                     <p className="text-[12px] text-slate-500 mt-0.5">Preview of marks before result generation</p>
                                 </div>
                                 <div className="overflow-x-auto custom-scrollbar">
-                                    <table className="w-full text-left border-collapse min-w-[800px]">
+                                    <table className="w-full text-left border-collapse font-sans min-w-[800px] border-t-0 [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0 [&_tr:last-child>td]:border-b-0">
                                         <thead>
-                                            <tr className="bg-white border-b border-[#ebebeb]">
-                                                <th className="py-3 px-4 text-[12px] font-bold text-slate-700 bg-slate-50/50 sticky left-0 z-10 border-r border-[#ebebeb]">Student Name</th>
+                                            <tr className="bg-[#0bd462] text-white">
+                                                <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] sticky left-0 z-10 bg-[#0bd462]">Student Name</th>
                                                 {subjectsList.map(subject => (
-                                                    <th key={subject.id} className="py-3 px-4 text-[12px] font-bold text-slate-700 text-center whitespace-nowrap" title={subject.name}>
+                                                    <th key={subject.id} className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] text-center whitespace-nowrap" title={subject.name}>
                                                         {subject.code || subject.name.substring(0, 8)}
                                                     </th>
                                                 ))}
-                                                <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-center bg-emerald-50/30">Total Raw Marks</th>
+                                                <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] text-center bg-[#0aa84e]">Total Raw Marks</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-[#ebebeb]">
+                                        <tbody>
                                             {previewData.map((row, idx) => (
-                                                <tr key={idx} className="hover:bg-slate-50/40 transition-colors">
-                                                    <td className="py-2.5 px-4 sticky left-0 bg-white z-10 border-r border-[#ebebeb] shadow-[1px_0_0_0_#ebebeb]">
+                                                <tr key={idx} className="bg-white hover:bg-slate-50/40 transition-colors">
+                                                    <td className="py-1.5 px-2 border border-[#e5e7e5] sticky left-0 bg-white z-10">
                                                         <div className="flex flex-col">
-                                                            <span className="text-[13px] font-bold text-slate-800">{row.student?.name}</span>
-                                                            <span className="text-[11px] text-slate-500">{row.student?.email}</span>
+                                                            <span className="text-[12.5px] font-medium text-[#333]">{row.student?.name}</span>
+                                                            <span className="text-[11.5px] text-[#666]">{row.student?.email}</span>
                                                         </div>
                                                     </td>
                                                     {subjectsList.map(subject => (
-                                                        <td key={subject.id} className="py-2.5 px-4 text-center">
+                                                        <td key={subject.id} className="py-1.5 px-2 border border-[#e5e7e5] text-center">
                                                             {row.marks[subject.id] !== undefined ? (
-                                                                <span className="text-[13px] font-medium text-slate-700">{row.marks[subject.id]}</span>
+                                                                <span className="text-[12.5px] font-bold text-[#333]">{row.marks[subject.id]}</span>
                                                             ) : (
                                                                 <span className="text-[12px] text-slate-300">-</span>
                                                             )}
                                                         </td>
                                                     ))}
-                                                    <td className="py-2.5 px-4 text-center bg-emerald-50/30">
-                                                        <span className="text-[13px] font-bold text-[#008060]">{row.total_raw_marks}</span>
+                                                    <td className="py-1.5 px-2 border border-[#e5e7e5] text-center bg-[#f0fcf5]">
+                                                        <span className="text-[12.5px] font-bold text-[#008060]">{row.total_raw_marks}</span>
                                                     </td>
                                                 </tr>
                                             ))}

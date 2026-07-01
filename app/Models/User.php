@@ -94,32 +94,13 @@ class User extends Authenticatable
         return $this->hasMany(Address::class);
     }
 
-    public function wishlists()
+    public function studentProfile()
     {
-        return $this->hasMany(Wishlist::class);
+        return $this->hasOne(StudentProfile::class);
     }
 
-    /**
-     * Get the administrator who invited/created this user.
-     */
-    public function invitedBy()
+    public function teacherProfile()
     {
-        return $this->belongsTo(User::class, 'parent_id');
-    }
-
-    /**
-     * Get the tickets created by the user (as a customer).
-     */
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class, 'user_id');
-    }
-
-    /**
-     * Get the tickets currently assigned to this user (as a support agent).
-     */
-    public function assignedTickets()
-    {
-        return $this->hasMany(Ticket::class, 'assigned_to');
+        return $this->hasOne(TeacherProfile::class);
     }
 }

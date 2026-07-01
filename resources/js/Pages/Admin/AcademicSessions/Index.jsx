@@ -333,12 +333,12 @@ export default function Index({ auth, sessions, filters, stats }) {
                                         )}
                                         {visibleColumns.includes('created_at') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {session.created_at ? new Date(session.created_at).toLocaleDateString() : '-'}
+                                                {session.created_at ? new Date(session.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                                             </td>
                                         )}
                                         {visibleColumns.includes('updated_at') && (
                                             <td className="py-2 px-4 text-[13px] text-slate-600">
-                                                {session.updated_at ? new Date(session.updated_at).toLocaleDateString() : '-'}
+                                                {session.updated_at ? new Date(session.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                                             </td>
                                         )}
                                         <td className="py-2 px-4 text-right">

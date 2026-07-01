@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import TeacherLayout from '@/Layouts/TeacherLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { GraduationCap, CheckCircle2 } from 'lucide-react';
 import AttendanceToolbar from '@/Components/Attendance/AttendanceToolbar';
@@ -98,8 +99,10 @@ export default function Index({ auth, students = [], date, isAttendanceTaken }) 
         });
     };
 
+    const Layout = auth?.user?.user_type === 'admin' ? AdminLayout : TeacherLayout;
+
     return (
-        <TeacherLayout user={auth?.user}>
+        <Layout user={auth?.user}>
             <Head title="Student Attendance" />
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -148,6 +151,6 @@ export default function Index({ auth, students = [], date, isAttendanceTaken }) 
                     auth={auth}
                 />
             </form>
-        </TeacherLayout>
+        </Layout>
     );
 }

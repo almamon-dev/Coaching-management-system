@@ -13,3 +13,6 @@ Route::get('/attendance', [\App\Http\Controllers\Student\AttendanceController::c
 // Results
 Route::get('/results', [\App\Http\Controllers\Student\ResultController::class, 'index'])->name('results.index');
 Route::get('/results/{result}/report-card', [\App\Http\Controllers\Student\ResultController::class, 'reportCard'])->name('results.report-card');
+
+// Routine
+Route::get('/routine', [\App\Http\Controllers\Student\RoutineController::class, 'index'])->name('routine.index');

@@ -108,13 +108,13 @@ const AcademicClassTable = ({
 
                                     {visibleColumns.includes('created_at') && (
                                         <td className="py-2 px-4 text-[13px] text-slate-600">
-                                            {academic_class.created_at ? new Date(academic_class.created_at).toLocaleDateString() : '-'}
+                                            {academic_class.created_at ? new Date(academic_class.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                                         </td>
                                     )}
 
                                     {visibleColumns.includes('updated_at') && (
                                         <td className="py-2 px-4 text-[13px] text-slate-600">
-                                            {academic_class.updated_at ? new Date(academic_class.updated_at).toLocaleDateString() : '-'}
+                                            {academic_class.updated_at ? new Date(academic_class.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                                         </td>
                                     )}
 

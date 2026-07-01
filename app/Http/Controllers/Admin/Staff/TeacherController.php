@@ -40,7 +40,7 @@ class TeacherController extends Controller
             $query->where('designation', $designation);
         }
 
-        $teachers = $query->latest()->paginate($request->input('per_page', 10))->withQueryString();
+        $teachers = $query->orderBy('id', 'asc')->paginate($request->input('per_page', 10))->withQueryString();
 
         // Get unique options for filters
         $departments = TeacherProfile::whereNotNull('department')->distinct()->pluck('department')->map(function($dept) {
