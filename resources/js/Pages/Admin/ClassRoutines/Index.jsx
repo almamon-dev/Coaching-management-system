@@ -391,20 +391,20 @@ export default function Index({ auth, routines, classes, sections, subjects, tea
                 <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left border-collapse min-w-[800px]">
                         <thead>
-                            <tr className="bg-slate-50/50 border-b border-[#ebebeb]">
-                                <th className="py-2 px-3 w-[48px] text-center select-none">
+                            <tr className="bg-[#f4f6f8]">
+                                <th className="py-2 px-3 w-[48px] text-center select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                                     <div onClick={toggleSelectAll} className={`w-[15px] h-[15px] border-[1.5px] rounded-[3px] mx-auto cursor-pointer transition-all flex items-center justify-center ${isAllSelected ? 'bg-[#008060] border-[#008060]' : 'bg-white border-[#d1d1d1]'}`}>
                                         {isAllSelected && <Check size={10} strokeWidth={3} className="text-white" />}
                                     </div>
                                 </th>
-                                {visibleColumns.includes('class_section') && <th className="py-2 px-3 text-[11px] font-bold text-slate-700 uppercase tracking-wider">Class & Section</th>}
-                                {visibleColumns.includes('subject') && <th className="py-2 px-3 text-[11px] font-bold text-slate-700 uppercase tracking-wider">Subject</th>}
-                                {visibleColumns.includes('teacher') && <th className="py-2 px-3 text-[11px] font-bold text-slate-700 uppercase tracking-wider">Teacher</th>}
-                                {visibleColumns.includes('timing') && <th className="py-2 px-3 text-[11px] font-bold text-slate-700 uppercase tracking-wider">Day & Time</th>}
-                                {visibleColumns.includes('room') && <th className="py-2 px-3 text-[11px] font-bold text-slate-700 uppercase tracking-wider">Room</th>}
-                                {visibleColumns.includes('created_at') && <th className="py-2 px-3 text-[11px] font-bold text-slate-700 uppercase tracking-wider">Created At</th>}
-                                {visibleColumns.includes('updated_at') && <th className="py-2 px-3 text-[11px] font-bold text-slate-700 uppercase tracking-wider">Updated At</th>}
-                                <th className="py-2 px-3 text-[11px] font-bold text-slate-700 uppercase tracking-wider text-right w-[100px]">Actions</th>
+                                {visibleColumns.includes('class_section') && <th className="py-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Class & Section</th>}
+                                {visibleColumns.includes('subject') && <th className="py-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Subject</th>}
+                                {visibleColumns.includes('teacher') && <th className="py-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Teacher</th>}
+                                {visibleColumns.includes('timing') && <th className="py-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Day & Time</th>}
+                                {visibleColumns.includes('room') && <th className="py-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Room</th>}
+                                {visibleColumns.includes('created_at') && <th className="py-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Created At</th>}
+                                {visibleColumns.includes('updated_at') && <th className="py-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Updated At</th>}
+                                <th className="py-2 px-3 text-[11px] font-bold uppercase tracking-wider text-right w-[100px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#ebebeb]">

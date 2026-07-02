@@ -61,6 +61,19 @@ use Illuminate\Support\Facades\Route;
     Route::get('class_routines/print', [\App\Http\Controllers\Admin\Academics\ClassRoutinePrintController::class, 'index'])->name('class_routines.print');
     Route::resource('class_routines', \App\Http\Controllers\Admin\Academics\ClassRoutineController::class);
 
+    // Fees Management
+    Route::resource('fee-types', \App\Http\Controllers\Admin\Fees\FeeTypeController::class)->except(['create', 'edit', 'show']);
+    Route::post('fee-groups/bulk-destroy', [\App\Http\Controllers\Admin\Fees\FeeGroupController::class, 'bulkDestroy'])->name('fee-groups.bulk-destroy');
+    Route::resource('fee-groups', \App\Http\Controllers\Admin\Fees\FeeGroupController::class)->except(['create', 'edit', 'show']);
+    
+    // Invoices and Collections
+    Route::get('fee-invoices/generate', [\App\Http\Controllers\Admin\Fees\FeeInvoiceController::class, 'generate'])->name('fee-invoices.generate');
+    Route::post('fee-invoices/bulk-store', [\App\Http\Controllers\Admin\Fees\FeeInvoiceController::class, 'storeBulk'])->name('fee-invoices.bulk-store');
+    Route::resource('fee-invoices', \App\Http\Controllers\Admin\Fees\FeeInvoiceController::class)->only(['index', 'show', 'destroy']);
+    
+    Route::get('fee-collections', [\App\Http\Controllers\Admin\Fees\FeeCollectionController::class, 'index'])->name('fee-collections.index');
+    Route::post('fee-collections', [\App\Http\Controllers\Admin\Fees\FeeCollectionController::class, 'store'])->name('fee-collections.store');
+
     // Student Management
     Route::post('students/bulk-delete', [\App\Http\Controllers\Admin\Students\StudentController::class, 'bulkDestroy'])->name('students.bulk-delete');
     Route::resource('students', \App\Http\Controllers\Admin\Students\StudentController::class);
@@ -80,6 +93,17 @@ use Illuminate\Support\Facades\Route;
     // Teacher Management
     Route::post('teachers/bulk-delete', [\App\Http\Controllers\Admin\Staff\TeacherController::class, 'bulkDestroy'])->name('teachers.bulk-delete');
     Route::resource('teachers', \App\Http\Controllers\Admin\Staff\TeacherController::class);
+    
+    Route::get('teacher-promotions', [\App\Http\Controllers\Admin\Teachers\TeacherPromotionController::class, 'index'])->name('teacher-promotions.index');
+    Route::post('teacher-promotions', [\App\Http\Controllers\Admin\Teachers\TeacherPromotionController::class, 'store'])->name('teacher-promotions.store');
+
+    // Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('promotions', [\App\Http\Controllers\Admin\Reports\PromotionReportController::class, 'index'])->name('promotions.index');
+        Route::get('students', [\App\Http\Controllers\Admin\Reports\StudentReportController::class, 'index'])->name('students.index');
+        Route::get('attendance', [\App\Http\Controllers\Admin\Reports\AttendanceReportController::class, 'index'])->name('attendance.index');
+        Route::get('exams', [\App\Http\Controllers\Admin\Reports\ExamReportController::class, 'index'])->name('exams.index');
+    });
 
     Route::get('/dashboard', [\App\Http\Controllers\Admin\Dashboard\DashboardController::class, 'index'])->name('dashboard');
     

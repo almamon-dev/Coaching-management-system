@@ -24,7 +24,7 @@ const CounterTable = ({
             <table className="w-full text-left border-collapse min-w-[700px] table-fixed">
                 <thead className="bg-[#f7f7f7] text-[#303030] text-[12px] font-semibold border-b border-[#ebebeb]">
                     <tr>
-                        <th className="pl-4 pr-2 py-2.5 w-[45px]">
+                        <th className="pl-4 pr-2 py-2.5 w-[45px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                             <div
                                 onClick={toggleSelectAll}
                                 className={`w-[18px] h-[18px] border-[1.5px] rounded-[3px] cursor-pointer transition-all flex items-center justify-center ${selectAllAcrossPages || isAllOnPageSelected
@@ -39,11 +39,11 @@ const CounterTable = ({
                                 ) : null}
                             </div>
                         </th>
-                        {visibleColumns.includes('name') && <th className="px-4 py-2.5 w-[200px]">Desk Name</th>}
-                        {visibleColumns.includes('description') && <th className="px-4 py-2.5 w-[320px]">Description</th>}
-                        {visibleColumns.includes('status') && <th className="px-4 py-2.5 text-center w-[130px]">Status</th>}
-                        {visibleColumns.includes('created_at') && <th className="px-4 py-2.5 text-center w-[140px]">Date Added</th>}
-                        <th className="px-6 py-2.5 text-right w-[110px]">Actions</th>
+                        {visibleColumns.includes('name') && <th className="px-4 py-2.5 w-[200px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Desk Name</th>}
+                        {visibleColumns.includes('description') && <th className="px-4 py-2.5 w-[320px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Description</th>}
+                        {visibleColumns.includes('status') && <th className="px-4 py-2.5 text-center w-[130px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Status</th>}
+                        {visibleColumns.includes('created_at') && <th className="px-4 py-2.5 text-center w-[140px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Date Added</th>}
+                        <th className="px-6 py-2.5 text-right w-[110px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb]">

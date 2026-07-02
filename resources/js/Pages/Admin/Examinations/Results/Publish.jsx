@@ -171,13 +171,13 @@ export default function Publish({ auth, exams, classes, sections, filters, resul
                         <div className="overflow-x-auto custom-scrollbar">
                             <table className="w-full text-left border-collapse min-w-[800px]">
                                 <thead>
-                                    <tr className="bg-slate-50/50 border-b border-[#ebebeb]">
-                                        <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Student Name</th>
-                                        <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-center">Total Marks</th>
-                                        <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-center">GPA</th>
-                                        <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-center">Grade</th>
-                                        <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-center">Status</th>
-                                        <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-right">Actions</th>
+                                    <tr className="bg-[#f4f6f8]">
+                                        <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student Name</th>
+                                        <th className="py-3 px-4 text-[12px] font-bold text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Total Marks</th>
+                                        <th className="py-3 px-4 text-[12px] font-bold text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">GPA</th>
+                                        <th className="py-3 px-4 text-[12px] font-bold text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Grade</th>
+                                        <th className="py-3 px-4 text-[12px] font-bold text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Status</th>
+                                        <th className="py-3 px-4 text-[12px] font-bold text-right text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[#ebebeb]">

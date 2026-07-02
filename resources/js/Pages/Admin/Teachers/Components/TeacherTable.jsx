@@ -6,9 +6,7 @@ import { AlertTriangle, SquarePen, Trash2, Mail, Briefcase, Check } from 'lucide
 const TeacherTable = ({ 
     teachers, 
     handleDelete, 
-    isProcessing,
     selectedIds,
-    selectAllAcrossPages,
     toggleSelectAll,
     toggleSelect,
     visibleColumns 
@@ -20,8 +18,8 @@ const TeacherTable = ({
         <div className="overflow-x-auto custom-scrollbar relative">
             <table className="w-full min-w-[800px] border-collapse text-left">
                 <thead>
-                    <tr className="border-b border-[#ebebeb] bg-slate-50/50">
-                        <th className="py-2 px-3 w-[48px] text-center select-none">
+                    <tr className="bg-[#f4f6f8]">
+                        <th className="py-2 px-3 w-[48px] text-center select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                             <div
                                 onClick={toggleSelectAll}
                                 className={cn(
@@ -36,12 +34,12 @@ const TeacherTable = ({
                                 )}
                             </div>
                         </th>
-                        <th className="py-2 px-3 text-[12px] font-bold text-slate-700 w-[50px] text-center">SL</th>
-                        {visibleColumns.includes('employee_id') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700 w-[80px]">Emp ID</th>}
-                        {visibleColumns.includes('name') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Teacher Detail</th>}
-                        {visibleColumns.includes('designation') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Designation</th>}
-                        {visibleColumns.includes('department') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Department</th>}
-                        <th className="py-2 px-3 text-[12px] font-bold text-slate-700 text-right w-[120px] select-none">Actions</th>
+                        <th className="py-2 px-3 text-[12px] font-bold w-[50px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">SL</th>
+                        {visibleColumns.includes('employee_id') && <th className="py-2 px-3 text-[12px] font-bold w-[80px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Emp ID</th>}
+                        {visibleColumns.includes('name') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Teacher Detail</th>}
+                        {visibleColumns.includes('designation') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Designation</th>}
+                        {visibleColumns.includes('department') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Department</th>}
+                        <th className="py-2 px-3 text-[12px] font-bold text-right w-[120px] select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb]">

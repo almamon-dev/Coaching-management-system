@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
-import { AlertTriangle, SquarePen, Trash2, Mail, BookOpen, Check } from 'lucide-react';
+import { AlertTriangle, SquarePen, Trash2, Mail, BookOpen, Check, Eye } from 'lucide-react';
 
 const StudentTable = ({ 
     students, 
@@ -19,8 +19,8 @@ const StudentTable = ({
         <div className="overflow-x-auto custom-scrollbar relative">
             <table className="w-full min-w-[800px] border-collapse text-left">
                 <thead>
-                    <tr className="border-b border-[#ebebeb] bg-slate-50/50">
-                        <th className="py-2 px-3 w-[48px] text-center select-none">
+                    <tr className="bg-[#f4f6f8]">
+                        <th className="py-2 px-3 w-[48px] text-center select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                             <div
                                 onClick={toggleSelectAll}
                                 className={cn(
@@ -35,11 +35,11 @@ const StudentTable = ({
                                 )}
                             </div>
                         </th>
-                        {visibleColumns.includes('student_id') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700 w-[60px]">Student ID</th>}
-                        {visibleColumns.includes('name') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Student Detail</th>}
-                        {visibleColumns.includes('class') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Class & Section</th>}
-                        {visibleColumns.includes('roll_number') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Roll No.</th>}
-                        <th className="py-2 px-3 text-[12px] font-bold text-slate-700 text-right w-[120px] select-none">Actions</th>
+                        {visibleColumns.includes('student_id') && <th className="py-2 px-3 text-[12px] font-bold w-[60px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student ID</th>}
+                        {visibleColumns.includes('name') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student Detail</th>}
+                        {visibleColumns.includes('class') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Class & Section</th>}
+                        {visibleColumns.includes('roll_number') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Roll No.</th>}
+                        <th className="py-2 px-3 text-[12px] font-bold text-right w-[120px] select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb]">
@@ -119,6 +119,13 @@ const StudentTable = ({
 
                                     <td className="py-1 px-3 text-right select-none">
                                         <div className="flex items-center justify-end gap-1">
+                                            <Link
+                                                href={route('admin.students.show', student.id)}
+                                                className="h-[26px] w-[26px] flex items-center justify-center bg-[#008060] text-white rounded-[2px] hover:bg-[#006e52] transition-all cursor-pointer"
+                                                title="View Student Details"
+                                            >
+                                                <Eye size={12} />
+                                            </Link>
                                             <Link
                                                 href={route('admin.students.edit', student.id)}
                                                 className="h-[26px] w-[26px] flex items-center justify-center bg-[#3151fe] text-white rounded-[2px] hover:bg-[#1a39d1] transition-all cursor-pointer"

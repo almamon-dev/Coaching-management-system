@@ -9,8 +9,8 @@ const EnrollmentTable = ({ enrollments, selectedIds = [], toggleSelectAll, toggl
         <div className="overflow-x-auto custom-scrollbar relative">
             <table className="w-full min-w-[800px] border-collapse text-left">
                 <thead>
-                    <tr className="border-b border-[#ebebeb] bg-slate-50/50">
-                        <th className="py-2 px-3 w-[40px] text-center">
+                    <tr className="bg-[#f4f6f8]">
+                        <th className="py-2 px-3 w-[40px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                             <div
                                 onClick={toggleSelectAll}
                                 className={cn(
@@ -25,11 +25,11 @@ const EnrollmentTable = ({ enrollments, selectedIds = [], toggleSelectAll, toggl
                                 )}
                             </div>
                         </th>
-                        {visibleColumns.includes('session') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700 whitespace-nowrap">Session</th>}
-                        {visibleColumns.includes('student_id') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700 whitespace-nowrap">Student ID</th>}
-                        {visibleColumns.includes('name') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700 whitespace-nowrap">Student Detail</th>}
-                        {visibleColumns.includes('class') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700 whitespace-nowrap">Class & Section</th>}
-                        {visibleColumns.includes('status') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700 whitespace-nowrap">Status</th>}
+                        {visibleColumns.includes('session') && <th className="py-2 px-3 text-[12px] font-bold whitespace-nowrap text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Session</th>}
+                        {visibleColumns.includes('student_id') && <th className="py-2 px-3 text-[12px] font-bold whitespace-nowrap text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student ID</th>}
+                        {visibleColumns.includes('name') && <th className="py-2 px-3 text-[12px] font-bold whitespace-nowrap text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student Detail</th>}
+                        {visibleColumns.includes('class') && <th className="py-2 px-3 text-[12px] font-bold whitespace-nowrap text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Class & Section</th>}
+                        {visibleColumns.includes('status') && <th className="py-2 px-3 text-[12px] font-bold whitespace-nowrap text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Status</th>}
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb]">

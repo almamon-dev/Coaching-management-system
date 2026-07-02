@@ -19,8 +19,8 @@ const ExamTable = ({
         <div className="overflow-x-auto custom-scrollbar relative">
             <table className="w-full min-w-[800px] border-collapse text-left">
                 <thead>
-                    <tr className="border-b border-[#ebebeb] bg-slate-50/50">
-                        <th className="py-2 px-3 w-[48px] text-center select-none">
+                    <tr className="bg-[#f4f6f8]">
+                        <th className="py-2 px-3 w-[48px] text-center select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                             <div
                                 onClick={toggleSelectAll}
                                 className={cn(
@@ -35,12 +35,12 @@ const ExamTable = ({
                                 )}
                             </div>
                         </th>
-                        {visibleColumns.includes('name') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Exam Name</th>}
-                        {visibleColumns.includes('academic_session') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Academic Session</th>}
-                        {visibleColumns.includes('start_date') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">Start Date</th>}
-                        {visibleColumns.includes('end_date') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700">End Date</th>}
-                        {visibleColumns.includes('status') && <th className="py-2 px-3 text-[12px] font-bold text-slate-700 w-[120px]">Status</th>}
-                        <th className="py-2 px-3 text-[12px] font-bold text-slate-700 text-right w-[120px] select-none">Actions</th>
+                        {visibleColumns.includes('name') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Exam Name</th>}
+                        {visibleColumns.includes('academic_session') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Academic Session</th>}
+                        {visibleColumns.includes('start_date') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Start Date</th>}
+                        {visibleColumns.includes('end_date') && <th className="py-2 px-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">End Date</th>}
+                        {visibleColumns.includes('status') && <th className="py-2 px-3 text-[12px] font-bold w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Status</th>}
+                        <th className="py-2 px-3 text-[12px] font-bold text-right w-[120px] select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb]">

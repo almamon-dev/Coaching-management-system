@@ -71,7 +71,7 @@ const PageTable = ({
             <table className="w-full text-left border-collapse min-w-[1200px] table-fixed">
                 <thead className="bg-[#f7f7f7] text-[#303030] text-[12px] font-semibold border-b border-[#ebebeb]">
                     <tr>
-                        <th className="pl-4 pr-2 py-2.5 w-[45px]">
+                        <th className="pl-4 pr-2 py-2.5 w-[45px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                             <div
                                 onClick={toggleSelectAll}
                                 className={`w-[18px] h-[18px] border-[1.5px] rounded-[3px] cursor-pointer transition-all flex items-center justify-center ${selectAllAcrossPages || isAllOnPageSelected
@@ -86,12 +86,12 @@ const PageTable = ({
                                 ) : null}
                             </div>
                         </th>
-                        {visibleColumns.includes('title') && <th className="px-4 py-2.5 w-[280px]">Page Info</th>}
-                        {visibleColumns.includes('slug') && <th className="px-4 py-2.5 text-center w-[180px]">Slug/Route</th>}
-                        {visibleColumns.includes('meta') && <th className="px-4 py-2.5 w-[320px]">Search Engine Metadata</th>}
-                        {visibleColumns.includes('status') && <th className="px-4 py-2.5 text-center w-[130px]">Status</th>}
-                        {visibleColumns.includes('updated_at') && <th className="px-4 py-2.5 text-center w-[130px]">Last Updated</th>}
-                        <th className="px-6 py-2.5 text-right w-[150px]">Actions</th>
+                        {visibleColumns.includes('title') && <th className="px-4 py-2.5 w-[280px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Page Info</th>}
+                        {visibleColumns.includes('slug') && <th className="px-4 py-2.5 text-center w-[180px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Slug/Route</th>}
+                        {visibleColumns.includes('meta') && <th className="px-4 py-2.5 w-[320px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Search Engine Metadata</th>}
+                        {visibleColumns.includes('status') && <th className="px-4 py-2.5 text-center w-[130px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Status</th>}
+                        {visibleColumns.includes('updated_at') && <th className="px-4 py-2.5 text-center w-[130px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Last Updated</th>}
+                        <th className="px-6 py-2.5 text-right w-[150px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb] bg-white">

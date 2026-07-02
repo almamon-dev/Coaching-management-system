@@ -271,8 +271,8 @@ export default function Index({ auth, grades, filters }) {
                 <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left border-collapse min-w-[800px]">
                         <thead>
-                            <tr className="bg-slate-50/50 border-b border-[#ebebeb]">
-                                <th className="py-3 px-4 w-[40px] text-center">
+                            <tr className="bg-[#f4f6f8]">
+                                <th className="py-3 px-4 w-[40px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                                     <input 
                                         type="checkbox" 
                                         checked={grades?.data?.length > 0 && selectedIds.length === grades.data.length}
@@ -280,11 +280,11 @@ export default function Index({ auth, grades, filters }) {
                                         className="rounded-[3px] border-[#d1d1d1] text-[#008060] focus:ring-[#008060]"
                                     />
                                 </th>
-                                {visibleColumns.includes('grade_name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Grade Name</th>}
-                                {visibleColumns.includes('grade_point') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Grade Point (GPA)</th>}
-                                {visibleColumns.includes('mark_range') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Mark Range</th>}
-                                {visibleColumns.includes('remarks') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Remarks</th>}
-                                {visibleColumns.includes('actions') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-right w-[120px]">Actions</th>}
+                                {visibleColumns.includes('grade_name') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Grade Name</th>}
+                                {visibleColumns.includes('grade_point') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Grade Point (GPA)</th>}
+                                {visibleColumns.includes('mark_range') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Mark Range</th>}
+                                {visibleColumns.includes('remarks') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Remarks</th>}
+                                {visibleColumns.includes('actions') && <th className="py-3 px-4 text-[12px] font-bold text-right w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#ebebeb]">

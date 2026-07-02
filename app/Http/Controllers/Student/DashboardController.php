@@ -41,46 +41,89 @@ class DashboardController extends Controller
         }
 
         if ($user->user_type === 'staff' || $user->user_type === 'teacher' || $user->hasRole('staff') || $user->hasRole('teacher')) {
-            $today = now()->format('l'); // e.g. "Monday"
+            $today = now()->format('l'); 
             
-            $classesToday = \App\Models\ClassRoutine::with(['academicClass', 'section', 'subject'])
+            $weeklyRoutine = \App\Models\ClassRoutine::with(['academicClass', 'section', 'subject'])
                 ->where('teacher_id', $user->id)
-                ->where('day', $today)
+                ->orderByRaw("FIELD(day, 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')")
                 ->orderBy('start_time')
                 ->get()
-                ->map(function ($routine) {
-                    $now = now()->format('H:i:s');
-                    $status = 'UPCOMING';
-                    $statusColor = 'bg-slate-100 text-slate-600';
-                    
-                    if ($now > $routine->end_time) {
-                        $status = 'COMPLETED';
-                        $statusColor = 'bg-slate-200 text-slate-600';
-                    } elseif ($now >= $routine->start_time && $now <= $routine->end_time) {
-                        $status = 'ONGOING';
-                        $statusColor = 'bg-[#008060] text-white ring-4 ring-[#008060]/20';
-                    }
+                ->groupBy('day')
+                ->map(function ($routines, $day) use ($today) {
+                    return $routines->map(function ($routine) use ($day, $today) {
+                        $now = now()->format('H:i:s');
+                        $status = 'UPCOMING';
+                        $statusColor = 'bg-slate-100 text-slate-600';
+                        
+                        if ($day !== $today) {
+                            $status = 'SCHEDULED';
+                            $statusColor = 'bg-slate-100 text-slate-500';
+                        } else {
+                            if ($now > $routine->end_time) {
+                                $status = 'COMPLETED';
+                                $statusColor = 'bg-slate-300 text-slate-700';
+                            } elseif ($now >= $routine->start_time && $now <= $routine->end_time) {
+                                $status = 'ONGOING';
+                                $statusColor = 'bg-[#008060] text-white ring-2 ring-[#008060]/20';
+                            }
+                        }
 
+                        return [
+                            'id' => $routine->id,
+                            'code' => $routine->subject->code ?? 'N/A',
+                            'time' => \Carbon\Carbon::parse($routine->start_time)->format('h:i A') . ' - ' . \Carbon\Carbon::parse($routine->end_time)->format('h:i A'),
+                            'subject' => $routine->subject->name ?? 'Unknown',
+                            'class_sec' => ($routine->academicClass->name ?? '') . ' - ' . ($routine->section->name ?? ''),
+                            'room' => 'Room ' . ($routine->room_number ?? 'N/A'),
+                            'day' => $day,
+                            'status' => $status,
+                            'statusColor' => $statusColor,
+                        ];
+                    });
+                });
+
+            $currentMonth = request('month', now()->month);
+            $currentYear = request('year', now()->year);
+
+            $attendances = \App\Models\Attendance::where('user_id', $user->id)
+                ->whereMonth('date', $currentMonth)
+                ->whereYear('date', $currentYear)
+                ->get();
+                
+            $attendanceStats = [
+                'total_present' => $attendances->where('status', 'present')->count(),
+                'total_absent' => $attendances->where('status', 'absent')->count(),
+                'total_late' => $attendances->where('status', 'late')->count(),
+                'total_leave' => $attendances->whereIn('status', ['on_leave', 'half_day'])->count(),
+            ];
+
+            $upcomingExams = \App\Models\Exam::where('status', 'upcoming')
+                ->orderBy('start_date', 'asc')
+                ->take(3)
+                ->get()
+                ->map(function ($exam) {
                     return [
-                        'time' => \Carbon\Carbon::parse($routine->start_time)->format('h:i A') . ' - ' . \Carbon\Carbon::parse($routine->end_time)->format('h:i A'),
-                        'subject' => ($routine->subject->name ?? 'Unknown') . ' (' . ($routine->academicClass->name ?? '') . ' - ' . ($routine->section->name ?? '') . ')',
-                        'room' => 'Room ' . ($routine->room_number ?? 'N/A'),
-                        'status' => $status,
-                        'statusColor' => $statusColor,
+                        'title' => $exam->name,
+                        'date' => \Carbon\Carbon::parse($exam->start_date)->format('M d, Y'),
                     ];
                 });
 
             return Inertia::render('Teacher/Dashboard/TeacherOverview', [
-                'schedule' => $classesToday,
+                'weeklyRoutine' => $weeklyRoutine,
+                'today' => $today,
                 'stats' => [
-                    'classes_today' => $classesToday->count(),
+                    'classes_today' => collect($weeklyRoutine->get($today, []))->count(),
                     'total_classes' => \App\Models\ClassRoutine::where('teacher_id', $user->id)->count(),
-                    'pending_tasks' => 2,
+                    'pending_tasks' => 3, // Mock pending tasks: Attendance, Marks, Assignment
                 ],
+                'upcomingExams' => $upcomingExams,
                 'notices' => [
                     ['title' => 'Submit Term 1 Result Sheets', 'time' => '1 day ago'],
                     ['title' => 'Monthly Staff Meeting', 'time' => '3 days ago'],
-                ]
+                ],
+                'attendances' => $attendances,
+                'attendanceStats' => $attendanceStats,
+                'filters' => ['month' => (int) $currentMonth, 'year' => (int) $currentYear]
             ]);
         }
 

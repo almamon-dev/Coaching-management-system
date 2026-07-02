@@ -299,11 +299,11 @@ export default function Index({ auth }) {
                         <div className="overflow-hidden">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="border-b border-slate-100">
-                                        <th className="pb-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[25%]">Class</th>
-                                        <th className="pb-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[35%]">Exam</th>
-                                        <th className="pb-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center w-[20%]">Avg Score</th>
-                                        <th className="pb-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-right w-[20%]">Topper</th>
+                                    <tr className="bg-[#f4f6f8]">
+                                        <th className="pb-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[25%] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Class</th>
+                                        <th className="pb-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[35%] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Exam</th>
+                                        <th className="pb-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center w-[20%] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Avg Score</th>
+                                        <th className="pb-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-right w-[20%] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Topper</th>
                                     </tr>
                                 </thead>
                                 <tbody>

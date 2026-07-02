@@ -197,14 +197,14 @@ export default function Generation({ auth, exams, classes, sections, filters, ex
                                 <div className="overflow-x-auto custom-scrollbar">
                                     <table className="w-full text-left border-collapse font-sans min-w-[800px] border-t-0 [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0 [&_tr:last-child>td]:border-b-0">
                                         <thead>
-                                            <tr className="bg-[#0bd462] text-white">
-                                                <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] sticky left-0 z-10 bg-[#0bd462]">Student Name</th>
+                                            <tr className="bg-[#f4f6f8]">
+                                                <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] sticky left-0 z-10 bg-[#0bd462] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student Name</th>
                                                 {subjectsList.map(subject => (
-                                                    <th key={subject.id} className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] text-center whitespace-nowrap" title={subject.name}>
+                                                    <th key={subject.id} className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] text-center whitespace-nowrap text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0" title={subject.name}>
                                                         {subject.code || subject.name.substring(0, 8)}
                                                     </th>
                                                 ))}
-                                                <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] text-center bg-[#0aa84e]">Total Raw Marks</th>
+                                                <th className="py-1.5 px-2 border border-[#0aa84e] font-medium text-[13px] text-center bg-[#0aa84e] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Total Raw Marks</th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -28,4 +28,9 @@ class TeacherProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function promotions()
+    {
+        return $this->hasMany(TeacherPromotion::class);
+    }
 }
