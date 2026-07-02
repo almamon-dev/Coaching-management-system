@@ -92,11 +92,11 @@ export default function DailyReport({ auth, date, type, stats, attendances }) {
                 <div className="overflow-x-auto min-h-[300px]">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-[#f4f6f8] border-b border-[#ebebeb]">
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] w-[300px]">Name</th>
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] w-[200px]">Email</th>
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] w-[150px]">Status</th>
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223]">Remarks</th>
+                            <tr className="bg-[#f4f6f8]">
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] w-[300px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Name</th>
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] w-[200px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Email</th>
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] w-[150px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Status</th>
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Remarks</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white">

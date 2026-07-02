@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Students;
 
 use App\Http\Controllers\Controller;
 use App\Models\AcademicClass;
+use App\Models\FeeInvoice;
 use App\Models\Section;
 use App\Models\StudentProfile;
 use App\Models\User;
@@ -74,6 +75,46 @@ class StudentController extends Controller
             'classes' => $classes,
             'sections' => $sections,
             'filters' => $request->only(['search', 'per_page', 'class_id', 'section_id', 'status'])
+        ]);
+    }
+    public function show(StudentProfile $student)
+    {
+        $student->load([
+            'user',
+            'enrollments' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            },
+            'enrollments.academicClass',
+            'enrollments.section',
+            'enrollments.academicSession'
+        ]);
+
+        // Load fees
+        $fees = FeeInvoice::with(['feeGroup', 'items.feeType', 'payments'])
+            ->where('user_id', $student->user_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $attendances = \App\Models\Attendance::where('user_id', $student->user_id)
+            ->orderBy('date', 'desc')
+            ->get();
+
+        // Optional: Load exam results (if exist)
+        $results = \App\Models\Result::with(['exam', 'academicClass'])
+            ->where('student_id', $student->user_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $marks = \App\Models\Mark::with(['subject.teachers'])
+            ->where('student_id', $student->user_id)
+            ->get();
+
+        return Inertia::render('Admin/Students/Show', [
+            'student' => $student,
+            'fees' => $fees,
+            'attendances' => $attendances,
+            'results' => $results,
+            'marks' => $marks,
         ]);
     }
 

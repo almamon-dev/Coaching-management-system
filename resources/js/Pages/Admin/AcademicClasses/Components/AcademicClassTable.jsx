@@ -23,8 +23,8 @@ const AcademicClassTable = ({
         <div className="overflow-x-auto custom-scrollbar relative">
             <table className="w-full min-w-[800px] border-collapse text-left">
                 <thead>
-                    <tr className="border-b border-[#ebebeb] bg-slate-50/50">
-                        <th className="py-3 px-4 w-[48px] text-center select-none">
+                    <tr className="bg-[#f4f6f8]">
+                        <th className="py-3 px-4 w-[48px] text-center select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                             <div
                                 onClick={toggleSelectAll}
                                 className={cn(
@@ -39,12 +39,12 @@ const AcademicClassTable = ({
                                 )}
                             </div>
                         </th>
-                        {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Class Name</th>}
-                        {visibleColumns.includes('numeric_value') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Numeric Value</th>}
-                        {visibleColumns.includes('sections') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Total Sections</th>}
-                        {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Created At</th>}
-                        {visibleColumns.includes('updated_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Updated At</th>}
-                        <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-right w-[120px] select-none">Actions</th>
+                        {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Class Name</th>}
+                        {visibleColumns.includes('numeric_value') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Numeric Value</th>}
+                        {visibleColumns.includes('sections') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Total Sections</th>}
+                        {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Created At</th>}
+                        {visibleColumns.includes('updated_at') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Updated At</th>}
+                        <th className="py-3 px-4 text-[12px] font-bold text-right w-[120px] select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb]">

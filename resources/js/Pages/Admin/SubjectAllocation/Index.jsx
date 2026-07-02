@@ -329,10 +329,10 @@ export default function Index({ auth, classes, sections, subjects, teachers, all
                                         <div className="overflow-visible">
                                             <table className="w-full text-left border-collapse">
                                                 <thead>
-                                                    <tr className="bg-slate-50/50 border-b border-[#ebebeb]">
-                                                        <th className="py-2.5 px-4 text-[12px] font-bold text-slate-700">Subject</th>
-                                                        <th className="py-2.5 px-4 text-[12px] font-bold text-slate-700 w-[350px]">Assigned Teacher</th>
-                                                        <th className="py-2.5 px-4 text-[12px] font-bold text-slate-700 w-[60px] text-center">Action</th>
+                                                    <tr className="bg-[#f4f6f8]">
+                                                        <th className="py-2.5 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Subject</th>
+                                                        <th className="py-2.5 px-4 text-[12px] font-bold w-[350px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Assigned Teacher</th>
+                                                        <th className="py-2.5 px-4 text-[12px] font-bold w-[60px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-[#ebebeb]">
@@ -479,8 +479,8 @@ export default function Index({ auth, classes, sections, subjects, teachers, all
                                 <div className="overflow-x-auto custom-scrollbar h-auto">
                                     <table className="w-full text-left border-collapse min-w-[800px]">
                                         <thead>
-                                            <tr className="bg-slate-50/50 border-b border-[#ebebeb]">
-                                                <th className="py-3 px-4 w-[40px] text-center">
+                                            <tr className="bg-[#f4f6f8]">
+                                                <th className="py-3 px-4 w-[40px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                                                     <input 
                                                         type="checkbox" 
                                                         checked={all_allocations?.data?.length > 0 && selectedIds.length === all_allocations.data.length}
@@ -488,11 +488,11 @@ export default function Index({ auth, classes, sections, subjects, teachers, all
                                                         className="rounded-[3px] border-[#d1d1d1] text-[#008060] focus:ring-[#008060]"
                                                     />
                                                 </th>
-                                                {visibleColumns.includes('class_name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Class</th>}
-                                                {visibleColumns.includes('section_name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Section</th>}
-                                                {visibleColumns.includes('subject_name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Subject</th>}
-                                                {visibleColumns.includes('teacher_name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Assigned Teacher</th>}
-                                                {visibleColumns.includes('actions') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-[60px] text-center">Actions</th>}
+                                                {visibleColumns.includes('class_name') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Class</th>}
+                                                {visibleColumns.includes('section_name') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Section</th>}
+                                                {visibleColumns.includes('subject_name') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Subject</th>}
+                                                {visibleColumns.includes('teacher_name') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Assigned Teacher</th>}
+                                                {visibleColumns.includes('actions') && <th className="py-3 px-4 text-[12px] font-bold w-[60px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>}
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-[#ebebeb]">

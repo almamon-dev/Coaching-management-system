@@ -41,7 +41,7 @@ const RoleTable = ({
             <table className="w-full text-left border-collapse min-w-[1200px] table-fixed">
                 <thead className="bg-[#f7f7f7] text-[#303030] text-[12px] font-semibold border-b border-[#ebebeb]">
                     <tr>
-                        <th className="pl-4 pr-2 py-2.5 w-[45px]">
+                        <th className="pl-4 pr-2 py-2.5 w-[45px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                             <div
                                 onClick={toggleSelectAll}
                                 className={cn(
@@ -58,11 +58,11 @@ const RoleTable = ({
                                 ) : null}
                             </div>
                         </th>
-                        {visibleColumns.includes('role') && <th className="px-4 py-2.5 w-[250px]">Role Name</th>}
-                        {visibleColumns.includes('operators') && <th className="px-4 py-2.5 text-center w-[120px]">Operators</th>}
-                        {visibleColumns.includes('permissions') && <th className="px-4 py-2.5 w-[500px]">Permissions</th>}
-                        {visibleColumns.includes('created_at') && <th className="px-4 py-2.5 text-center w-[180px]">Created Date</th>}
-                        <th className="px-6 py-2.5 text-right w-[120px]">Actions</th>
+                        {visibleColumns.includes('role') && <th className="px-4 py-2.5 w-[250px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Role Name</th>}
+                        {visibleColumns.includes('operators') && <th className="px-4 py-2.5 text-center w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Operators</th>}
+                        {visibleColumns.includes('permissions') && <th className="px-4 py-2.5 w-[500px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Permissions</th>}
+                        {visibleColumns.includes('created_at') && <th className="px-4 py-2.5 text-center w-[180px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Created Date</th>}
+                        <th className="px-6 py-2.5 text-right w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb] bg-white text-[13px] text-slate-600">

@@ -30,8 +30,8 @@ const UserTable = ({
         <div className="overflow-x-auto custom-scrollbar relative">
             <table className="w-full min-w-[800px] border-collapse text-left">
                 <thead>
-                    <tr className="border-b border-[#ebebeb] bg-slate-50/50">
-                        <th className="py-3 px-4 w-[48px] text-center select-none">
+                    <tr className="bg-[#f4f6f8]">
+                        <th className="py-3 px-4 w-[48px] text-center select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                             <div
                                 onClick={toggleSelectAll}
                                 className={cn(
@@ -46,12 +46,12 @@ const UserTable = ({
                                 )}
                             </div>
                         </th>
-                        {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Staff Member</th>}
-                        {visibleColumns.includes('email') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Email Details</th>}
-                        {visibleColumns.includes('roles') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">System Roles</th>}
-                        {visibleColumns.includes('status') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Access State</th>}
-                        {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Created Date</th>}
-                        <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-right w-[120px] select-none">Actions</th>
+                        {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Staff Member</th>}
+                        {visibleColumns.includes('email') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Email Details</th>}
+                        {visibleColumns.includes('roles') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">System Roles</th>}
+                        {visibleColumns.includes('status') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Access State</th>}
+                        {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Created Date</th>}
+                        <th className="py-3 px-4 text-[12px] font-bold text-right w-[120px] select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ebebeb]">

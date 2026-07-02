@@ -13,6 +13,7 @@ import {
     FileText,
     Settings,
     LogOut,
+    Wallet,
 } from "lucide-react";
 
 /*
@@ -58,6 +59,7 @@ const RAW_MENU_GROUPS = [
                     { label: "Teachers", getPath: () => route('admin.teachers.index') },
                     { label: "Departments", getPath: () => route('admin.departments.index') },
                     { label: "Designations", getPath: () => route('admin.designations.index') },
+                    { label: "Teacher Promotion", getPath: () => route('admin.teacher-promotions.index') },
                 ],
             },
             {
@@ -66,6 +68,17 @@ const RAW_MENU_GROUPS = [
                 icon: ShieldCheck,
                 children: [
                     { label: "Guardians", getPath: () => '#' },
+                ],
+            },
+            {
+                key: "fees",
+                label: "Fees Management",
+                icon: Wallet,
+                children: [
+                    { label: "Fee Types & Heads", getPath: () => route('admin.fee-types.index') },
+                    { label: "Fee Setup (Groups)", getPath: () => route('admin.fee-groups.index') },
+                    { label: "Fee Invoices", getPath: () => route('admin.fee-invoices.index') },
+                    { label: "Fee Collection", getPath: () => route('admin.fee-collections.index') },
                 ],
             },
             {
@@ -106,10 +119,10 @@ const RAW_MENU_GROUPS = [
                 label: "Reports",
                 icon: FileText,
                 children: [
-                    { label: "Student Reports", getPath: () => '#' },
-                    { label: "Attendance Reports", getPath: () => '#' },
-                    { label: "Exam Reports", getPath: () => '#' },
-                    { label: "Promotion Reports", getPath: () => '#' },
+                    { label: "Student Reports", getPath: () => route('admin.reports.students.index') },
+                    { label: "Attendance Reports", getPath: () => route('admin.reports.attendance.index') },
+                    { label: "Exam Reports", getPath: () => route('admin.reports.exams.index') },
+                    { label: "Promotion Reports", getPath: () => route('admin.reports.promotions.index') },
                     { label: "Export PDF/Excel", getPath: () => '#' },
                 ],
             },

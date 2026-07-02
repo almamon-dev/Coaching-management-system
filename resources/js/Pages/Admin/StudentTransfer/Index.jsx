@@ -177,8 +177,8 @@ export default function StudentTransfer({ auth, classes, sections, sessions, stu
                             <div className="overflow-x-auto border border-[#ebebeb] rounded-t-md">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="border-b border-[#ebebeb] bg-[#f8f9fa]">
-                                            <th className="py-3 px-4 w-[50px] text-center">
+                                        <tr className="bg-[#f4f6f8]">
+                                            <th className="py-3 px-4 w-[50px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                                                 <input
                                                     type="checkbox"
                                                     onChange={handleSelectAll}
@@ -186,9 +186,9 @@ export default function StudentTransfer({ auth, classes, sections, sessions, stu
                                                     className="rounded-[3px] border-slate-300 text-[#008060] focus:ring-[#008060]"
                                                 />
                                             </th>
-                                            <th className="py-3 px-4 text-[12px] font-bold text-slate-600 w-[150px]">Student ID</th>
-                                            <th className="py-3 px-4 text-[12px] font-bold text-slate-600">Student Name</th>
-                                            <th className="py-3 px-4 text-[12px] font-bold text-slate-600 w-[120px]">Roll No</th>
+                                            <th className="py-3 px-4 text-[12px] font-bold w-[150px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student ID</th>
+                                            <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student Name</th>
+                                            <th className="py-3 px-4 text-[12px] font-bold w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Roll No</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[#ebebeb]">

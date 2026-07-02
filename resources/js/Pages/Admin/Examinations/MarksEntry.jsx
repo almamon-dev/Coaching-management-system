@@ -162,11 +162,11 @@ export default function MarksEntry({ auth, exams, classes, sections, subjects, s
                     <div className="overflow-x-auto custom-scrollbar">
                         <table className="w-full text-left border-collapse min-w-[600px]">
                             <thead>
-                                <tr className="bg-slate-50/50 border-b border-[#ebebeb]">
-                                    <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-[100px]">Roll No</th>
-                                    <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Student Name</th>
-                                    <th className="py-3 px-4 text-[12px] font-bold text-slate-700 w-[180px]">Marks Obtained</th>
-                                    <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Comments / Remarks</th>
+                                <tr className="bg-[#f4f6f8]">
+                                    <th className="py-3 px-4 text-[12px] font-bold w-[100px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Roll No</th>
+                                    <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student Name</th>
+                                    <th className="py-3 px-4 text-[12px] font-bold w-[180px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Marks Obtained</th>
+                                    <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Comments / Remarks</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#ebebeb]">

@@ -75,7 +75,6 @@ export default function Modal({
                                 <X size={20} strokeWidth={3} />
                             </button>
                         )}
-                        
                         {children}
                     </DialogPanel>
                 </TransitionChild>

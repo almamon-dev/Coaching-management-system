@@ -106,12 +106,12 @@ export default function ReportCard({ result, marks, grades }) {
                         <div className="mb-8 border border-slate-800 rounded-[4px] overflow-hidden">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-slate-800 text-white border-b border-slate-800">
-                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider w-16 text-center border-r border-slate-700">SL</th>
-                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider border-r border-slate-700">Subject Name</th>
-                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider text-center border-r border-slate-700">Full Marks</th>
-                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider text-center border-r border-slate-700">Obtained</th>
-                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider text-center">Grade</th>
+                                    <tr className="bg-[#f4f6f8]">
+                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider w-16 text-center border-r border-slate-700 text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">SL</th>
+                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider border-r border-slate-700 text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Subject Name</th>
+                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider text-center border-r border-slate-700 text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Full Marks</th>
+                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider text-center border-r border-slate-700 text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Obtained</th>
+                                        <th className="py-3 px-4 text-[13px] font-bold uppercase tracking-wider text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Grade</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -152,10 +152,10 @@ export default function ReportCard({ result, marks, grades }) {
                             <div className="w-1/3">
                                 <table className="w-full text-left border border-slate-300 text-[11px]">
                                     <thead>
-                                        <tr className="bg-slate-100 border-b border-slate-300">
-                                            <th className="py-1.5 px-2 font-bold border-r border-slate-300">Marks</th>
-                                            <th className="py-1.5 px-2 font-bold border-r border-slate-300 text-center">Grade</th>
-                                            <th className="py-1.5 px-2 font-bold text-center">Point</th>
+                                        <tr className="bg-[#f4f6f8]">
+                                            <th className="py-1.5 px-2 font-bold border-r border-slate-300 text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Marks</th>
+                                            <th className="py-1.5 px-2 font-bold border-r border-slate-300 text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Grade</th>
+                                            <th className="py-1.5 px-2 font-bold text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Point</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-200">

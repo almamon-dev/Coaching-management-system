@@ -83,10 +83,10 @@ export default function Print({ routines, info, filters }) {
                         <table className="w-full border-collapse border border-slate-300 print:border-black table-fixed">
                             <thead>
                                 <tr>
-                                    <th className="border border-slate-300 print:border-black px-3 print:px-1 py-2.5 print:py-1.5 w-[120px] print:w-[80px] text-center font-bold text-slate-800 print:text-black text-[13px] print:text-[11px] tracking-wide bg-slate-100 print:bg-transparent">
+                                    <th className="border border-slate-300 print:lack px-3 print:px-1 py-2.5 print:py-1.5 w-[120px] print:w-[80px] text-center font-bold print:text-black text-[13px] print:text-[11px] tracking-wide bg-slate-100 print:bg-transparent text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                                         Day
                                     </th>
-                                    <th className="border border-slate-300 print:border-black px-4 print:px-2 py-2.5 print:py-1.5 text-left font-bold text-slate-800 print:text-black text-[13px] print:text-[11px] tracking-wide bg-slate-100 print:bg-transparent">
+                                    <th className="border border-slate-300 print:lack px-4 print:px-2 py-2.5 print:py-1.5 text-left font-bold print:text-black text-[13px] print:text-[11px] tracking-wide bg-slate-100 print:bg-transparent text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                                         Scheduled Classes
                                     </th>
                                 </tr>

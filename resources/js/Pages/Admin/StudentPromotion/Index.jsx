@@ -229,15 +229,15 @@ export default function StudentPromotion({ auth, classes, sessions, students, fi
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse min-w-[600px]">
                             <thead>
-                                <tr className="bg-white border-b border-[#ebebeb]">
-                                    <th className="py-3 px-6 w-[60px] text-center select-none">
+                                <tr className="bg-[#f4f6f8]">
+                                    <th className="py-3 px-6 w-[60px] text-center select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                                         <div onClick={toggleSelectAll} className={`w-[17px] h-[17px] border-[1.5px] rounded-[3px] mx-auto cursor-pointer transition-all flex items-center justify-center ${data.student_ids.length === students.length && students.length > 0 ? 'bg-[#008060] border-[#008060]' : 'bg-white border-[#d1d1d1]'}`}>
                                             {data.student_ids.length === students.length && students.length > 0 && <CheckCircle2 size={12} strokeWidth={3} className="text-white" />}
                                         </div>
                                     </th>
-                                    <th className="py-3 px-6 text-[12px] font-bold text-slate-700 uppercase tracking-wider">Student Name</th>
-                                    <th className="py-3 px-6 text-[12px] font-bold text-slate-700 uppercase tracking-wider">Current Info</th>
-                                    <th className="py-3 px-6 text-[12px] font-bold text-slate-700 uppercase tracking-wider text-right">Result/Status</th>
+                                    <th className="py-3 px-6 text-[12px] font-bold uppercase tracking-wider text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student Name</th>
+                                    <th className="py-3 px-6 text-[12px] font-bold uppercase tracking-wider text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Current Info</th>
+                                    <th className="py-3 px-6 text-[12px] font-bold uppercase tracking-wider text-right text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Result/Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#ebebeb]">

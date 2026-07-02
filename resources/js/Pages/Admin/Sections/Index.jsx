@@ -302,19 +302,19 @@ export default function Index({ auth, sections, classes, teachers, filters, stat
                 <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left border-collapse min-w-[800px]">
                         <thead>
-                            <tr className="bg-slate-50/50 border-b border-[#ebebeb]">
-                                <th className="py-3 px-4 w-[48px] text-center select-none">
+                            <tr className="bg-[#f4f6f8]">
+                                <th className="py-3 px-4 w-[48px] text-center select-none text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">
                                     <div onClick={toggleSelectAll} className={`w-[17px] h-[17px] border-[1.5px] rounded-[3px] mx-auto cursor-pointer transition-all flex items-center justify-center ${isAllSelected ? 'bg-[#008060] border-[#008060]' : 'bg-white border-[#d1d1d1]'}`}>
                                         {isAllSelected && <Check size={12} strokeWidth={3} className="text-white" />}
                                     </div>
                                 </th>
-                                {visibleColumns.includes('class') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Class</th>}
-                                {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Section Name</th>}
-                                {visibleColumns.includes('capacity') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-center">Capacity</th>}
-                                {visibleColumns.includes('teacher') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Class Teacher</th>}
-                                {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Created At</th>}
-                                {visibleColumns.includes('updated_at') && <th className="py-3 px-4 text-[12px] font-bold text-slate-700">Updated At</th>}
-                                <th className="py-3 px-4 text-[12px] font-bold text-slate-700 text-right w-[120px]">Actions</th>
+                                {visibleColumns.includes('class') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Class</th>}
+                                {visibleColumns.includes('name') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Section Name</th>}
+                                {visibleColumns.includes('capacity') && <th className="py-3 px-4 text-[12px] font-bold text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Capacity</th>}
+                                {visibleColumns.includes('teacher') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Class Teacher</th>}
+                                {visibleColumns.includes('created_at') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Created At</th>}
+                                {visibleColumns.includes('updated_at') && <th className="py-3 px-4 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Updated At</th>}
+                                <th className="py-3 px-4 text-[12px] font-bold text-right w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#ebebeb]">

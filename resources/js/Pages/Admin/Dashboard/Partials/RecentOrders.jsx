@@ -28,13 +28,13 @@ const RecentOrders = ({ orders }) => {
                 <table className="w-full text-left border-collapse table-fixed min-w-[900px]">
                     <thead className="bg-[#f7f7f7] text-[#303030] text-[12px] font-semibold border-b border-[#ebebeb]">
                         <tr>
-                            <th className="px-4 py-2.5 w-[120px]">Order ID</th>
-                            <th className="px-4 py-2.5 w-[180px]">Customer</th>
-                            <th className="px-4 py-2.5 w-[300px]">Product Summary</th>
-                            <th className="px-4 py-2.5 w-[100px] text-center">Amount</th>
-                            <th className="px-4 py-2.5 w-[120px] text-center">Status</th>
-                            <th className="px-4 py-2.5 w-[120px] text-center">Date</th>
-                            <th className="px-6 py-2.5 w-[100px] text-right text-[#202223]">Actions</th>
+                            <th className="px-4 py-2.5 w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Order ID</th>
+                            <th className="px-4 py-2.5 w-[180px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Customer</th>
+                            <th className="px-4 py-2.5 w-[300px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Product Summary</th>
+                            <th className="px-4 py-2.5 w-[100px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Amount</th>
+                            <th className="px-4 py-2.5 w-[120px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Status</th>
+                            <th className="px-4 py-2.5 w-[120px] text-center text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Date</th>
+                            <th className="px-6 py-2.5 w-[100px] text-right text-[#202223] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[#ebebeb]">

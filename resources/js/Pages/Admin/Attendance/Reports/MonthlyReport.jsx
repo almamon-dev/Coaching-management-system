@@ -66,13 +66,13 @@ export default function MonthlyReport({ auth, month, type, reportData }) {
                 <div className="overflow-x-auto min-h-[400px]">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-[#f4f6f8] border-b border-[#ebebeb]">
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] w-[300px]">Name</th>
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-center w-[120px]">Present</th>
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-center w-[120px]">Absent</th>
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-center w-[120px]">Late</th>
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-center w-[120px]">On Leave</th>
-                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-right">Attendance %</th>
+                            <tr className="bg-[#f4f6f8]">
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] w-[300px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Name</th>
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-center w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Present</th>
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-center w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Absent</th>
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-center w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Late</th>
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-center w-[120px] text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">On Leave</th>
+                                <th className="py-2.5 px-4 text-[12px] font-semibold text-[#202223] text-right text-[#6d7175] bg-[#f4f6f8] first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Attendance %</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white">
