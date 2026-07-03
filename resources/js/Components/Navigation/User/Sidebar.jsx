@@ -266,16 +266,21 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
             {/* BRANDING HEADER */}
             <div className="h-[70px] flex items-center px-4 shrink-0 bg-white border-b border-slate-100 overflow-hidden relative">
                 {!isCollapsed && (
-                    <Link href="/" className="flex-shrink-0 flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white shadow-sm shrink-0">
-                            <GraduationCap size={18} strokeWidth={2.5} />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-[16px] font-black tracking-tight text-slate-800 leading-tight">
-                                Lohadi High
-                            </span>
-                            <span className="text-[10px] font-semibold text-slate-400">School Management System</span>
-                        </div>
+                    <Link href="/" className="flex items-center px-3 h-[70px]">
+                        <img
+                            src="/images/school-logo-wide.png"
+                            alt="School Logo"
+                            className="h-[50px] w-auto"
+                        />
+                    </Link>
+                )}
+                {isCollapsed && (
+                    <Link href="/" className="flex items-center justify-center w-full h-[70px]">
+                        <img
+                            src="/images/school-logo-wide.png"
+                            alt="School Logo"
+                            className="h-[40px] w-auto"
+                        />
                     </Link>
                 )}
             </div>

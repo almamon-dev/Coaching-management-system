@@ -105,14 +105,12 @@ export default function Header() {
                 <div className="container mx-auto px-4 flex items-center justify-between">
 
                     {/* Logo */}
-                    <Link href="/" className="flex-shrink-0 flex items-center gap-3">
-                        {/* School Logo */}
+                    <Link href="/" className="flex-shrink-0">
                         <img
-                            src="/images/logo_final.png"
-                            alt="Lohadi High School Logo"
-                            className="h-10 md:h-12 w-auto object-contain"
+                            src="/images/school-logo-wide.png"
+                            alt="Kirtonia Yousob Ali Bhuyan High School"
+                            className="h-[52px] w-auto"
                         />
-
                     </Link>
 
                     {/* Desktop Navigation */}

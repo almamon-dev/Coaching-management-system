@@ -50,7 +50,11 @@ const Header = ({ onMenuClick, onToggleSidebar }) => {
                 >
                     <AlignLeft size={20} />
                 </button>
-                <h2 className="text-[16px] font-bold text-slate-800 tracking-tight hidden sm:block">
+                {/* Mobile: show logo when sidebar is hidden */}
+                <Link href="/dashboard" className="flex items-center lg:hidden shrink-0">
+                    <img src="/images/school-logo-wide.png" alt="Logo" className="h-[38px] w-auto" />
+                </Link>
+                <h2 className="text-[16px] font-bold text-slate-800 tracking-tight hidden lg:block">
                     Dashboard
                 </h2>
 

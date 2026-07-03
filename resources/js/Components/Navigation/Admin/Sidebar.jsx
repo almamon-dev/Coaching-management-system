@@ -120,6 +120,7 @@ const RAW_MENU_GROUPS = [
                 icon: FileText,
                 children: [
                     { label: "Student Reports", getPath: () => route('admin.reports.students.index') },
+                    { label: "Teacher Reports", getPath: () => route('admin.reports.teachers.index') },
                     { label: "Attendance Reports", getPath: () => route('admin.reports.attendance.index') },
                     { label: "Exam Reports", getPath: () => route('admin.reports.exams.index') },
                     { label: "Promotion Reports", getPath: () => route('admin.reports.promotions.index') },
@@ -327,13 +328,21 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
             {/* BRANDING HEADER */}
             <div className="h-[70px] flex items-center px-4 shrink-0 bg-white border-b border-slate-200/60 overflow-hidden relative">
                 {!isCollapsed && (
-                    <Link href="/dashboard" className="flex-shrink-0 flex items-center gap-2 h-[45px]">
-                        <div className="relative text-[#008060] bg-[#e6f2ef] p-1.5 rounded-lg">
-                            <GraduationCap size={22} className="md:w-[22px] md:h-[22px]" strokeWidth={2} />
-                        </div>
-                        <span className="text-[18px] font-bold tracking-tight text-[#202223]">
-                            School SMS
-                        </span>
+                    <Link href="/dashboard" className="flex items-center px-3 h-[70px]">
+                        <img
+                            src="/images/school-logo-wide.png"
+                            alt="School Logo"
+                            className="h-[50px] w-auto"
+                        />
+                    </Link>
+                )}
+                {isCollapsed && (
+                    <Link href="/dashboard" className="flex items-center justify-center w-full h-[70px]">
+                        <img
+                            src="/images/school-logo-wide.png"
+                            alt="School Logo"
+                            className="h-[40px] w-auto"
+                        />
                     </Link>
                 )}
             </div>

@@ -101,6 +101,7 @@ use Illuminate\Support\Facades\Route;
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('promotions', [\App\Http\Controllers\Admin\Reports\PromotionReportController::class, 'index'])->name('promotions.index');
         Route::get('students', [\App\Http\Controllers\Admin\Reports\StudentReportController::class, 'index'])->name('students.index');
+        Route::get('teachers', [\App\Http\Controllers\Admin\Reports\TeacherReportController::class, 'index'])->name('teachers.index');
         Route::get('attendance', [\App\Http\Controllers\Admin\Reports\AttendanceReportController::class, 'index'])->name('attendance.index');
         Route::get('exams', [\App\Http\Controllers\Admin\Reports\ExamReportController::class, 'index'])->name('exams.index');
     });

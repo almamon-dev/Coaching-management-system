@@ -149,7 +149,7 @@ export default function StudentEditPage({ auth, classes, student }) {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                                    <div className="md:col-span-2">
+                                    <div>
                                         <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Full Name <span className="text-red-500">*</span></label>
                                         <TextInput
                                             type="text"
@@ -160,6 +160,24 @@ export default function StudentEditPage({ auth, classes, student }) {
                                             required={activeTab === 'personal'}
                                         />
                                         {errors.name && <div className="text-red-500 text-[11px] mt-1">{errors.name}</div>}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Blood Group</label>
+                                        <SelectInput
+                                            value={data.blood_group}
+                                            onChange={e => setData('blood_group', e.target.value)}
+                                            options={[
+                                                { id: '', name: 'Select Blood Group' },
+                                                { id: 'A+', name: 'A+' }, { id: 'A-', name: 'A-' },
+                                                { id: 'B+', name: 'B+' }, { id: 'B-', name: 'B-' },
+                                                { id: 'O+', name: 'O+' }, { id: 'O-', name: 'O-' },
+                                                { id: 'AB+', name: 'AB+' }, { id: 'AB-', name: 'AB-' }
+                                            ]}
+                                            className="w-full"
+                                            showSearch={false}
+                                        />
+                                        {errors.blood_group && <div className="text-red-500 text-[11px] mt-1">{errors.blood_group}</div>}
                                     </div>
                                     
                                     <div>
@@ -216,23 +234,7 @@ export default function StudentEditPage({ auth, classes, student }) {
                                         {errors.gender && <div className="text-red-500 text-[11px] mt-1">{errors.gender}</div>}
                                     </div>
                                     
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Blood Group</label>
-                                        <SelectInput
-                                            value={data.blood_group}
-                                            onChange={e => setData('blood_group', e.target.value)}
-                                            options={[
-                                                { id: '', name: 'Select Blood Group' },
-                                                { id: 'A+', name: 'A+' }, { id: 'A-', name: 'A-' },
-                                                { id: 'B+', name: 'B+' }, { id: 'B-', name: 'B-' },
-                                                { id: 'O+', name: 'O+' }, { id: 'O-', name: 'O-' },
-                                                { id: 'AB+', name: 'AB+' }, { id: 'AB-', name: 'AB-' }
-                                            ]}
-                                            className="w-full"
-                                            showSearch={false}
-                                        />
-                                        {errors.blood_group && <div className="text-red-500 text-[11px] mt-1">{errors.blood_group}</div>}
-                                    </div>
+
                                 </div>
                             </div>
                         )}

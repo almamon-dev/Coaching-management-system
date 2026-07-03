@@ -11,6 +11,7 @@ export default function Edit({ auth, teacher, designations, departments, subject
         name: teacher.user?.name || '',
         email: teacher.user?.email || '',
         phone: teacher.user?.phone || '',
+        gender: teacher.user?.gender || '',
         password: '',
         password_confirmation: '',
         designation: teacher.designation || '',
@@ -165,6 +166,22 @@ export default function Edit({ auth, teacher, designations, departments, subject
                                             required
                                         />
                                         {errors.phone && <div className="text-red-500 text-[11px] mt-1">{errors.phone}</div>}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Gender</label>
+                                        <SelectInput
+                                            value={data.gender}
+                                            onChange={(e) => setData('gender', e.target.value)}
+                                            options={[
+                                                { id: '', name: 'Select Gender...' },
+                                                { id: 'male', name: 'Male' },
+                                                { id: 'female', name: 'Female' },
+                                                { id: 'other', name: 'Other' },
+                                            ]}
+                                            className="w-full"
+                                        />
+                                        {errors.gender && <div className="text-red-500 text-[11px] mt-1">{errors.gender}</div>}
                                     </div>
 
                                     <div>

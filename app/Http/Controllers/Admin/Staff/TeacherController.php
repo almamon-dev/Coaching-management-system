@@ -79,6 +79,7 @@ class TeacherController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|string|max:20',
+            'gender' => 'nullable|in:male,female,other',
             'password' => 'required|string|min:8|confirmed',
             'designation' => 'required|string|max:255',
             'department' => 'nullable|string|max:255',
@@ -95,6 +96,7 @@ class TeacherController extends Controller
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'phone' => $validated['phone'],
+                'gender' => $validated['gender'] ?? null,
                 'user_type' => 'staff', // Staff/Teachers access the Teacher portal
                 'is_verified' => true,
                 'email_verified_at' => now(),
@@ -150,6 +152,7 @@ class TeacherController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $teacher->user_id,
             'phone' => 'required|string|max:20',
+            'gender' => 'nullable|in:male,female,other',
             'password' => 'nullable|string|min:8|confirmed',
             'designation' => 'required|string|max:255',
             'department' => 'nullable|string|max:255',
@@ -164,6 +167,7 @@ class TeacherController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
+                'gender' => $validated['gender'] ?? null,
             ];
 
             if (!empty($validated['password'])) {

@@ -43,6 +43,11 @@ const Header = ({ onMenuClick }) => {
                     <Menu size={20} />
                 </button>
 
+                {/* Mobile: show logo */}
+                <Link href="/" className="flex items-center lg:hidden shrink-0">
+                    <img src="/images/school-logo-wide.png" alt="Logo" className="h-[38px] w-auto" />
+                </Link>
+
                 {/* MIDDLE: Search Bar */}
                 <div className="w-full max-w-[400px] relative hidden md:block">
                     <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />

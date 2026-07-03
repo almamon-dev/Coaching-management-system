@@ -5,7 +5,7 @@ import { FileText, FileDown, Table as TableIcon, Eye, Users } from 'lucide-react
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHeadCell } from '@/Components/Table/Table';
 import TableSearch from '@/Components/Table/TableSearch';
 import SelectInput from '@/Components/Form/SelectInput';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+
 
 export default function Index({ auth, filters, reportData, sessions, classes, sections, stats, genderData, classDistribution }) {
     const [search, setSearch] = useState(filters?.search || '');
@@ -86,45 +86,98 @@ export default function Index({ auth, filters, reportData, sessions, classes, se
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
+                        {/* Custom SVG Multi-Ring Chart for Status */}
                         <div className="bg-white border border-[#ebebeb] rounded-[4px] shadow-sm p-5">
-                            <h3 className="text-[14px] font-bold text-[#202223] mb-4 border-b border-[#ebebeb] pb-2">Gender Ratio</h3>
-                            <div className="h-[250px] w-full flex items-center justify-center">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={genderData}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
-                                            paddingAngle={5}
-                                            dataKey="value"
-                                        >
-                                            <Cell fill="#3b82f6" />
-                                            <Cell fill="#ec4899" />
-                                        </Pie>
-                                        <Tooltip contentStyle={{ borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }} />
-                                        <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 'bold' }} />
-                                    </PieChart>
-                                </ResponsiveContainer>
+                            <h3 className="text-[14px] font-bold text-[#202223] mb-2 border-b border-[#ebebeb] pb-2">Status Distribution</h3>
+                            <div className="h-[260px] w-full flex items-center justify-center">
+                                {stats.total > 0 ? (() => {
+                                    const cx = 110, cy = 120, rings = [
+                                        { label: 'Active',      pct: Math.round((stats.active / stats.total) * 100), color: '#008060', r: 85 },
+                                        { label: 'Promoted',    pct: Math.round((stats.promoted / stats.total) * 100), color: '#3b82f6', r: 68 },
+                                        { label: 'Transferred', pct: Math.round((stats.transferred / stats.total) * 100), color: '#f49342', r: 51 },
+                                        { label: 'Dropped Out', pct: Math.round((stats.dropped / stats.total) * 100), color: '#e32c2b', r: 34 },
+                                    ];
+                                    const arc = (pct, r) => {
+                                        const angle = (pct / 100) * 360;
+                                        const rad = (a) => (a - 90) * Math.PI / 180;
+                                        const x1 = cx + r * Math.cos(rad(0));
+                                        const y1 = cy + r * Math.sin(rad(0));
+                                        const x2 = cx + r * Math.cos(rad(Math.min(angle, 359.99)));
+                                        const y2 = cy + r * Math.sin(rad(Math.min(angle, 359.99)));
+                                        return `M ${x1} ${y1} A ${r} ${r} 0 ${angle >= 180 ? 1 : 0} 1 ${x2} ${y2}`;
+                                    };
+                                    return (
+                                        <svg width="280" height="240" viewBox="0 0 280 240">
+                                            {rings.map((ring, i) => (
+                                                <g key={i}>
+                                                    <circle cx={cx} cy={cy} r={ring.r} fill="none" stroke="#f0f0f0" strokeWidth="12" />
+                                                    <path d={arc(ring.pct, ring.r)} fill="none" stroke={ring.color} strokeWidth="12" strokeLinecap="round" />
+                                                </g>
+                                            ))}
+                                            <text x={cx} y={cy - 6} textAnchor="middle" fontSize="18" fontWeight="bold" fill="#202223">{stats.total}</text>
+                                            <text x={cx} y={cy + 12} textAnchor="middle" fontSize="10" fill="#6d7175">Total</text>
+                                            {rings.map((ring, i) => (
+                                                <g key={i} transform={`translate(205, ${50 + i * 42})`}>
+                                                    <circle cx="6" cy="6" r="6" fill={ring.color} />
+                                                    <text x="16" y="10" fontSize="11" fontWeight="bold" fill="#202223">{ring.pct}%</text>
+                                                    <text x="16" y="22" fontSize="10" fill="#6d7175">{ring.label}</text>
+                                                </g>
+                                            ))}
+                                        </svg>
+                                    );
+                                })() : (
+                                    <div className="flex flex-col items-center justify-center text-[#6d7175] text-[13px]">
+                                        <Users size={32} className="mb-2 text-[#d1d1d1]" />
+                                        No student data available
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        <div className="bg-white border border-[#ebebeb] rounded-[4px] shadow-sm p-5 lg:col-span-2">
-                            <h3 className="text-[14px] font-bold text-[#202223] mb-4 border-b border-[#ebebeb] pb-2 flex justify-between items-center">
+                        {/* Custom Horizontal Progress Bar for Class Distribution */}
+                        <div className="bg-white border border-[#ebebeb] rounded-[4px] shadow-sm p-5 lg:col-span-2 flex flex-col">
+                            <h3 className="text-[14px] font-bold text-[#202223] mb-5 border-b border-[#ebebeb] pb-2 flex justify-between items-center shrink-0">
                                 <span>Students Per Class</span>
                                 <Users size={16} className="text-[#6d7175]" />
                             </h3>
-                            <div className="h-[250px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={classDistribution} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ebebeb" />
-                                        <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6d7175' }} axisLine={false} tickLine={false} />
-                                        <YAxis tick={{ fontSize: 11, fill: '#6d7175' }} axisLine={false} tickLine={false} />
-                                        <Tooltip cursor={{ fill: '#f4f6f8' }} contentStyle={{ borderRadius: '4px', fontSize: '12px' }} />
-                                        <Bar dataKey="students" name="Students" fill="#008060" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                                    </BarChart>
-                                </ResponsiveContainer>
+                            <div className="space-y-4 overflow-y-auto custom-scrollbar pr-2 flex-1 max-h-[240px]">
+                                {(() => {
+                                    const palette = [
+                                        { from: '#008060', to: '#00a87a', text: '#008060' },
+                                        { from: '#3b82f6', to: '#60a5fa', text: '#3b82f6' },
+                                        { from: '#f49342', to: '#fbbf24', text: '#d97706' },
+                                        { from: '#ec4899', to: '#f472b6', text: '#db2777' },
+                                        { from: '#8b5cf6', to: '#a78bfa', text: '#7c3aed' },
+                                        { from: '#06b6d4', to: '#67e8f9', text: '#0891b2' },
+                                        { from: '#ef4444', to: '#f87171', text: '#dc2626' },
+                                        { from: '#10b981', to: '#6ee7b7', text: '#059669' },
+                                        { from: '#f59e0b', to: '#fcd34d', text: '#d97706' },
+                                        { from: '#6366f1', to: '#a5b4fc', text: '#4f46e5' },
+                                    ];
+                                    return classDistribution.map((item, idx) => {
+                                        const pct = stats.total > 0 ? Math.round((item.students / stats.total) * 100) : 0;
+                                        const clr = palette[idx % palette.length];
+                                        return (
+                                            <div key={idx} className="flex items-center gap-3">
+                                                <div className="w-[100px] text-right text-[12px] font-bold text-[#6d7175] shrink-0 truncate" title={item.name}>{item.name}</div>
+                                                <div className="flex-1 relative h-[32px] bg-[#f4f6f8] rounded-full overflow-hidden">
+                                                    <div
+                                                        className="h-full rounded-full flex items-center justify-end pr-3 transition-all duration-700 ease-out"
+                                                        style={{ width: `${Math.max(pct, 4)}%`, background: `linear-gradient(90deg, ${clr.from}, ${clr.to})` }}
+                                                    >
+                                                        <span className="text-white text-[11px] font-bold drop-shadow">{pct}%</span>
+                                                        <div className="absolute right-0 top-0 h-full w-[28px] flex items-center justify-center" style={{ right: `calc(${100 - Math.max(pct, 4)}% - 1px)`, position: 'absolute' }} />
+                                                    </div>
+                                                </div>
+                                                <div className="w-[40px] text-[12px] font-bold shrink-0" style={{ color: clr.text }}>{item.students}</div>
+                                                <div className="flex items-center gap-1 shrink-0">
+                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-[3px] bg-blue-50 text-blue-600 text-[10px] font-bold">♂{item.male ?? 0}</span>
+                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-[3px] bg-pink-50 text-pink-600 text-[10px] font-bold">♀{item.female ?? 0}</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    });
+                                })()}
                             </div>
                         </div>
                     </div>
