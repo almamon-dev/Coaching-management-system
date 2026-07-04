@@ -111,7 +111,7 @@ const RAW_MENU_GROUPS = [
                 label: "Notice Board",
                 icon: Bell,
                 children: [
-                    { label: "Notices", getPath: () => '#' },
+                    { label: "Notices", getPath: () => route('admin.notices.index') },
                     { label: "Announcements", getPath: () => '#' },
                 ],
             },
@@ -125,7 +125,7 @@ const RAW_MENU_GROUPS = [
                     { label: "Attendance Reports", getPath: () => route('admin.reports.attendance.index') },
                     { label: "Exam Reports", getPath: () => route('admin.reports.exams.index') },
                     { label: "Promotion Reports", getPath: () => route('admin.reports.promotions.index') },
-                    { label: "Export PDF/Excel", getPath: () => '#' },
+                    // { label: "Export PDF/Excel", getPath: () => '#' },
                 ],
             },
             {
@@ -133,7 +133,7 @@ const RAW_MENU_GROUPS = [
                 label: "Settings",
                 icon: Settings,
                 children: [
-                    { label: "School Information", getPath: () => '#' },
+                    // { label: "School Information", getPath: () => '#' },
                     { label: "User Roles", getPath: () => '#' },
                     { label: "Permissions", getPath: () => '#' },
                     { label: "SMS Settings", getPath: () => '#' },

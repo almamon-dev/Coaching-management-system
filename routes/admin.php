@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
     Route::patch('pages/{page}/status', [\App\Http\Controllers\Admin\Page\PageController::class, 'updateStatus'])->name('pages.status');
     Route::resource('pages', \App\Http\Controllers\Admin\Page\PageController::class);
 
+    // Notices
+    Route::resource('notices', \App\Http\Controllers\Admin\NoticeController::class);
+
     // Attendance Management
     Route::get('attendance', [\App\Http\Controllers\Admin\Attendance\AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('attendance', [\App\Http\Controllers\Admin\Attendance\AttendanceController::class, 'store'])->name('attendance.store');
