@@ -17,7 +17,7 @@ export default function NoticeBoardSection({ notices = [] }) {
                                         Notice Board
                                     </h2>
                                 </div>
-                                <Link href={route('coming.soon')} className="inline-flex items-center text-[#16a34a] text-xs font-bold hover:text-[#009ca6] transition-colors mb-1">
+                                <Link href={route('notices.index')} className="inline-flex items-center text-[#16a34a] text-xs font-bold hover:text-[#009ca6] transition-colors mb-1">
                                     View All <ChevronRight size={14} />
                                 </Link>
                             </div>

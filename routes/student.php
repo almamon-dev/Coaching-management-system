@@ -16,3 +16,6 @@ Route::get('/results/{result}/report-card', [\App\Http\Controllers\Student\Resul
 
 // Routine
 Route::get('/routine', [\App\Http\Controllers\Student\RoutineController::class, 'index'])->name('routine.index');
+
+// Events
+Route::resource('events', \App\Http\Controllers\Student\EventController::class)->only(['index', 'create', 'store']);

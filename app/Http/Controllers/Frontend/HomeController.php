@@ -26,8 +26,27 @@ class HomeController extends Controller
             ];
         });
 
+        $events = \App\Models\Event::where('status', 'published')
+            ->where('date', '>=', now()->toDateString())
+            ->orderBy('date', 'asc')
+            ->take(4)
+            ->get()
+            ->map(function($event) {
+                return [
+                    'id' => encrypt($event->id),
+                    'title' => $event->title,
+                    'slug' => $event->slug,
+                    'description' => $event->description,
+                    'image' => $event->image,
+                    'date' => $event->date->format('Y-m-d'),
+                    'time' => $event->time ? date('h:i A', strtotime($event->time)) : null,
+                    'location' => $event->location,
+                ];
+            });
+
         return Inertia::render('Frontend/Home', [
             'notices' => $notices,
+            'events' => $events,
         ]);
     }
 }

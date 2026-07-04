@@ -14,8 +14,11 @@ use Illuminate\Support\Facades\Route;
     Route::patch('pages/{page}/status', [\App\Http\Controllers\Admin\Page\PageController::class, 'updateStatus'])->name('pages.status');
     Route::resource('pages', \App\Http\Controllers\Admin\Page\PageController::class);
 
-    // Notices
+    // Notices & Events
     Route::resource('notices', \App\Http\Controllers\Admin\NoticeController::class);
+    Route::resource('events', \App\Http\Controllers\Admin\EventController::class);
+    Route::post('events/{event}/approve', [\App\Http\Controllers\Admin\EventController::class, 'approve'])->name('events.approve');
+    Route::post('events/{event}/reject', [\App\Http\Controllers\Admin\EventController::class, 'reject'])->name('events.reject');
 
     // Attendance Management
     Route::get('attendance', [\App\Http\Controllers\Admin\Attendance\AttendanceController::class, 'index'])->name('attendance.index');

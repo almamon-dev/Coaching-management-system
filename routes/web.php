@@ -68,6 +68,7 @@ Route::get('/events', function () {
     return Inertia::render('Frontend/Events');
 })->name('events');
 
+Route::get('/notices', [\App\Http\Controllers\Frontend\NoticeController::class, 'index'])->name('notices.index');
 Route::get('/notices/{id}', [\App\Http\Controllers\Frontend\NoticeController::class, 'show'])->name('notices.show');
 
 Route::get('/coming-soon', function () {

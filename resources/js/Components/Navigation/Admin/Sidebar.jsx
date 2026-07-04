@@ -15,6 +15,7 @@ import {
     Settings,
     LogOut,
     Wallet,
+    Calendar,
 } from "lucide-react";
 
 /*
@@ -112,7 +113,14 @@ const RAW_MENU_GROUPS = [
                 icon: Bell,
                 children: [
                     { label: "Notices", getPath: () => route('admin.notices.index') },
-                    { label: "Announcements", getPath: () => '#' },
+                ],
+            },
+            {
+                key: "events",
+                label: "Event Management",
+                icon: Calendar,
+                children: [
+                    { label: "Events", getPath: () => route('admin.events.index') },
                 ],
             },
             {

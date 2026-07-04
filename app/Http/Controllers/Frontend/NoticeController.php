@@ -9,6 +9,28 @@ use Inertia\Inertia;
 
 class NoticeController extends Controller
 {
+    public function index()
+    {
+        $noticesDb = \App\Models\Notice::with('creator')->where('status', 'published')
+            ->orderBy('published_at', 'desc')
+            ->paginate(10);
+
+        $noticesDb->getCollection()->transform(function ($item) {
+            return [
+                'id' => encrypt($item->id),
+                'title' => $item->title,
+                'date' => $item->published_at ? $item->published_at->format('Y-m-d') : $item->created_at->format('Y-m-d'),
+                'description' => $item->content,
+                'is_new' => $item->published_at ? $item->published_at->diffInDays(now()) <= 7 : false,
+                'author' => $item->creator ? $item->creator->name : 'Administration',
+            ];
+        });
+
+        return Inertia::render('Frontend/Notices/Index', [
+            'notices' => $noticesDb
+        ]);
+    }
+
     public function show($id)
     {
         try {
