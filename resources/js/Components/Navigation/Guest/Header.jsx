@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { Search, ChevronDown, Menu, X, Share2, Phone, Video } from 'lucide-react';
 import { useTranslation } from '@/Hooks/useTranslation';
+import SchoolLogo from '@/Components/SchoolLogo';
 
 export default function Header() {
     const { auth } = usePage().props;
@@ -105,14 +106,8 @@ export default function Header() {
                 <div className="container mx-auto px-4 flex items-center justify-between">
 
                     {/* Logo */}
-                    <Link href="/" className="flex-shrink-0 flex items-center gap-3">
-                        {/* School Logo */}
-                        <img
-                            src="/images/logo_final.png"
-                            alt="Lohadi High School Logo"
-                            className="h-10 md:h-12 w-auto object-contain"
-                        />
-
+                    <Link href="/" className="flex-shrink-0">
+                        <SchoolLogo variant="wide" />
                     </Link>
 
                     {/* Desktop Navigation */}

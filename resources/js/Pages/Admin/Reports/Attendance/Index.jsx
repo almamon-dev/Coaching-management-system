@@ -44,7 +44,7 @@ export default function AttendanceReport({ auth, stats, trendData, recentAbsente
                             <ClipboardCheck size={20} className="text-[#008060]" />
                             Attendance Reports
                         </h2>
-                        <p className="text-[12px] text-[#6d7175] font-medium mt-0.5">Comprehensive overview of student attendance</p>
+                        <p className="text-[12px] text-[#6d7175] font-medium mt-0.5">Comprehensive overview of {userType === 'teacher' ? 'teacher' : 'student'} attendance</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <button className="h-[32px] px-3 bg-white border border-[#d1d1d1] rounded-[4px] text-[12px] font-bold text-[#202223] hover:bg-[#f4f6f8] transition-all flex items-center gap-1.5 shadow-sm">
@@ -126,7 +126,7 @@ export default function AttendanceReport({ auth, stats, trendData, recentAbsente
             {/* Stats Overview */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-5">
                 <div className="bg-white p-5 rounded-[4px] border border-[#ebebeb] shadow-sm flex flex-col justify-center">
-                    <div className="text-[13px] font-bold text-[#6d7175] mb-1">Total Students</div>
+                    <div className="text-[13px] font-bold text-[#6d7175] mb-1">Total {userType === 'teacher' ? 'Teachers' : 'Students'}</div>
                     <div className="text-[28px] font-bold text-[#202223] leading-none">{stats.total}</div>
                 </div>
                 <div className="bg-white p-5 rounded-[4px] border-l-4 border-l-[#008060] border-y border-y-[#ebebeb] border-r border-r-[#ebebeb] shadow-sm flex flex-col justify-center">

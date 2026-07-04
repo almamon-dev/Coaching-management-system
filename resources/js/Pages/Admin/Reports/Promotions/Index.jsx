@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Head, router, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { FileText, FileDown, Table as TableIcon, TrendingUp, Users, Calendar, Filter, X } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts';
+
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHeadCell } from '@/Components/Table/Table';
 
 const CLASS_COLORS = ['#008060','#3b82f6','#f49342','#e32c2b','#6366f1','#06b6d4','#84cc16','#f59e0b'];
@@ -119,26 +119,58 @@ export default function Index({ auth, type, filters, records, stats, classCounts
 
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
-                {/* Stat card */}
+                {/* Custom SVG Multi-Ring Chart */}
                 <div className="bg-white border border-[#ebebeb] rounded-[4px] shadow-sm p-5">
-                    <h3 className="text-[13px] font-bold text-[#202223] mb-3 border-b border-[#ebebeb] pb-2">
+                    <h3 className="text-[13px] font-bold text-[#202223] mb-2 border-b border-[#ebebeb] pb-2">
                         {type === 'student' ? 'Promotions by Class' : 'Promotion Overview'}
                     </h3>
-                    <div className="h-[200px]">
-                        {(classCounts?.length ?? 0) > 0 ? (
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={classCounts} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                    <XAxis dataKey="class" tick={{ fontSize: 10, fill: '#6d7175' }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fontSize: 10, fill: '#6d7175' }} axisLine={false} tickLine={false} allowDecimals={false} />
-                                    <Tooltip contentStyle={{ borderRadius: '6px', fontSize: '12px', border: '1px solid #ebebeb' }} />
-                                    <Bar dataKey="total" name="Promoted" radius={[4,4,0,0]} maxBarSize={40}>
-                                        {classCounts.map((_, i) => <Cell key={i} fill={CLASS_COLORS[i % CLASS_COLORS.length]} />)}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className="h-full flex items-center justify-center text-[13px] text-[#6d7175]">No chart data available</div>
+                    <div className="h-[240px] w-full flex items-center justify-center">
+                        {(classCounts?.length ?? 0) > 0 ? (() => {
+                            const cx = 110, cy = 120;
+                            // Take top 5 to avoid too many rings overlapping
+                            const topClasses = [...classCounts].sort((a, b) => b.total - a.total).slice(0, 5);
+                            const totalAll = classCounts.reduce((acc, curr) => acc + curr.total, 0);
+                            
+                            const rings = topClasses.map((item, idx) => ({
+                                label: item.class,
+                                pct: totalAll > 0 ? Math.round((item.total / totalAll) * 100) : 0,
+                                color: CLASS_COLORS[idx % CLASS_COLORS.length],
+                                r: 85 - (idx * 16)
+                            }));
+                            
+                            const arc = (pct, r) => {
+                                const angle = (pct / 100) * 360;
+                                const rad = (a) => (a - 90) * Math.PI / 180;
+                                const x1 = cx + r * Math.cos(rad(0));
+                                const y1 = cy + r * Math.sin(rad(0));
+                                const x2 = cx + r * Math.cos(rad(Math.min(angle, 359.99)));
+                                const y2 = cy + r * Math.sin(rad(Math.min(angle, 359.99)));
+                                return `M ${x1} ${y1} A ${r} ${r} 0 ${angle >= 180 ? 1 : 0} 1 ${x2} ${y2}`;
+                            };
+                            return (
+                                <svg width="290" height="240" viewBox="0 0 290 240">
+                                    {rings.map((ring, i) => (
+                                        <g key={i}>
+                                            <circle cx={cx} cy={cy} r={ring.r} fill="none" stroke="#f0f0f0" strokeWidth="10" />
+                                            <path d={arc(ring.pct, ring.r)} fill="none" stroke={ring.color} strokeWidth="10" strokeLinecap="round" />
+                                        </g>
+                                    ))}
+                                    <text x={cx} y={cy - 6} textAnchor="middle" fontSize="18" fontWeight="bold" fill="#202223">{totalAll}</text>
+                                    <text x={cx} y={cy + 12} textAnchor="middle" fontSize="10" fill="#6d7175">Total</text>
+                                    {rings.map((ring, i) => (
+                                        <g key={i} transform={`translate(210, ${35 + i * 35})`}>
+                                            <circle cx="6" cy="6" r="6" fill={ring.color} />
+                                            <text x="16" y="9" fontSize="11" fontWeight="bold" fill="#202223">{ring.pct}%</text>
+                                            <text x="16" y="21" fontSize="9" fill="#6d7175" style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} width="65">{ring.label.length > 10 ? ring.label.substring(0, 10) + '..' : ring.label}</text>
+                                        </g>
+                                    ))}
+                                </svg>
+                            );
+                        })() : (
+                            <div className="flex flex-col items-center justify-center text-[#6d7175] text-[13px] h-full">
+                                <TrendingUp size={32} className="mb-2 text-[#d1d1d1]" />
+                                No chart data available
+                            </div>
                         )}
                     </div>
                 </div>

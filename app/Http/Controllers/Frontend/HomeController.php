@@ -11,40 +11,42 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Static Notices for now (to be made dynamic later)
-        $notices = [
-            [
-                'id' => encrypt(1),
-                'title' => 'Admission Open for 2026 Academic Year',
-                'date' => '2025-12-15',
-                'description' => 'Admission process for class 6 to 9 will start from 20th December. Collect forms from the school office.',
-                'is_new' => true,
-            ],
-            [
-                'id' => encrypt(2),
-                'title' => 'Winter Vacation Announcement',
-                'date' => '2025-12-10',
-                'description' => 'The school will remain closed from 25th December to 5th January on account of the winter vacation.',
-                'is_new' => true,
-            ],
-            [
-                'id' => encrypt(3),
-                'title' => 'Annual Sports Competition 2026',
-                'date' => '2025-12-05',
-                'description' => 'Students interested in participating in the annual sports day are requested to submit their names to their respective class teachers.',
-                'is_new' => false,
-            ],
-            [
-                'id' => encrypt(4),
-                'title' => 'Parent-Teacher Meeting for Class 10',
-                'date' => '2025-11-28',
-                'description' => 'A mandatory parent-teacher meeting will be held on the upcoming Saturday to discuss SSC exam preparations.',
-                'is_new' => false,
-            ]
-        ];
+        $dbNotices = \App\Models\Notice::where('status', 'published')
+            ->orderBy('published_at', 'desc')
+            ->take(5)
+            ->get();
+
+        $notices = $dbNotices->map(function($notice) {
+            return [
+                'id' => encrypt($notice->id),
+                'title' => $notice->title,
+                'date' => $notice->published_at ? $notice->published_at->format('Y-m-d') : $notice->created_at->format('Y-m-d'),
+                'description' => $notice->content,
+                'is_new' => $notice->published_at ? $notice->published_at->diffInDays(now()) <= 7 : false,
+            ];
+        });
+
+        $events = \App\Models\Event::where('status', 'published')
+            ->where('date', '>=', now()->toDateString())
+            ->orderBy('date', 'asc')
+            ->take(4)
+            ->get()
+            ->map(function($event) {
+                return [
+                    'id' => encrypt($event->id),
+                    'title' => $event->title,
+                    'slug' => $event->slug,
+                    'description' => $event->description,
+                    'image' => $event->image,
+                    'date' => $event->date->format('Y-m-d'),
+                    'time' => $event->time ? date('h:i A', strtotime($event->time)) : null,
+                    'location' => $event->location,
+                ];
+            });
 
         return Inertia::render('Frontend/Home', [
             'notices' => $notices,
+            'events' => $events,
         ]);
     }
 }

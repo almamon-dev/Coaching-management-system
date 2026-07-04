@@ -3,6 +3,7 @@ import { router, usePage, Link } from "@inertiajs/react";
 import {
     Search, Bell, Menu, Settings, LogOut, Calendar, ChevronDown
 } from "lucide-react";
+import SchoolLogo from "@/Components/SchoolLogo";
 
 const Header = ({ onMenuClick }) => {
     const { auth } = usePage().props;
@@ -42,6 +43,11 @@ const Header = ({ onMenuClick }) => {
                 >
                     <Menu size={20} />
                 </button>
+
+                {/* Mobile: show logo */}
+                <Link href="/" className="flex items-center lg:hidden shrink-0">
+                    <SchoolLogo variant="wide" className="h-[38px]" />
+                </Link>
 
                 {/* MIDDLE: Search Bar */}
                 <div className="w-full max-w-[400px] relative hidden md:block">

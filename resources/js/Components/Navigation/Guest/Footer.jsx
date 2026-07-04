@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Mail, MapPin, Phone, Share2, Camera, MessagesSquare, Video, BookOpen } from 'lucide-react';
+import SchoolLogo from '@/Components/SchoolLogo';
 
 export default function Footer() {
     return (
@@ -8,18 +9,11 @@ export default function Footer() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
                     <div className="space-y-6">
-                        <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-                            <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white shadow-md">
-                                <BookOpen size={20} strokeWidth={2} />
-                            </div>
-                            <div>
-                                <span className="block text-[20px] font-black tracking-tight text-white leading-none">
-                                    Lohadi High School
-                                </span>
-                            </div>
+                        <Link href="/" className="flex-shrink-0">
+                            <SchoolLogo variant="wide" theme="white" className="h-[50px]" />
                         </Link>
                         <p className="text-[14px] leading-relaxed text-indigo-200">
-                            Empowering education through technology. Lohadi High School is a comprehensive enterprise school management system designed to streamline administration and enhance learning.
+                            Knowledge · Discipline · Service. Established in 1968, Kirtonia Yousob Ali Bhuyan High School is committed to nurturing future leaders through quality education and strong values.
                         </p>
                     </div>
 
@@ -103,7 +97,7 @@ export default function Footer() {
                 {/* Bottom bar */}
                 <div className="pt-8 border-t border-indigo-900 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-[14px]">
-                        &copy; {new Date().getFullYear()} Lohadi High School. All rights reserved.
+                        &copy; {new Date().getFullYear()} Kirtonia Yousob Ali Bhuyan High School. All rights reserved.
                     </p>
                     <div className="flex items-center gap-4 text-[14px]">
                         <Link href="#" className="hover:text-white transition-colors">Help Center</Link>

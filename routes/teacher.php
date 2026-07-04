@@ -22,3 +22,6 @@ Route::post('results/generate', [\App\Http\Controllers\Teacher\Examinations\Resu
 Route::get('results/publish', [\App\Http\Controllers\Teacher\Examinations\ResultController::class, 'publishIndex'])->name('results.publishIndex');
 Route::post('results/publish', [\App\Http\Controllers\Teacher\Examinations\ResultController::class, 'publish'])->name('results.publish');
 Route::get('results/{result}/report-card', [\App\Http\Controllers\Teacher\Examinations\ResultController::class, 'reportCard'])->name('results.report-card');
+
+// Events
+Route::resource('events', \App\Http\Controllers\Teacher\EventController::class)->only(['index', 'create', 'store']);

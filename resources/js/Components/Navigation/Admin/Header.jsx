@@ -3,6 +3,7 @@ import { router, usePage, Link } from "@inertiajs/react";
 import {
     Search, Bell, Settings, LogOut, Calendar, ChevronDown, AlignLeft
 } from "lucide-react";
+import SchoolLogo from "@/Components/SchoolLogo";
 
 const Header = ({ onMenuClick, onToggleSidebar }) => {
     const { auth } = usePage().props;
@@ -50,7 +51,11 @@ const Header = ({ onMenuClick, onToggleSidebar }) => {
                 >
                     <AlignLeft size={20} />
                 </button>
-                <h2 className="text-[16px] font-bold text-slate-800 tracking-tight hidden sm:block">
+                {/* Mobile: show logo when sidebar is hidden */}
+                <Link href="/dashboard" className="flex items-center lg:hidden shrink-0">
+                    <SchoolLogo variant="wide" className="h-[38px]" />
+                </Link>
+                <h2 className="text-[16px] font-bold text-slate-800 tracking-tight hidden lg:block">
                     Dashboard
                 </h2>
 

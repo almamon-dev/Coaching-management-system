@@ -36,8 +36,13 @@ class AttendanceReportController extends Controller
 
         // Stats (all users for the date)
         $statsQuery = Attendance::whereDate('date', $date);
-        if ($classId && $userType === 'student') {
-            $statsQuery->whereHas('user.studentProfile.latestEnrollment', fn($q) => $q->where('academic_class_id', $classId));
+        if ($userType === 'teacher') {
+            $statsQuery->whereHas('user.teacherProfile');
+        } else {
+            $statsQuery->whereHas('user.studentProfile');
+            if ($classId) {
+                $statsQuery->whereHas('user.studentProfile.latestEnrollment', fn($q) => $q->where('academic_class_id', $classId));
+            }
         }
         $attendances = $statsQuery->get();
 
@@ -56,8 +61,13 @@ class AttendanceReportController extends Controller
             ->whereMonth('date', Carbon::parse($date)->month)
             ->whereYear('date',  Carbon::parse($date)->year);
 
-        if ($classId && $userType === 'student') {
-            $monthlyQuery->whereHas('user.studentProfile.latestEnrollment', fn($q) => $q->where('academic_class_id', $classId));
+        if ($userType === 'teacher') {
+            $monthlyQuery->whereHas('user.teacherProfile');
+        } else {
+            $monthlyQuery->whereHas('user.studentProfile');
+            if ($classId) {
+                $monthlyQuery->whereHas('user.studentProfile.latestEnrollment', fn($q) => $q->where('academic_class_id', $classId));
+            }
         }
 
         $monthlyData = $monthlyQuery->groupBy('date', 'status')->get()->groupBy('date');

@@ -34,45 +34,45 @@ export default function NoticeShow({ notice, recentNotices }) {
             </div>
 
             {/* Page Header (Hidden in Print) */}
-            <div className="bg-slate-900 py-6 md:py-8 relative overflow-hidden font-inter print:hidden">
+            <div className="bg-slate-900 py-6 relative overflow-hidden font-inter print:hidden">
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
-                <div className="container mx-auto px-4 md:px-8 max-w-8xl relative z-10">
+                <div className="container mx-auto px-4 md:px-8 max-w-7xl relative z-10">
                     <div className="flex items-center gap-2 text-[#16a34a] font-bold text-[10px] uppercase tracking-wider mb-2">
                         <Link href="/" className="hover:text-white transition-colors">Home</Link>
                         <ChevronRight size={10} />
-                        <Link href="/#notice-board" className="hover:text-white transition-colors">Notices</Link>
+                        <Link href={route('notices.index')} className="hover:text-white transition-colors">Notices</Link>
                         <ChevronRight size={10} />
                         <span className="text-slate-400">Notice Details</span>
                     </div>
-                    <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-white leading-tight max-w-4xl">
+                    <h1 className="text-xl md:text-2xl font-black text-white leading-tight max-w-4xl">
                         {notice.title}
                     </h1>
                 </div>
             </div>
 
             {/* Main Content Area */}
-            <section className="py-12 bg-slate-50 font-inter print:py-0 print:bg-white">
-                <div className="container mx-auto px-4 md:px-8 max-w-8xl">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start print:grid-cols-1 print:block">
+            <section className="py-8 bg-transparent font-inter print:py-0 print:bg-white">
+                <div className="container mx-auto px-4 md:px-8 max-w-7xl">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start print:grid-cols-1 print:block">
                         
                         {/* Left Content Column (Notice Details) */}
                         <div className="lg:col-span-2 print:col-span-1">
-                            <div className="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden print:shadow-none print:border-none">
+                            <div className="bg-white rounded border border-slate-200 shadow-sm overflow-hidden print:shadow-none print:border-none">
                                 
                                 {/* Print Only Title */}
-                                <h1 className="hidden print:block text-2xl font-bold text-slate-900 mb-6 px-6 pt-6">
+                                <h1 className="hidden print:block text-2xl font-bold text-slate-900 mb-4 px-5 pt-5">
                                     {notice.title}
                                 </h1>
 
                                 {/* Meta Info Bar */}
-                                <div className="bg-slate-50/50 border-b border-slate-100 p-4 md:p-6 flex flex-wrap items-center justify-between gap-4 print:bg-white print:border-b-2 print:border-slate-800 print:px-6">
-                                    <div className="flex items-center gap-6">
-                                        <div className="flex items-center gap-2 text-slate-600 text-[13px] font-medium print:text-black">
-                                            <Calendar size={16} className="text-[#009ca6] print:hidden" />
+                                <div className="bg-slate-50 border-b border-slate-200 p-4 flex flex-wrap items-center justify-between gap-4 print:bg-white print:border-b-2 print:border-slate-800 print:px-5">
+                                    <div className="flex items-center gap-5">
+                                        <div className="flex items-center gap-2 text-slate-600 text-[12px] font-medium print:text-black">
+                                            <Calendar size={14} className="text-[#009ca6] print:hidden" />
                                             <span><strong className="hidden print:inline">Date:</strong> {formatDate(notice.date)}</span>
                                         </div>
-                                        <div className="flex items-center gap-2 text-slate-600 text-[13px] font-medium print:text-black">
-                                            <User size={16} className="text-[#009ca6] print:hidden" />
+                                        <div className="flex items-center gap-2 text-slate-600 text-[12px] font-medium print:text-black">
+                                            <User size={14} className="text-[#009ca6] print:hidden" />
                                             <span><strong className="hidden print:inline">Issued By:</strong> {notice.author}</span>
                                         </div>
                                     </div>
@@ -80,13 +80,13 @@ export default function NoticeShow({ notice, recentNotices }) {
                                     <div className="flex items-center gap-2 print:hidden">
                                         <button 
                                             onClick={() => window.print()}
-                                            className="p-2 text-slate-400 hover:text-slate-700 bg-white border border-slate-200 rounded-sm hover:bg-slate-50 transition-colors tooltip"
+                                            className="p-1.5 text-slate-400 hover:text-slate-700 bg-white border border-slate-200 rounded hover:bg-slate-50 transition-colors tooltip"
                                             title="Print Notice"
                                         >
                                             <Printer size={16} />
                                         </button>
                                         <button 
-                                            className="p-2 text-slate-400 hover:text-[#16a34a] bg-white border border-slate-200 rounded-sm hover:bg-green-50 transition-colors"
+                                            className="p-1.5 text-slate-400 hover:text-[#16a34a] bg-white border border-slate-200 rounded hover:bg-green-50 transition-colors"
                                             title="Share Notice"
                                         >
                                             <Share2 size={16} />
@@ -95,16 +95,16 @@ export default function NoticeShow({ notice, recentNotices }) {
                                 </div>
 
                                 {/* Notice Body */}
-                                <div className="p-6 md:p-8 lg:p-10 print:px-6 print:py-8">
+                                <div className="p-5 md:p-6 print:px-5 print:py-6">
                                     {notice.is_new && (
-                                        <span className="inline-block bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2.5 py-1 rounded-sm uppercase tracking-wider mb-6 shadow-sm print:hidden">
+                                        <span className="inline-block bg-red-50 text-red-600 border border-red-100 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider mb-4 shadow-sm print:hidden">
                                             Important Update
                                         </span>
                                     )}
                                     
-                                    <div className="prose prose-slate max-w-none text-[15px] md:text-[16px] leading-loose text-slate-700 print:text-black print:leading-relaxed">
+                                    <div className="prose prose-slate max-w-none text-[14px] leading-relaxed text-slate-700 print:text-black">
                                         {notice.description.split('\n').map((paragraph, idx) => (
-                                            <p key={idx} className="mb-4">{paragraph}</p>
+                                            <p key={idx} className="mb-3">{paragraph}</p>
                                         ))}
                                     </div>
 
@@ -152,10 +152,10 @@ export default function NoticeShow({ notice, recentNotices }) {
                         <div className="lg:col-span-1 space-y-6 print:hidden">
                             
                             {/* Recent Notices Widget */}
-                            <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
-                                <div className="bg-slate-50 border-b border-slate-100 p-4">
-                                    <h3 className="text-[16px] font-bold text-slate-900 flex items-center gap-2">
-                                        <FileText size={18} className="text-[#009ca6]" />
+                            <div className="bg-white border border-slate-200 shadow-sm rounded overflow-hidden">
+                                <div className="bg-slate-50 border-b border-slate-200 p-3.5">
+                                    <h3 className="text-[14px] font-bold text-slate-900 flex items-center gap-2">
+                                        <FileText size={16} className="text-[#009ca6]" />
                                         Other Recent Notices
                                     </h3>
                                 </div>
@@ -180,17 +180,17 @@ export default function NoticeShow({ notice, recentNotices }) {
                                         <div className="p-4 text-sm text-slate-500 text-center">No other notices.</div>
                                     )}
                                 </div>
-                                <div className="bg-slate-50 p-3 border-t border-slate-100 text-center">
-                                    <Link href="/#notice-board" className="text-[12px] font-bold text-[#16a34a] hover:underline">
+                                <div className="bg-slate-50 p-2.5 border-t border-slate-200 text-center">
+                                    <Link href={route('notices.index')} className="text-[11px] font-bold text-[#16a34a] hover:underline uppercase tracking-wider">
                                         View All Notices
                                     </Link>
                                 </div>
                             </div>
 
                             {/* Important Links Widget */}
-                            <div className="border border-[#009ca6]/20 shadow-sm overflow-hidden bg-gradient-to-b from-[#f4fbfa] to-white rounded-lg">
-                                <div className="bg-[#009ca6] py-3 px-4">
-                                    <h3 className="text-[16px] font-bold text-white tracking-wide">Quick Links</h3>
+                            <div className="border border-[#009ca6]/20 shadow-sm overflow-hidden bg-[#f4fbfa] rounded">
+                                <div className="bg-[#009ca6] py-2.5 px-3.5">
+                                    <h3 className="text-[14px] font-bold text-white tracking-wide">Quick Links</h3>
                                 </div>
                                 <div className="flex flex-col py-2">
                                     {[

@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Route;
     Route::patch('pages/{page}/status', [\App\Http\Controllers\Admin\Page\PageController::class, 'updateStatus'])->name('pages.status');
     Route::resource('pages', \App\Http\Controllers\Admin\Page\PageController::class);
 
+    // Notices & Events
+    Route::resource('notices', \App\Http\Controllers\Admin\NoticeController::class);
+    Route::resource('events', \App\Http\Controllers\Admin\EventController::class);
+    Route::post('events/{event}/approve', [\App\Http\Controllers\Admin\EventController::class, 'approve'])->name('events.approve');
+    Route::post('events/{event}/reject', [\App\Http\Controllers\Admin\EventController::class, 'reject'])->name('events.reject');
+
     // Attendance Management
     Route::get('attendance', [\App\Http\Controllers\Admin\Attendance\AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('attendance', [\App\Http\Controllers\Admin\Attendance\AttendanceController::class, 'store'])->name('attendance.store');
@@ -101,6 +107,7 @@ use Illuminate\Support\Facades\Route;
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('promotions', [\App\Http\Controllers\Admin\Reports\PromotionReportController::class, 'index'])->name('promotions.index');
         Route::get('students', [\App\Http\Controllers\Admin\Reports\StudentReportController::class, 'index'])->name('students.index');
+        Route::get('teachers', [\App\Http\Controllers\Admin\Reports\TeacherReportController::class, 'index'])->name('teachers.index');
         Route::get('attendance', [\App\Http\Controllers\Admin\Reports\AttendanceReportController::class, 'index'])->name('attendance.index');
         Route::get('exams', [\App\Http\Controllers\Admin\Reports\ExamReportController::class, 'index'])->name('exams.index');
     });

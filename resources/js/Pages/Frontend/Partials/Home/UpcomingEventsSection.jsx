@@ -1,7 +1,15 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 
-export default function UpcomingEventsSection() {
+export default function UpcomingEventsSection({ events = [] }) {
+    // Array of color themes for the date box and accents
+    const eventColors = [
+        { main: 'text-rose-600', border: 'border-rose-500', bg: 'bg-rose-100', icon: 'text-rose-500' },
+        { main: 'text-emerald-600', border: 'border-emerald-500', bg: 'bg-emerald-100', icon: 'text-emerald-500' },
+        { main: 'text-blue-600', border: 'border-blue-500', bg: 'bg-blue-100', icon: 'text-blue-500' },
+        { main: 'text-amber-600', border: 'border-amber-500', bg: 'bg-amber-100', icon: 'text-amber-500' },
+    ];
+
     return (
         <section className="py-16 bg-transparent">
             <div className="container mx-auto px-4 md:px-8 max-w-8xl">
@@ -17,86 +25,55 @@ export default function UpcomingEventsSection() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Event Card 1 */}
-                    <div className="bg-white rounded-sm overflow-hidden shadow-sm border border-slate-100 flex flex-col sm:flex-row group">
-                        <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
-                            <img src="/images/event_harvest.png" alt="Harvest Festival" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                            <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-center shadow-lg border-b-2 border-rose-500 min-w-[55px]">
-                                <span className="block text-rose-600 font-bold text-[10px] uppercase mb-0.5">Mar</span>
-                                <span className="block text-xl font-black text-slate-900 leading-none">15</span>
-                            </div>
-                        </div>
-                        <div className="p-4 sm:p-5 flex flex-col justify-center">
-                            <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider">
-                                <span className="flex items-center gap-1.5"><svg className="w-3.5 h-3.5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 10:00 AM</span>
-                                <span className="flex items-center gap-1.5"><svg className="w-3.5 h-3.5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Main Field</span>
-                            </div>
-                            <h3 className="text-[17px] font-bold text-slate-900 mb-1.5 group-hover:text-rose-600 transition-colors leading-snug">Spring Harvest Festival & Cultural Show</h3>
-                            <p className="text-slate-600 text-[13px] leading-relaxed mb-3 line-clamp-2">Join us for a celebration of local culture, agriculture, and student performances in our open-air campus ground.</p>
-                            <a href="#" className="mt-auto text-rose-600 font-bold text-[13px] inline-flex items-center group-hover:gap-1.5 transition-all">Read More <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></a>
-                        </div>
-                    </div>
+                    {events && events.length > 0 ? (
+                        events.map((event, index) => {
+                            const colors = eventColors[index % eventColors.length];
+                            const eventDate = new Date(event.date);
+                            const month = eventDate.toLocaleString('default', { month: 'short' });
+                            const day = eventDate.getDate().toString().padStart(2, '0');
 
-                    {/* Event Card 2 */}
-                    <div className="bg-white rounded-sm overflow-hidden shadow-sm border border-slate-100 flex flex-col sm:flex-row group">
-                        <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
-                            <img src="/images/event_science.png" alt="Science Fair" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                            <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-center shadow-lg border-b-2 border-emerald-500 min-w-[55px]">
-                                <span className="block text-emerald-600 font-bold text-[10px] uppercase mb-0.5">Mar</span>
-                                <span className="block text-xl font-black text-slate-900 leading-none">22</span>
-                            </div>
+                            return (
+                                <div key={event.id} className="bg-white rounded-sm overflow-hidden shadow-sm border border-slate-100 flex flex-col sm:flex-row group">
+                                    <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
+                                        <img src={event.image || '/images/default_event.png'} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                        <div className={`absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-center shadow-lg border-b-2 ${colors.border} min-w-[55px]`}>
+                                            <span className={`block ${colors.main} font-bold text-[10px] uppercase mb-0.5`}>{month}</span>
+                                            <span className="block text-xl font-black text-slate-900 leading-none">{day}</span>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 sm:p-5 flex flex-col justify-center">
+                                        <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider">
+                                            {event.time && (
+                                                <span className="flex items-center gap-1.5">
+                                                    <svg className={`w-3.5 h-3.5 ${colors.icon}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
+                                                    {event.time}
+                                                </span>
+                                            )}
+                                            {event.location && (
+                                                <span className="flex items-center gap-1.5">
+                                                    <svg className={`w-3.5 h-3.5 ${colors.icon}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> 
+                                                    {event.location}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <h3 className={`text-[17px] font-bold text-slate-900 mb-1.5 group-hover:${colors.main} transition-colors leading-snug`}>
+                                            {event.title}
+                                        </h3>
+                                        <p className="text-slate-600 text-[13px] leading-relaxed mb-3 line-clamp-2">
+                                            {event.description}
+                                        </p>
+                                        <Link href={`/events/${event.slug}`} className={`mt-auto ${colors.main} font-bold text-[13px] inline-flex items-center group-hover:gap-1.5 transition-all`}>
+                                            Read More <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                                        </Link>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="col-span-full py-12 text-center text-slate-500">
+                            No upcoming events at the moment. Please check back later.
                         </div>
-                        <div className="p-4 sm:p-5 flex flex-col justify-center">
-                            <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider">
-                                <span className="flex items-center gap-1.5"><svg className="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 09:00 AM</span>
-                                <span className="flex items-center gap-1.5"><svg className="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Outdoor Lab</span>
-                            </div>
-                            <h3 className="text-[17px] font-bold text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors leading-snug">Inter-School Outdoor Science Fair</h3>
-                            <p className="text-slate-600 text-[13px] leading-relaxed mb-3 line-clamp-2">Students from neighboring villages will gather to demonstrate eco-friendly science projects and innovations.</p>
-                            <a href="#" className="mt-auto text-emerald-600 font-bold text-[13px] inline-flex items-center group-hover:gap-1.5 transition-all">Read More <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></a>
-                        </div>
-                    </div>
-
-                    {/* Event Card 3 */}
-                    <div className="bg-white rounded-sm overflow-hidden shadow-sm border border-slate-100 flex flex-col sm:flex-row group">
-                        <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
-                            <img src="/images/event_football.png" alt="Football Championship" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                            <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-center shadow-lg border-b-2 border-blue-500 min-w-[55px]">
-                                <span className="block text-blue-600 font-bold text-[10px] uppercase mb-0.5">Apr</span>
-                                <span className="block text-xl font-black text-slate-900 leading-none">05</span>
-                            </div>
-                        </div>
-                        <div className="p-4 sm:p-5 flex flex-col justify-center">
-                            <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider">
-                                <span className="flex items-center gap-1.5"><svg className="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 03:00 PM</span>
-                                <span className="flex items-center gap-1.5"><svg className="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Stadium</span>
-                            </div>
-                            <h3 className="text-[17px] font-bold text-slate-900 mb-1.5 group-hover:text-blue-600 transition-colors leading-snug">Annual Football Championship Final</h3>
-                            <p className="text-slate-600 text-[13px] leading-relaxed mb-3 line-clamp-2">The most awaited sports event of the year! Cheer for your favorite houses as they battle for the cup.</p>
-                            <a href="#" className="mt-auto text-blue-600 font-bold text-[13px] inline-flex items-center group-hover:gap-1.5 transition-all">Read More <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></a>
-                        </div>
-                    </div>
-
-                    {/* Event Card 4 */}
-                    <div className="bg-white rounded-sm overflow-hidden shadow-sm border border-slate-100 flex flex-col sm:flex-row group">
-                        <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
-                            <img src="/images/event_boishakh.png" alt="Pohela Boishakh" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                            <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-center shadow-lg border-b-2 border-amber-500 min-w-[55px]">
-                                <span className="block text-amber-600 font-bold text-[10px] uppercase mb-0.5">Apr</span>
-                                <span className="block text-xl font-black text-slate-900 leading-none">14</span>
-                            </div>
-                        </div>
-                        <div className="p-4 sm:p-5 flex flex-col justify-center">
-                            <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider">
-                                <span className="flex items-center gap-1.5"><svg className="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 08:00 AM</span>
-                                <span className="flex items-center gap-1.5"><svg className="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> School Courtyard</span>
-                            </div>
-                            <h3 className="text-[17px] font-bold text-slate-900 mb-1.5 group-hover:text-amber-600 transition-colors leading-snug">Pohela Boishakh Celebration</h3>
-                            <p className="text-slate-600 text-[13px] leading-relaxed mb-3 line-clamp-2">Celebrate the Bengali New Year with traditional food, music, and vibrant rallies across the campus.</p>
-                            <a href="#" className="mt-auto text-amber-600 font-bold text-[13px] inline-flex items-center group-hover:gap-1.5 transition-all">Read More <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></a>
-                        </div>
-                    </div>
-
+                    )}
                 </div>
             </div>
         </section>

@@ -1,33 +1,15 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, router } from '@inertiajs/react';
-import { Bell, Check, Mail, Star, CreditCard } from 'lucide-react';
+import { Head, router, Link } from '@inertiajs/react';
+import { Bell, Check, Megaphone, Info } from 'lucide-react';
 
 const Index = ({ auth, notifications }) => {
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    const hasCursor = searchParams.has('cursor');
-    const startIdx = hasCursor ? parseInt(searchParams.get('start_index') || '1', 10) : 1;
-    const perPage = 20;
     const count = notifications.data?.length || 0;
-
-    const fromIdx = count > 0 ? startIdx : 0;
-    const toIdx = count > 0 ? startIdx + count - 1 : 0;
-
-    const getPaginatedUrl = (url, nextStartIndex) => {
-        if (!url) return null;
-        try {
-            const urlObj = new URL(url, window.location.origin);
-            urlObj.searchParams.set('start_index', nextStartIndex.toString());
-            return urlObj.pathname + urlObj.search;
-        } catch (e) {
-            return url;
-        }
-    };
-
-    const prevUrl = getPaginatedUrl(notifications.prev_page_url, Math.max(1, startIdx - perPage));
-    const nextUrl = getPaginatedUrl(notifications.next_page_url, startIdx + perPage);
+    const fromIdx = notifications.from || 0;
+    const toIdx = notifications.to || 0;
+    const total = notifications.total || 0;
 
     const markAllAsRead = () => {
         setIsProcessing(true);
@@ -37,31 +19,19 @@ const Index = ({ auth, notifications }) => {
         });
     };
 
-    const handlePageChange = (url) => {
-        if (!url) return;
-        router.get(url, {}, { preserveState: true, preserveScroll: true });
-    };
-
-    const handlePerPageChange = (e) => {
-        router.get(route('admin.notifications.index'), { per_page: e.target.value }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
-    };
-
     const getIcon = (type) => {
         switch (type) {
-            case 'question': return <Mail size={18} />;
-            case 'review': return <Star size={18} />;
-            default: return <CreditCard size={18} />;
+            case 'announcement': return <Megaphone size={18} />;
+            case 'notice': return <Info size={18} />;
+            default: return <Bell size={18} />;
         }
     };
 
     const getIconClass = (type) => {
         switch (type) {
-            case 'question': return 'bg-blue-50 text-blue-600';
-            case 'review': return 'bg-orange-50 text-orange-600';
-            default: return 'bg-slate-50 text-slate-600';
+            case 'announcement': return 'bg-amber-50 text-amber-600 border border-amber-100';
+            case 'notice': return 'bg-blue-50 text-blue-600 border border-blue-100';
+            default: return 'bg-slate-50 text-slate-600 border border-slate-100';
         }
     };
 
@@ -69,120 +39,79 @@ const Index = ({ auth, notifications }) => {
         <AdminLayout user={auth?.user}>
             <Head title="Notifications" />
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-[20px] font-bold text-[#081621] tracking-tight">Notifications</h1>
-                    <p className="text-slate-400 text-[11px] font-medium mt-1">View and manage all system notifications</p>
+                    <h1 className="text-[20px] font-bold text-[#202223] tracking-tight">Notifications</h1>
+                    <p className="text-[#6d7175] text-[13px] mt-0.5 font-medium">View and manage all system notifications</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={markAllAsRead}
                         disabled={isProcessing || auth.user.unread_notifications_count === 0}
-                        className="h-[38px] px-4 border border-slate-200 text-slate-600 rounded-[2px] flex items-center gap-1.5 hover:bg-slate-50 transition-all font-bold text-[11px] disabled:opacity-50"
+                        className="px-4 py-1.5 border border-[#ebebeb] text-[#202223] bg-white rounded-[3px] flex items-center gap-2 hover:bg-slate-50 transition-all font-bold text-[12px] shadow-sm disabled:opacity-50"
                     >
                         <Check size={14} /> Mark all as read
                     </button>
                 </div>
             </div>
 
-            <div className="space-y-4">
-                {notifications.data.length > 0 ? (
-                    notifications.data.map((notif) => (
-                        <div
-                            key={notif.id}
-                            className={`bg-white p-5 rounded-[4px] border border-slate-200 transition-all relative overflow-hidden ${notif.read_at ? 'opacity-75' : ''}`}
-                        >
-                            <div className="flex gap-4">
-                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${getIconClass(notif.data.type)}`}>
+            <div className="bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] overflow-hidden">
+                <div className="divide-y divide-[#ebebeb]">
+                    {notifications.data.length > 0 ? (
+                        notifications.data.map((notif) => (
+                            <div
+                                key={notif.id}
+                                className={`p-4 transition-all relative flex gap-4 items-start ${!notif.read_at ? 'bg-blue-50/20' : 'hover:bg-slate-50'}`}
+                            >
+                                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${getIconClass(notif.data.type)}`}>
                                     {getIcon(notif.data.type)}
                                 </div>
-                                <div className="flex-1 min-w-0">
+                                <div className="flex-1 min-w-0 pt-0.5">
                                     <div className="flex items-center justify-between gap-4 mb-1">
-                                        <h3 className="text-[14px] font-bold text-[#081621] truncate">
-                                            {notif.data.title || 'Notification'}
+                                        <h3 className={`text-[13px] ${!notif.read_at ? 'font-bold text-[#202223]' : 'font-semibold text-slate-700'} truncate`}>
+                                            {notif.data.title || 'System Notification'}
                                         </h3>
-                                        <span className="text-[11px] text-slate-400 font-medium whitespace-nowrap">
+                                        <span className="text-[11px] text-[#6d7175] font-medium whitespace-nowrap shrink-0">
                                             {new Date(notif.created_at).toLocaleString('en-GB', {
-                                                day: '2-digit',
-                                                month: 'short',
-                                                year: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                                hour12: true
+                                                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true
                                             })}
                                         </span>
                                     </div>
-
-                                    <p className="text-[13px] text-slate-500 leading-relaxed">
+                                    <p className={`text-[13px] ${!notif.read_at ? 'text-slate-800' : 'text-[#6d7175]'} leading-relaxed`}>
                                         {notif.data.message}
                                     </p>
-
-                                    {notif.data.content && (
-                                        <div className="mt-2">
-                                            <p className="text-[13px] text-[#081621] font-medium leading-relaxed">
-                                                <span className="text-[#3749bb] font-bold mr-1.5">
-                                                    {notif.data.type === 'question' ? 'Q:' : 'Review:'}
-                                                </span>
-                                                {notif.data.content}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {notif.data.action_url && (
-                                        <div className="mt-3">
-                                            <a
-                                                href={notif.data.action_url}
-                                                className="inline-flex items-center gap-1 text-[11px] text-[#ef4a23] font-bold hover:underline"
-                                            >
-                                                View Details
-                                            </a>
-                                        </div>
-                                    )}
                                 </div>
+                                {!notif.read_at && (
+                                    <div className="w-2 h-2 rounded-full bg-[#008060] shrink-0 mt-2"></div>
+                                )}
                             </div>
+                        ))
+                    ) : (
+                        <div className="p-12 text-center">
+                            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Bell size={24} className="text-slate-300" />
+                            </div>
+                            <h3 className="text-[14px] font-bold text-[#202223]">No notifications yet</h3>
+                            <p className="text-[13px] text-[#6d7175] mt-1">When you receive notifications, they will appear here.</p>
                         </div>
-                    ))
-                ) : (
-                    <div className="bg-white p-20 text-center rounded-[4px] border border-slate-200">
-                        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Bell size={32} className="text-slate-200" />
-                        </div>
-                        <h3 className="text-[15px] font-bold text-slate-900">No notifications yet</h3>
-                        <p className="text-[13px] text-slate-400 mt-1">When you receive notifications, they will appear here.</p>
-                    </div>
-                )}
+                    )}
+                </div>
 
-                {/* Custom Style Pagination */}
-                {(notifications.prev_page_url || notifications.next_page_url) && (
-                    <div className="flex items-center justify-between gap-1 mt-4">
-                        <span className="text-[12px] text-slate-500 font-bold tabular-nums">
-                            {fromIdx} - {toIdx}
-                        </span>
-                        <div className="flex items-center gap-1">
-                            <button
-                                onClick={() => handlePageChange(prevUrl)}
-                                disabled={!prevUrl}
-                                className={`
-                                    px-[11px] h-[25px] flex items-center justify-center text-[11px] font-[600] rounded-[2px] transition-all uppercase tracking-wider
-                                    ${!prevUrl
-                                        ? 'text-slate-400 bg-slate-50 cursor-not-allowed'
-                                        : 'text-[#081621] bg-slate-100 hover:bg-slate-200'}
-                                `}
-                            >
-                                Prev
-                            </button>
-                            <button
-                                onClick={() => handlePageChange(nextUrl)}
-                                disabled={!nextUrl}
-                                className={`
-                                    px-[11px] h-[25px] flex items-center justify-center text-[11px] font-[600] rounded-[2px] transition-all uppercase tracking-wider
-                                    ${!nextUrl
-                                        ? 'text-slate-400 bg-slate-50 cursor-not-allowed'
-                                        : 'text-[#081621] bg-slate-100 hover:bg-slate-200'}
-                                `}
-                            >
-                                Next
-                            </button>
+                {/* Pagination */}
+                {notifications.links && notifications.links.length > 3 && (
+                    <div className="px-4 py-3 border-t border-[#ebebeb] flex items-center justify-between bg-slate-50/50">
+                        <div className="text-[12px] text-[#6d7175]">
+                            Showing {fromIdx} to {toIdx} of {total} results
+                        </div>
+                        <div className="flex gap-1">
+                            {notifications.links.map((link, idx) => (
+                                <Link 
+                                    key={idx} 
+                                    href={link.url || '#'} 
+                                    className={`px-3 py-1 text-[12px] border rounded-[3px] ${link.active ? 'bg-[#008060] text-white border-[#008060]' : 'bg-white text-[#202223] border-[#ebebeb] hover:bg-slate-50'} ${!link.url && 'opacity-50 cursor-not-allowed'}`}
+                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                />
+                            ))}
                         </div>
                     </div>
                 )}

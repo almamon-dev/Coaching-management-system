@@ -48,9 +48,12 @@ class StudentReportController extends Controller
         $classes = AcademicClass::orderBy('numeric_value', 'asc')->get();
         $classDistribution = [];
         foreach ($classes as $class) {
+            $classEnrollments = $allEnrollments->where('academic_class_id', $class->id);
             $classDistribution[] = [
-                'name' => $class->name,
-                'students' => $allEnrollments->where('academic_class_id', $class->id)->count(),
+                'name'     => $class->name,
+                'students' => $classEnrollments->count(),
+                'male'     => $classEnrollments->filter(fn($e) => $e->studentProfile && strtolower($e->studentProfile->gender) === 'male')->count(),
+                'female'   => $classEnrollments->filter(fn($e) => $e->studentProfile && strtolower($e->studentProfile->gender) === 'female')->count(),
             ];
         }
 
