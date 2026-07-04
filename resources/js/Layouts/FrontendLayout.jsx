@@ -4,6 +4,7 @@ import Footer from '@/Components/Navigation/Guest/Footer';
 import LoadingOverlay from '@/Components/ui/LoadingOverlay';
 import { usePage } from '@inertiajs/react';
 import { useToast } from '@/Hooks/use-toast';
+import Lenis from 'lenis';
 
 /**
  * FrontendLayout Component
@@ -34,6 +35,28 @@ const FrontendLayout = ({ children }) => {
             });
         }
     }, [flash, toast]);
+
+    // Lenis Smooth Scroll Initialization
+    useEffect(() => {
+        const lenis = new Lenis({
+            duration: 1.2, // Reduced from 1.2 for faster scroll
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+
+        requestAnimationFrame(raf);
+
+        return () => {
+            lenis.destroy();
+        };
+    }, []);
 
     return (
         <div className="min-h-screen flex flex-col relative overflow-x-hidden font-inter selection:bg-[#16a34a] selection:text-white bg-gradient-to-r from-white via-[#f0f9f8] to-[#ccece6] print:bg-none print:bg-white">

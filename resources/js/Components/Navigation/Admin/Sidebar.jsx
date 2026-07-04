@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import SchoolLogo from "@/Components/SchoolLogo";
 import { Link, usePage } from "@inertiajs/react";
 import {
     LayoutDashboard,
@@ -327,22 +328,13 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
         <div className="w-full h-full flex flex-col bg-white border-r border-slate-200/60 relative select-none">
             {/* BRANDING HEADER */}
             <div className="h-[70px] flex items-center px-4 shrink-0 bg-white border-b border-slate-200/60 overflow-hidden relative">
-                {!isCollapsed && (
-                    <Link href="/dashboard" className="flex items-center px-3 h-[70px]">
-                        <img
-                            src="/images/school-logo-wide.png"
-                            alt="School Logo"
-                            className="h-[50px] w-auto"
-                        />
+                {!isCollapsed ? (
+                    <Link href="/dashboard" className="flex items-center px-2 h-[70px]">
+                        <SchoolLogo variant="wide" />
                     </Link>
-                )}
-                {isCollapsed && (
+                ) : (
                     <Link href="/dashboard" className="flex items-center justify-center w-full h-[70px]">
-                        <img
-                            src="/images/school-logo-wide.png"
-                            alt="School Logo"
-                            className="h-[40px] w-auto"
-                        />
+                        <SchoolLogo variant="icon" />
                     </Link>
                 )}
             </div>

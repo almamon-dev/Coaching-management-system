@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { Search, ChevronDown, Menu, X, Share2, Phone, Video } from 'lucide-react';
 import { useTranslation } from '@/Hooks/useTranslation';
+import SchoolLogo from '@/Components/SchoolLogo';
 
 export default function Header() {
     const { auth } = usePage().props;
@@ -106,11 +107,7 @@ export default function Header() {
 
                     {/* Logo */}
                     <Link href="/" className="flex-shrink-0">
-                        <img
-                            src="/images/school-logo-wide.png"
-                            alt="Kirtonia Yousob Ali Bhuyan High School"
-                            className="h-[52px] w-auto"
-                        />
+                        <SchoolLogo variant="wide" />
                     </Link>
 
                     {/* Desktop Navigation */}
