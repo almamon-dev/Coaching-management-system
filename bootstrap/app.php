@@ -47,12 +47,31 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
  
         $middleware->redirectTo(function (\Illuminate\Http\Request $request) {
-            if ($request->is('admin/*') || $request->is('admin')) {
+            if ($request->is('admin/*') || $request->is('admin-login')) {
                 return route('admin.login');
             }
-            return route('login');
+            if ($request->is('teacher/*') || $request->is('teacher-login')) {
+                return route('teacher.login');
+            }
+            return route('student.login');
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, \Illuminate\Http\Request $request) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'This action is unauthorized.'], 403);
+            }
+            return \Inertia\Inertia::render('Errors/403', [
+                'message' => 'You do not have the required role or permission to access this page.'
+            ])->toResponse($request)->setStatusCode(403);
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, \Illuminate\Http\Request $request) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'This action is unauthorized.'], 403);
+            }
+            return \Inertia\Inertia::render('Errors/403', [
+                'message' => $e->getMessage() !== 'This action is unauthorized.' ? $e->getMessage() : 'You do not have permission to access this page.'
+            ])->toResponse($request)->setStatusCode(403);
+        });
     })->create();

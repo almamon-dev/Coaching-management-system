@@ -3,10 +3,10 @@ import { Head, Link } from '@inertiajs/react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import { Mail, Phone, GraduationCap, MonitorSmartphone, ClipboardCheck, Users } from 'lucide-react';
 
-export default function FacultyIndex({ faculties = [] }) {
+export default function FacultyIndex({ faculties = [], departments = [] }) {
     const [activeFilter, setActiveFilter] = useState('All Departments');
 
-    const departments = ['All Departments', 'Science', 'Business Studies', 'Humanities', 'Physical Education'];
+    const filterOptions = ['All Departments', ...departments];
 
     const filteredFaculties = activeFilter === 'All Departments' 
         ? faculties 
@@ -33,7 +33,7 @@ export default function FacultyIndex({ faculties = [] }) {
                     
                     {/* Filters */}
                     <div className="flex flex-wrap gap-3 mb-8">
-                        {departments.map((dept) => (
+                        {filterOptions.map((dept) => (
                             <button 
                                 key={dept}
                                 onClick={() => setActiveFilter(dept)}
@@ -48,46 +48,46 @@ export default function FacultyIndex({ faculties = [] }) {
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {filteredFaculties && filteredFaculties.length > 0 ? (
                             filteredFaculties.map((faculty) => (
                                 <Link
                                     href={route('faculties.show', faculty.id)}
                                     key={faculty.id}
-                                    className="relative group rounded-[24px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden p-[2px] flex flex-col"
+                                    className="relative group rounded-[20px] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden p-[2px] flex flex-col"
                                 >
                                     {/* Animated Running Border Background */}
                                     <div className="absolute inset-[-50%] bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0%,#16a34a_25%,transparent_50%,#009ca6_75%,transparent_100%)] opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                                     {/* Actual Card Content with Glass and Grid */}
-                                    <div className="relative rounded-[22px] bg-white/90 backdrop-blur-md p-8 w-full h-full flex flex-col items-center text-center z-10">
-                                        <div className="absolute inset-0 opacity-[0.02] pointer-events-none rounded-[22px]" style={{ backgroundImage: 'linear-gradient(#16a34a 1px, transparent 1px), linear-gradient(90deg, #16a34a 1px, transparent 1px)', backgroundSize: '16px 16px' }}></div>
+                                    <div className="relative rounded-[18px] bg-white/90 backdrop-blur-md p-6 w-full h-full flex flex-col items-center text-center z-10">
+                                        <div className="absolute inset-0 opacity-[0.02] pointer-events-none rounded-[18px]" style={{ backgroundImage: 'linear-gradient(#16a34a 1px, transparent 1px), linear-gradient(90deg, #16a34a 1px, transparent 1px)', backgroundSize: '16px 16px' }}></div>
 
                                         {/* Faculty Image */}
-                                        <div className="w-24 h-24 rounded-full overflow-hidden mb-5 shadow-inner relative z-10 border-4 border-white ring-4 ring-slate-100/50 group-hover:ring-[#16a34a]/20 transition-all duration-500">
+                                        <div className="w-20 h-20 rounded-full overflow-hidden mb-4 shadow-inner relative z-10 border-[3px] border-white ring-[3px] ring-slate-100/50 group-hover:ring-[#16a34a]/20 transition-all duration-500">
                                             <img src={faculty.image} alt={faculty.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                         </div>
 
                                         {/* Department Badge */}
-                                        <span className="px-3 py-1 bg-slate-100 text-slate-700 text-[11px] font-bold rounded-full uppercase tracking-wider mb-4 border border-slate-200/60 group-hover:bg-[#16a34a]/10 group-hover:text-[#16a34a] group-hover:border-transparent transition-all duration-300">
+                                        <span className="px-2.5 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-bold rounded-full uppercase tracking-wider mb-3 border border-slate-200/60 group-hover:bg-[#16a34a]/10 group-hover:text-[#16a34a] group-hover:border-transparent transition-all duration-300">
                                             {faculty.department}
                                         </span>
 
                                         {/* Name & Role */}
-                                        <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mb-1 group-hover:text-[#009ca6] transition-colors duration-300">{faculty.name}</h3>
-                                        <p className="text-[13px] font-medium text-slate-500 mb-6">{faculty.role}</p>
+                                        <h3 className="text-lg font-extrabold text-slate-900 tracking-tight mb-0.5 group-hover:text-[#009ca6] transition-colors duration-300">{faculty.name}</h3>
+                                        <p className="text-[12px] font-medium text-slate-500 mb-4">{faculty.role}</p>
 
                                         {/* Divider */}
-                                        <div className="w-12 h-[2px] bg-slate-200/80 rounded-full mb-6 group-hover:w-20 transition-all duration-300"></div>
+                                        <div className="w-10 h-[2px] bg-slate-200/80 rounded-full mb-4 group-hover:w-16 transition-all duration-300"></div>
 
                                         {/* Contact Info */}
-                                        <div className="flex flex-col gap-3 w-full text-[13px] font-medium text-slate-600 mt-auto">
-                                            <div className="flex items-center justify-center gap-2.5 hover:text-[#009ca6] transition-colors py-1 rounded-lg hover:bg-slate-50/80">
-                                                <Mail size={15} className="text-slate-400 group-hover:text-[#009ca6] transition-colors" strokeWidth={2} />
-                                                <span className="truncate max-w-[200px]">{faculty.email}</span>
+                                        <div className="flex flex-col gap-2 w-full text-[12px] font-medium text-slate-600 mt-auto">
+                                            <div className="flex items-center justify-center gap-2 hover:text-[#009ca6] transition-colors py-0.5 rounded-lg hover:bg-slate-50/80">
+                                                <Mail size={14} className="text-slate-400 group-hover:text-[#009ca6] transition-colors" strokeWidth={2} />
+                                                <span className="truncate max-w-[180px]">{faculty.email}</span>
                                             </div>
-                                            <div className="flex items-center justify-center gap-2.5 hover:text-[#009ca6] transition-colors py-1 rounded-lg hover:bg-slate-50/80">
-                                                <Phone size={15} className="text-slate-400 group-hover:text-[#009ca6] transition-colors" strokeWidth={2} />
+                                            <div className="flex items-center justify-center gap-2 hover:text-[#009ca6] transition-colors py-0.5 rounded-lg hover:bg-slate-50/80">
+                                                <Phone size={14} className="text-slate-400 group-hover:text-[#009ca6] transition-colors" strokeWidth={2} />
                                                 <span>{faculty.phone}</span>
                                             </div>
                                         </div>

@@ -102,6 +102,8 @@ class TeacherController extends Controller
                 'email_verified_at' => now(),
             ]);
 
+            $user->assignRole('teacher');
+
 
             // 2. Generate Employee ID
             $year = date('Y');

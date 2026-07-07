@@ -16,14 +16,14 @@ class UserRepository
      */
     public function getUserList(Request $request): array
     {
-        $query = User::where('user_type', 'admin')->with(['roles', 'invitedBy']);
+        $query = User::whereIn('user_type', ['admin', 'staff', 'teacher'])->with(['roles']);
 
         // Search filter
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('email', 'like', '%' . $search . '%');
+                    ->orWhere('email', 'like', '%' . $search . '%');
             });
         }
 
@@ -50,13 +50,13 @@ class UserRepository
 
         // Pagination
         $perPage = $request->input('per_page', 10);
-        $users = $query->cursorPaginate($perPage)->withQueryString();
+        $users = $query->paginate($perPage)->withQueryString();
 
         // Calculate some basic stats for tabs
         $stats = [
-            'all' => User::where('user_type', 'admin')->count(),
-            'active' => User::where('user_type', 'admin')->where('status', 'active')->count(),
-            'inactive' => User::where('user_type', 'admin')->where('status', 'disabled')->count(),
+            'all' => User::whereIn('user_type', ['admin', 'staff', 'teacher'])->count(),
+            'active' => User::whereIn('user_type', ['admin', 'staff', 'teacher'])->where('status', 'active')->count(),
+            'inactive' => User::whereIn('user_type', ['admin', 'staff', 'teacher'])->where('status', 'disabled')->count(),
         ];
 
         return compact('users', 'stats');
@@ -149,7 +149,7 @@ class UserRepository
             return 0;
         }
 
-        return User::whereIn('id', $targetIds)->where('user_type', 'admin')->delete();
+        return User::whereIn('id', $targetIds)->whereIn('user_type', ['admin', 'staff', 'teacher'])->delete();
     }
 
     /**
@@ -166,6 +166,6 @@ class UserRepository
             return 0;
         }
 
-        return User::whereIn('id', $targetIds)->where('user_type', 'admin')->update(['status' => $status]);
+        return User::whereIn('id', $targetIds)->whereIn('user_type', ['admin', 'staff', 'teacher'])->update(['status' => $status]);
     }
 }

@@ -18,59 +18,67 @@ class RoleAndPermissionSeeder extends Seeder
         // 1. Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // 2. Define permissions grouped by modules
+        // 2. Define permissions grouped by modules for School Management System
         $permissionsByModule = [
-            'products' => [
-                'view-products',
-                'create-products',
-                'edit-products',
-                'delete-products',
+            'academic' => [
+                'view-academic',
+                'create-academic',
+                'edit-academic',
+                'delete-academic',
             ],
-            'categories' => [
-                'view-categories',
-                'create-categories',
-                'edit-categories',
-                'delete-categories',
+            'students' => [
+                'view-students',
+                'create-students',
+                'edit-students',
+                'delete-students',
+                'promote-students',
             ],
-            'brands' => [
-                'view-brands',
-                'create-brands',
-                'edit-brands',
-                'delete-brands',
+            'teachers' => [
+                'view-teachers',
+                'create-teachers',
+                'edit-teachers',
+                'delete-teachers',
             ],
-            'orders' => [
-                'view-orders',
-                'edit-orders',
-                'process-orders',
-                'delete-orders',
+            'attendance' => [
+                'view-attendance',
+                'mark-attendance',
+                'edit-attendance',
             ],
-            'suppliers' => [
-                'view-suppliers',
-                'create-suppliers',
-                'edit-suppliers',
-                'delete-suppliers',
+            'examinations' => [
+                'view-examinations',
+                'create-examinations',
+                'edit-examinations',
+                'delete-examinations',
+                'manage-marks',
+                'publish-results',
             ],
-            'warehouses' => [
-                'view-warehouses',
-                'create-warehouses',
-                'edit-warehouses',
-                'delete-warehouses',
+            'fees' => [
+                'view-fees',
+                'create-fees',
+                'edit-fees',
+                'delete-fees',
+                'collect-fees',
             ],
-            'reviews' => [
-                'view-reviews',
-                'edit-reviews',
-                'delete-reviews',
+            'notices' => [
+                'view-notices',
+                'create-notices',
+                'edit-notices',
+                'delete-notices',
             ],
-            'questions' => [
-                'view-questions',
-                'reply-questions',
-                'delete-questions',
+            'events' => [
+                'view-events',
+                'create-events',
+                'edit-events',
+                'delete-events',
+                'approve-events',
             ],
-            'marketing' => [
-                'view-marketing',
-                'create-marketing',
-                'edit-marketing',
-                'delete-marketing',
+            'library' => [
+                'view-library',
+                'manage-library',
+            ],
+            'reports' => [
+                'view-reports',
+                'export-reports',
             ],
             'settings' => [
                 'view-settings',
@@ -87,11 +95,6 @@ class RoleAndPermissionSeeder extends Seeder
                 'create-roles',
                 'edit-roles',
                 'delete-roles',
-            ],
-            'repairs' => [
-                'view-repairs',
-                'edit-repairs',
-                'diagnose-repairs',
             ],
         ];
 
@@ -113,9 +116,32 @@ class RoleAndPermissionSeeder extends Seeder
         // Give some permissions if needed, or all
         $principalRole->givePermissionTo(Permission::all());
 
-        // C. Staff & Teacher
-        $staffRole = Role::findOrCreate('staff', 'web');
+        // C. Teacher
         $teacherRole = Role::findOrCreate('teacher', 'web');
+        $teacherRole->givePermissionTo([
+            'view-students',
+            'view-attendance',
+            'mark-attendance',
+            'view-academic',
+            'view-examinations',
+            'manage-marks',
+            'view-notices',
+            'view-events',
+            'view-library',
+            'view-reports',
+        ]);
+        
+        // D. Accountant
+        $accountantRole = Role::findOrCreate('Accountant', 'web');
+        $accountantRole->givePermissionTo([
+            'view-fees',
+            'create-fees',
+            'edit-fees',
+            'delete-fees',
+            'collect-fees',
+            'view-reports',
+            'export-reports'
+        ]);
         
         // 5. Assign the Super Admin role to the default admin user
         $adminUser = User::where('email', 'admin@school.com')->first();

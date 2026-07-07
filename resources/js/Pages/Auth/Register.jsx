@@ -296,7 +296,7 @@ export default function Register() {
                             </div>
 
                             <div className="text-center text-[13px] text-gray-600 font-medium">
-                                If you already have an account with us, please login at the <Link href={route('login')} className="text-[#ef4a23] hover:underline font-bold">login page</Link>.
+                                If you already have an account with us, please login at the <Link href={route('student.login')} className="text-[#ef4a23] hover:underline font-bold">login page</Link>.
                             </div>
                         </form>
                     </div>

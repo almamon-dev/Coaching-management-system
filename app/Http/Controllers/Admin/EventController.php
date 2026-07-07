@@ -10,12 +10,30 @@ use Inertia\Inertia;
 
 class EventController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::with('user')->orderBy('created_at', 'desc')->paginate(10);
+        $query = Event::with('user')->orderBy('created_at', 'desc');
+
+        if ($request->filled('tab') && $request->tab !== 'all') {
+            if ($request->tab === 'published') {
+                $query->where('status', 'published');
+            } elseif ($request->tab === 'pending') {
+                $query->where('status', 'pending');
+            }
+        }
+
+        $events = $query->paginate(10)->withQueryString();
+
+        $counts = [
+            'all' => Event::count(),
+            'published' => Event::where('status', 'published')->count(),
+            'pending' => Event::where('status', 'pending')->count(),
+        ];
         
         return Inertia::render('Admin/Events/Index', [
-            'events' => $events
+            'events' => $events,
+            'counts' => $counts,
+            'currentTab' => $request->tab ?? 'all'
         ]);
     }
 

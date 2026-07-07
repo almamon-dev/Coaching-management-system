@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import InputError from '@/Components/Form/InputError';
 import InputLabel from '@/Components/Form/InputLabel';
 import TextInput from '@/Components/Form/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import FrontendLayout from '@/Layouts/FrontendLayout';
+import SchoolLogo from '@/Components/SchoolLogo';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from '@/Hooks/useTranslation';
 
-export default function Login({ status, canResetPassword, isAdmin }) {
+export default function Login({ status, canResetPassword, isAdmin, isTeacher, isStudent }) {
     const { t } = useTranslation();
     const { categories, brands } = usePage().props;
     const [copied, setCopied] = useState(false);
@@ -27,7 +26,11 @@ export default function Login({ status, canResetPassword, isAdmin }) {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route(isAdmin ? 'admin.login' : 'login'));
+        let routeName = 'login';
+        if (isStudent) routeName = 'student.login';
+        if (isAdmin) routeName = 'admin.login';
+        if (isTeacher) routeName = 'teacher.login';
+        post(route(routeName));
     };
 
     const handleQuickLogin = (email, password) => {
@@ -171,7 +174,7 @@ export default function Login({ status, canResetPassword, isAdmin }) {
     // USER LOGIN (Lohadi High School styling based on Green Uni reference)
     return (
         <>
-            <Head title="Account Login" />
+            <Head title={isTeacher ? "Teacher Login" : "Student Login"} />
             
             <div className="relative min-h-screen bg-white flex items-center justify-center overflow-hidden font-sans">
                 {/* Top Left Gradient Circle */}
@@ -186,40 +189,24 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                     style={{ background: 'radial-gradient(circle, rgba(98,177,70,0.2) 0%, rgba(255,255,255,0) 70%)' }}
                 ></div>
 
-                <div className="container mx-auto px-4 relative z-10 flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-32 w-full max-w-5xl">
+                <div className="container mx-auto px-4 relative z-10 flex items-center justify-center w-full max-w-4xl">
                     
-                    {/* Left Side - Logo & Typography */}
-                    <div className="flex items-center gap-3 md:gap-5 max-w-full">
-                        <div className="w-[60px] h-[80px] md:w-[90px] md:h-[110px] lg:w-[100px] lg:h-[120px] flex-shrink-0">
-                            {/* Abstract Tree/Leaf Logo mimicking the screenshot structure */}
-                            <svg viewBox="0 0 100 120" className="w-full h-full fill-none stroke-[#008a45]" strokeWidth="8" strokeLinecap="square" strokeLinejoin="miter">
-                                {/* Center Trunk */}
-                                <path d="M50 110 V10" />
-                                {/* Left Branches */}
-                                <path d="M50 30 Q25 30 10 40" />
-                                <path d="M50 50 Q25 50 10 60" />
-                                <path d="M50 70 Q25 70 10 80" />
-                                <path d="M50 90 Q25 90 10 100" />
-                                {/* Right Branches */}
-                                <path d="M50 20 Q75 20 90 30" />
-                                <path d="M50 40 Q75 40 90 50" />
-                                <path d="M50 60 Q75 60 90 70" />
-                                <path d="M50 80 Q75 80 90 90" />
-                            </svg>
+                    {/* Unified Split Card */}
+                    <div className="flex flex-col lg:flex-row w-full bg-white rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,138,69,0.2)] border border-gray-100 overflow-hidden items-stretch">
+                        
+                        {/* Left Side - Logo Container */}
+                        <div className="w-full lg:w-1/2 bg-slate-50 flex flex-col items-center justify-center p-12 border-b lg:border-b-0 lg:border-r border-slate-100 relative overflow-hidden">
+                            {/* Subtle decorative background inside left side */}
+                            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#008a45 2px, transparent 2px)', backgroundSize: '24px 24px' }}></div>
+                            
+                            <SchoolLogo variant="wide" className="scale-125 transform relative z-10" />
                         </div>
-                        <div className="flex flex-col justify-center">
-                            <h1 className="text-[24px] sm:text-[32px] md:text-[38px] lg:text-[46px] font-bold leading-[1.1] text-[#008a45] font-serif uppercase tracking-wide whitespace-nowrap">
-                                Lohadi High<br/>School
-                            </h1>
-                            <span className="text-[11px] sm:text-[14px] lg:text-[18px] text-[#008a45] tracking-[0.15em] lg:tracking-[0.2em] font-medium mt-1 md:mt-2 uppercase whitespace-nowrap">
-                                Of Bangladesh
-                            </span>
-                        </div>
-                    </div>
 
-                    {/* Right Side - Login Box */}
-                    <div className="bg-white rounded-xl p-10 w-full max-w-[400px] relative z-10 border border-gray-100 shadow-[0_20px_50px_-12px_rgba(0,138,69,0.2)]">
-                        <h2 className="text-center text-[32px] font-serif text-[#4a3f35] mb-8">Login</h2>
+                        {/* Right Side - Login Box */}
+                        <div className="w-full lg:w-1/2 p-8 md:p-12 relative z-10 flex flex-col justify-center bg-white">
+                            <h2 className="text-center text-[32px] font-serif text-[#4a3f35] mb-8">
+                                {isTeacher ? 'Teacher Login' : 'Student Login'}
+                            </h2>
 
                         {status && (
                             <div className="mb-4 text-sm font-medium text-green-600 bg-green-50 p-3 rounded">
@@ -304,17 +291,8 @@ export default function Login({ status, canResetPassword, isAdmin }) {
                                 )}
                             </button>
                         </form>
-
-                        <div className="mt-8 pt-4 border-t border-gray-100 flex items-center justify-between">
-                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Test Credentials:</span>
-                            <button
-                                type="button"
-                                onClick={() => handleQuickLogin('mamon193p@gmail.com', 'user123')}
-                                className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-gray-50 hover:bg-gray-100 rounded text-[11px] text-gray-600 font-medium transition-colors"
-                            >
-                                <span>{copied ? 'Copied!' : 'Click to Fill'}</span>
-                            </button>
-                        </div>
+                    </div>
+                    {/* End Unified Split Card */}
                     </div>
                 </div>
                 

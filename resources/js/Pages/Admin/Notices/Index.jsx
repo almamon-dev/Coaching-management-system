@@ -10,6 +10,7 @@ import SelectInput from '@/Components/Form/SelectInput';
 import TextArea from '@/Components/Form/TextArea';
 import DeleteConfirmModal from '@/Components/Modal/DeleteConfirmModal';
 import Notify from '@/Utils/Notify';
+import DataTable from '@/Components/Table/DataTable';
 
 
 export default function Index({ auth, notices }) {
@@ -98,6 +99,114 @@ export default function Index({ auth, notices }) {
         });
     };
 
+    const [search, setSearch] = useState('');
+
+    const columns = [
+        {
+            header: 'Title',
+            accessor: 'title',
+            className: 'w-[250px]',
+            cell: (row) => <span className="text-[13px] text-[#202223] font-medium max-w-[250px] truncate block">{row.title}</span>
+        },
+        {
+            header: 'Type',
+            accessor: 'type',
+            className: 'w-[120px]',
+            cell: (row) => <span className="text-[13px] text-[#6d7175] capitalize">{row.type}</span>
+        },
+        {
+            header: 'Audience',
+            accessor: 'target_audience',
+            className: 'w-[120px]',
+            cell: (row) => <span className="text-[13px] text-[#6d7175] capitalize">{row.target_audience}</span>
+        },
+        {
+            header: 'Status',
+            accessor: 'status',
+            className: 'w-[100px]',
+            cell: (row) => (
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                    row.status === 'published' ? 'bg-[#e4f1ef] text-[#008060]' : 'bg-amber-50 text-amber-700'
+                }`}>
+                    {row.status}
+                </span>
+            )
+        },
+        {
+            header: 'Date',
+            accessor: 'created_at',
+            className: 'w-[120px]',
+            cell: (row) => <span className="text-[13px] text-[#6d7175] tabular-nums">{new Date(row.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+        },
+        {
+            header: 'Actions',
+            accessor: 'actions',
+            className: 'w-[100px] text-right',
+            cell: (row) => (
+                <div className="flex items-center justify-end gap-1">
+                    <button
+                        onClick={() => openEditModal(row)}
+                        className="h-[26px] w-[26px] flex items-center justify-center bg-[#3151fe] text-white rounded-[2px] hover:bg-[#1a39d1] transition-all cursor-pointer shadow-sm"
+                        title="Edit Notice"
+                    >
+                        <Edit2 size={12} />
+                    </button>
+                    <button
+                        onClick={() => handleDeleteClick(row)}
+                        className="h-[26px] w-[26px] flex items-center justify-center rounded-[2px] transition-all border-none bg-[#ff4d4f] text-white hover:bg-[#cf1322] cursor-pointer shadow-sm"
+                        title="Delete Notice"
+                    >
+                        <Trash2 size={12} />
+                    </button>
+                </div>
+            )
+        }
+    ];
+
+    const advancedFiltersNode = (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">Type</label>
+                <SelectInput
+                    value={''} // Will be handled if backend pagination and filters are implemented
+                    onChange={() => {}}
+                    options={[
+                        { id: '', name: 'All Types' },
+                        { id: 'notice', name: 'Notice' },
+                        { id: 'announcement', name: 'Announcement' }
+                    ]}
+                    placeholder="Select type..."
+                />
+            </div>
+            <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">Audience</label>
+                <SelectInput
+                    value={''}
+                    onChange={() => {}}
+                    options={[
+                        { id: '', name: 'All Audiences' },
+                        { id: 'teacher', name: 'Teachers Only' },
+                        { id: 'student', name: 'Students Only' }
+                    ]}
+                    placeholder="Select audience..."
+                />
+            </div>
+            <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">Status</label>
+                <SelectInput
+                    value={''}
+                    onChange={() => {}}
+                    options={[
+                        { id: '', name: 'All Statuses' },
+                        { id: 'published', name: 'Published' },
+                        { id: 'draft', name: 'Draft' }
+                    ]}
+                    placeholder="Select status..."
+                />
+            </div>
+        </div>
+    );
+
     return (
         <AdminLayout user={auth?.user}>
             <Head title="Notice Board" />
@@ -115,84 +224,18 @@ export default function Index({ auth, notices }) {
                 </button>
             </div>
 
-            <div className="bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="border-b border-[#ebebeb] bg-[#f9fafb]">
-                                <th className="px-4 py-3 text-[12px] font-bold text-[#5c5f62] uppercase tracking-wider">Title</th>
-                                <th className="px-4 py-3 text-[12px] font-bold text-[#5c5f62] uppercase tracking-wider">Type</th>
-                                <th className="px-4 py-3 text-[12px] font-bold text-[#5c5f62] uppercase tracking-wider">Audience</th>
-                                <th className="px-4 py-3 text-[12px] font-bold text-[#5c5f62] uppercase tracking-wider">Status</th>
-                                <th className="px-4 py-3 text-[12px] font-bold text-[#5c5f62] uppercase tracking-wider">Date</th>
-                                <th className="px-4 py-3 text-[12px] font-bold text-[#5c5f62] uppercase tracking-wider text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[#ebebeb]">
-                            {notices.data.length > 0 ? notices.data.map((notice) => (
-                                <tr key={notice.id} className="hover:bg-[#f9fafb] transition-colors group">
-                                    <td className="px-4 py-3 text-[13px] text-[#202223] font-medium max-w-xs truncate">
-                                        {notice.title}
-                                    </td>
-                                    <td className="px-4 py-3 text-[13px] text-[#6d7175] capitalize">
-                                        {notice.type}
-                                    </td>
-                                    <td className="px-4 py-3 text-[13px] text-[#6d7175] capitalize">
-                                        {notice.target_audience}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${
-                                            notice.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
-                                        }`}>
-                                            {notice.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-[13px] text-[#6d7175]">
-                                        {new Date(notice.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => openEditModal(notice)} className="p-1.5 text-slate-400 hover:text-[#008060] rounded hover:bg-slate-100">
-                                                <Edit2 size={14} />
-                                            </button>
-                                            <button onClick={() => handleDeleteClick(notice)} className="p-1.5 text-slate-400 hover:text-red-600 rounded hover:bg-red-50">
-                                                <Trash2 size={14} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan="6" className="px-4 py-8 text-center text-[#6d7175] text-[13px]">
-                                        <div className="flex flex-col items-center justify-center">
-                                            <Megaphone size={32} className="text-slate-300 mb-2" />
-                                            <p>No notices found.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-                
-                {/* Basic Pagination fallback if global component is not found */}
-                {notices.links && notices.links.length > 3 && (
-                    <div className="px-4 py-3 border-t border-[#ebebeb] flex items-center justify-between">
-                        <div className="text-[12px] text-[#6d7175]">
-                            Showing {notices.from || 0} to {notices.to || 0} of {notices.total} results
-                        </div>
-                        <div className="flex gap-1">
-                            {notices.links.map((link, idx) => (
-                                <Link 
-                                    key={idx} 
-                                    href={link.url || '#'} 
-                                    className={`px-3 py-1 text-[12px] border rounded-[3px] ${link.active ? 'bg-[#008060] text-white border-[#008060]' : 'bg-white text-[#202223] border-[#ebebeb] hover:bg-slate-50'} ${!link.url && 'opacity-50 cursor-not-allowed'}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
+            <div className="mb-6">
+                <DataTable
+                    columns={columns}
+                    data={notices?.data || []}
+                    pagination={notices}
+                    selectable={false}
+                    itemNoun="notices"
+                    searchQuery={search}
+                    onSearchChange={setSearch}
+                    searchPlaceholder="Search notices..."
+                    advancedFilters={advancedFiltersNode}
+                />
             </div>
 
             <Modal show={noticeModal.show} onClose={closeNoticeModal} maxWidth="2xl">

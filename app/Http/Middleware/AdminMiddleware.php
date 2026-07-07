@@ -16,7 +16,14 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && in_array(Auth::user()->user_type, ['admin', 'staff', 'employee'])) {
+        $user = Auth::user();
+        
+        $hasAdminAccess = $user && (
+            in_array($user->user_type, ['admin', 'staff']) || 
+            $user->roles()->count() > 0
+        );
+
+        if ($hasAdminAccess) {
             return $next($request);
         }
  

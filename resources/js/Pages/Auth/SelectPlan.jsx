@@ -140,7 +140,7 @@ export default function SelectPlan({ supplierPlans, customerPlans }) {
                     <div className="text-center mt-12">
                         <p className="text-[14px] text-[#727586]">
                             Already have an account?{' '}
-                            <Link href={route('login')} className="text-[#673ab7] font-semibold hover:underline">
+                            <Link href={route('student.login')} className="text-[#673ab7] font-semibold hover:underline">
                                 Sign in
                             </Link>
                         </p>

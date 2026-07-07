@@ -10,7 +10,7 @@ export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const topBarLinks = [
-        { name: 'Students', url: route('login') },
+        { name: 'Student Portal', url: route('student.login') },
         { name: 'Admissions', url: route('admissions') },
         { name: 'Staff Faculty Portal', url: route('portals.index') },
         { name: 'Library', url: route('coming.soon') },
@@ -189,7 +189,7 @@ export default function Header() {
                                 Dashboard
                             </Link>
                         ) : (
-                            <Link href={route('login')} className="m-4 flex items-center justify-center py-3 bg-[#16a34a] text-white font-bold rounded-lg">
+                            <Link href={route('student.login')} className="m-4 flex items-center justify-center py-3 bg-[#16a34a] text-white font-bold rounded-lg">
                                 Login
                             </Link>
                         )}

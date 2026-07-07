@@ -20,6 +20,8 @@ class AuthenticatedSessionController extends Controller
     {
         return Inertia::render('Auth/Login', [
             'isAdmin' => Route::currentRouteName() === 'admin.login',
+            'isTeacher' => Route::currentRouteName() === 'teacher.login',
+            'isStudent' => Route::currentRouteName() === 'student.login',
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
         ]);
@@ -34,11 +36,41 @@ class AuthenticatedSessionController extends Controller
  
         $user = auth()->user();
  
+        $routeName = Route::currentRouteName();
+        // Portal-specific authorization
+        $hasAdminAccess = $user->user_type === 'admin' || $user->roles()->count() > 0;
+
+        if (in_array($routeName, ['admin.login', 'admin.login.store']) && !$hasAdminAccess) {
+            Auth::guard('web')->logout();
+            return redirect()->route('admin.login')->withErrors([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+
+        if (in_array($routeName, ['teacher.login', 'teacher.login.store']) && !in_array($user->user_type, ['staff', 'teacher'])) {
+            Auth::guard('web')->logout();
+            return redirect()->route('teacher.login')->withErrors([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+
+        if (in_array($routeName, ['student.login', 'student.login.store']) && in_array($user->user_type, ['admin', 'staff', 'teacher'])) {
+            Auth::guard('web')->logout();
+            return redirect()->route('student.login')->withErrors([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+
         $request->session()->regenerate();
  
-        $url = $user->user_type === 'admin'
-            ? route('admin.dashboard', absolute: false)
-            : route('dashboard', absolute: false);
+        // Redirect based on the portal they logged into
+        if (in_array($routeName, ['admin.login', 'admin.login.store'])) {
+            $url = route('admin.dashboard', absolute: false);
+        } elseif (in_array($routeName, ['teacher.login', 'teacher.login.store'])) {
+            $url = route('teacher.dashboard', absolute: false);
+        } else {
+            $url = route('user.dashboard', absolute: false);
+        }
  
         return redirect()->to($url);
     }

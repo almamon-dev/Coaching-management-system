@@ -18,6 +18,7 @@ const UserEditPage = ({ auth, user, userRoles, roles }) => {
         password_confirmation: '',
         roles: userRoles || [],
         status: user.status || 'active',
+        user_type: user.user_type || 'admin',
         _method: 'PUT' // Support PUT method override via Laravel POST
     });
 

@@ -28,7 +28,7 @@ export default function Portals() {
 
                 {/* Top Portals */}
                 <div className="flex justify-center gap-8 mb-16">
-                    <Link href={route('login')} className="flex flex-col items-center justify-center w-40 h-32 bg-[#efefef] hover:bg-[#e2e2e2] transition-colors">
+                    <Link href={route('teacher.login')} className="flex flex-col items-center justify-center w-40 h-32 bg-[#efefef] hover:bg-[#e2e2e2] transition-colors">
                         <div className="text-[#00a9cc] mb-2">
                             <MonitorSmartphone size={48} strokeWidth={1} />
                         </div>

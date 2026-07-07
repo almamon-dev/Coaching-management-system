@@ -21,8 +21,8 @@ class UserMiddleware
         }
  
         Auth::logout();
-        return redirect()->route('login')->withErrors([
-            'email' => 'Access denied. This area is for registered customers only.',
+        return redirect()->route('student.login')->withErrors([
+            'email' => 'Access denied. This area is for registered users only.',
         ]);
     }
 }

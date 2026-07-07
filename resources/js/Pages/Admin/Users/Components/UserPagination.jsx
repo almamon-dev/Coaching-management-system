@@ -3,28 +3,12 @@ import { Link } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const UserPagination = ({ users, filters, total, handlePerPageChange, handlePageChange }) => {
-    const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    const hasCursor = searchParams.has('cursor');
-    const startIdx = hasCursor ? parseInt(searchParams.get('start_index') || '1', 10) : 1;
-    const perPage = parseInt(filters?.per_page || 10, 10);
-    const count = users.data?.length || 0;
+    const fromIdx = users.from || 0;
+    const toIdx = users.to || 0;
+    const totalCount = users.total || total || 0;
 
-    const fromIdx = count > 0 ? startIdx : 0;
-    const toIdx = count > 0 ? startIdx + count - 1 : 0;
-
-    const getPaginatedUrl = (url, nextStartIndex) => {
-        if (!url) return '#';
-        try {
-            const urlObj = new URL(url, window.location.origin);
-            urlObj.searchParams.set('start_index', nextStartIndex.toString());
-            return urlObj.pathname + urlObj.search;
-        } catch (e) {
-            return url;
-        }
-    };
-
-    const prevUrl = getPaginatedUrl(users.prev_page_url || users.links?.prev, Math.max(1, startIdx - perPage));
-    const nextUrl = getPaginatedUrl(users.next_page_url || users.links?.next, startIdx + perPage);
+    const prevUrl = users.prev_page_url || users.links?.prev || '#';
+    const nextUrl = users.next_page_url || users.links?.next || '#';
 
     return (
         <div className="flex items-center justify-end gap-6 px-6 py-3 border-t border-[#ebebeb] bg-white">
@@ -49,10 +33,10 @@ const UserPagination = ({ users, filters, total, handlePerPageChange, handlePage
 
             <div className="flex items-center gap-4">
                 <span className="text-[12px] text-[#081621] font-bold tabular-nums">
-                    {total !== undefined ? (
-                        `${fromIdx} - ${toIdx} of ${total}`
+                    {totalCount > 0 ? (
+                        `${fromIdx} - ${toIdx} of ${totalCount}`
                     ) : (
-                        `${fromIdx} - ${toIdx}`
+                        `0 - 0 of 0`
                     )}
                 </span>
 

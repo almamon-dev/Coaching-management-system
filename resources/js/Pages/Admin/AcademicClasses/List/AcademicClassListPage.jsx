@@ -1,63 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Plus } from 'lucide-react';
-import DeleteConfirmModal from '@/Components/Modal/DeleteConfirmModal';
-import AcademicClassTable from '../Components/AcademicClassTable';
-import AcademicClassToolbar from '../Components/AcademicClassToolbar';
-import AcademicClassStats from '../Components/AcademicClassStats';
-import AcademicClassPagination from '../Components/AcademicClassPagination';
+import { Plus, SquarePen, Trash2, Hash, Layers } from 'lucide-react';
+import DataTable from '@/Components/Table/DataTable';
+
 import Notify from '@/Utils/Notify';
 
 const AcademicClassListPage = ({ auth, classes, filters, stats }) => {
-    const allColumns = [
-        { id: 'name', label: 'Class Name' },
-        { id: 'numeric_value', label: 'Numeric Value' },
-        { id: 'sections', label: 'Total Sections' },
-        { id: 'created_at', label: 'Created At' },
-        { id: 'updated_at', label: 'Updated At' },
-    ];
-
-    const [visibleColumns, setVisibleColumns] = useState(['name', 'numeric_value', 'sections', 'created_at', 'updated_at']);
-
-    const toggleColumn = (id) => {
-        setVisibleColumns(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
-    };
-
-    const totalCount = classes?.meta?.total || classes?.total || 0;
-    const perPageCount = classes?.data?.length || 0;
-
     const [search, setSearch] = useState(filters?.search || "");
-    const [selectedIds, setSelectedIds] = useState([]);
-    const [selectAllAcrossPages, setSelectAllAcrossPages] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-
-    const [deleteModal, setDeleteModal] = useState({
-        show: false,
-        academic_class: null,
-        title: '',
-        message: '',
-        isBulk: false
-    });
-    const [processingDelete, setProcessingDelete] = useState(false);
-
-    useEffect(() => {
-        const start = (event) => {
-            const isSamePage = new URL(event.detail.visit.url, window.location.origin).pathname === window.location.pathname;
-            if (event.detail.visit.method === 'get' && !event.detail.visit.prefetch && !event.detail.visit.bg && isSamePage) {
-                setIsProcessing(true);
-            }
-        };
-        const finish = () => setIsProcessing(false);
-        const unbindStart = router.on('start', start);
-        const unbindFinish = router.on('finish', finish);
-        return () => { unbindStart(); unbindFinish(); };
-    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             if (search !== (filters?.search || "")) {
-                setIsProcessing(true);
                 handleFilterChange('search', search);
             }
         }, 500);
@@ -68,102 +22,112 @@ const AcademicClassListPage = ({ auth, classes, filters, stats }) => {
         router.get(route('admin.classes.index'), { ...filters, [key]: value, page: 1 }, { preserveState: true, preserveScroll: true, replace: true });
     };
 
-    const handleReset = () => {
-        setSearch("");
-        router.get(route('admin.classes.index'), {}, { replace: true, preserveScroll: true, preserveState: true });
-    };
-
-    const handlePageChange = (url) => {
-        if (url) router.get(url, {}, { preserveState: true, preserveScroll: true });
-    };
-
-    const handlePerPageChange = (e) => handleFilterChange('per_page', e.target.value);
-
-    const availableBulkIds = useMemo(() => classes?.data?.map(u => u.id) || [], [classes?.data]);
-
-    const toggleSelect = (id) => {
-        if (selectAllAcrossPages) setSelectAllAcrossPages(false);
-        setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-    };
-
-    const toggleSelectAll = () => {
-        if (selectedIds.length > 0 || selectAllAcrossPages) {
-            handleClearSelection();
-        } else {
-            setSelectedIds(availableBulkIds);
-        }
-    };
-
-    const handleSelectAllAcrossPages = () => {
-        setSelectAllAcrossPages(true);
-        setSelectedIds(availableBulkIds);
-    };
-
-    const handleClearSelection = () => {
-        setSelectedIds([]);
-        setSelectAllAcrossPages(false);
-        setShowOnlySelected(false);
-    };
-
-    const handleDeleteClick = (academic_class) => {
-        setDeleteModal({
-            show: true,
-            academic_class,
-            title: 'Delete Class',
-            message: `Are you sure you want to delete "${academic_class.name}"? This action cannot be undone.`,
-            isBulk: false
-        });
-    };
-
-    const handleBulkDeleteClick = () => {
-        setDeleteModal({
-            show: true,
-            academic_class: null,
-            title: 'Bulk Delete Classes',
-            message: `Are you sure you want to delete ${selectAllAcrossPages ? totalCount : selectedIds.length} classes? This will permanently remove them.`,
-            isBulk: true
-        });
-    };
-
-    const handleConfirmDelete = () => {
-        setProcessingDelete(true);
-        if (deleteModal.isBulk) {
+    const handleConfirmDelete = (selectedIds, closeModal) => {
+        if (selectedIds.length > 1) {
             router.post(route("admin.classes.bulk-destroy"), { ids: selectedIds }, {
                 onSuccess: () => {
-                    handleClearSelection();
-                    setDeleteModal(prev => ({ ...prev, show: false }));
-                    setProcessingDelete(false);
+                    closeModal();
                     Notify.success('Deleted', 'Selected classes have been removed.');
                 },
                 onError: () => {
-                    setProcessingDelete(false);
+                    closeModal();
                     Notify.error('Action Failed', 'Could not delete classes.');
                 }
             });
         } else {
-            router.delete(route("admin.classes.destroy", deleteModal.academic_class.id), {
+            router.delete(route("admin.classes.destroy", selectedIds[0]), {
+                preserveScroll: true,
                 onSuccess: () => {
-                    setSelectedIds(prev => prev.filter(i => i !== deleteModal.academic_class.id));
-                    setDeleteModal(prev => ({ ...prev, show: false }));
-                    setProcessingDelete(false);
+                    closeModal();
                     Notify.success('Deleted', 'Class has been deleted.');
                 },
                 onError: () => {
-                    setProcessingDelete(false);
+                    closeModal();
                     Notify.error('Action Failed', 'Could not delete class.');
                 }
             });
         }
     };
 
-    const [showOnlySelected, setShowOnlySelected] = useState(false);
-    const displayClasses = useMemo(() => {
-        if (!classes) return { data: [] };
-        return {
-            ...classes,
-            data: showOnlySelected ? classes.data.filter(p => selectedIds.includes(p.id)) : classes.data
+    const columns = [
+        {
+            header: 'Class Name',
+            accessor: 'name',
+            className: 'w-[200px]',
+            cell: (row) => (
+                <span className="text-[13px] font-bold text-slate-800">
+                    {row.name}
+                </span>
+            )
+        },
+        {
+            header: 'Numeric Value',
+            accessor: 'numeric_value',
+            cell: (row) => (
+                <div className="flex items-center gap-1.5 text-[12.5px] text-slate-600">
+                    <Hash size={13} className="text-slate-400" />
+                    <span className="font-medium text-slate-700 bg-slate-100 px-2 rounded">{row.numeric_value}</span>
+                </div>
+            )
+        },
+        {
+            header: 'Total Sections',
+            accessor: 'sections',
+            cell: (row) => (
+                <div className="flex items-center gap-1.5 text-[12.5px] text-slate-600">
+                    <Layers size={13} className="text-slate-400" />
+                    <span className="font-medium text-[#008060] bg-[#e4f1ef] px-2 rounded-full border border-[#a3dfd2]/30">{row.sections_count || 0} Sections</span>
+                </div>
+            )
+        },
+        {
+            header: 'Created At',
+            accessor: 'created_at',
+            cell: (row) => (
+                <span className="text-[13px] text-slate-600">
+                    {row.created_at ? new Date(row.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
+                </span>
+            )
+        },
+        {
+            header: 'Updated At',
+            accessor: 'updated_at',
+            cell: (row) => (
+                <span className="text-[13px] text-slate-600">
+                    {row.updated_at ? new Date(row.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
+                </span>
+            )
+        },
+        {
+            header: 'Actions',
+            accessor: 'actions',
+            className: 'text-right w-[120px]',
+            cell: (row, tableActions) => (
+                <div className="flex items-center justify-end gap-1">
+                    <Link
+                        href={route('admin.classes.edit', row.id)}
+                        className="h-[26px] w-[26px] flex items-center justify-center bg-[#3151fe] text-white rounded-[2px] hover:bg-[#1a39d1] transition-all cursor-pointer shadow-sm"
+                        title="Edit Class"
+                    >
+                        <SquarePen size={12} />
+                    </Link>
+                    <button
+                        onClick={() => tableActions.deleteRow()}
+                        className="h-[26px] w-[26px] flex items-center justify-center rounded-[2px] transition-all border-none bg-[#ff4d4f] text-white hover:bg-[#cf1322] cursor-pointer shadow-sm"
+                        title="Delete Class"
+                    >
+                        <Trash2 size={12} />
+                    </button>
+                </div>
+            )
         }
-    }, [classes, showOnlySelected, selectedIds]);
+    ];
+
+    const classTabs = [
+        { name: 'All Classes', count: stats?.all || 0, active: (filters?.status || 'all') === 'all', onClick: () => handleFilterChange('status', 'all') },
+        { name: 'Active', count: stats?.active || 0, active: filters?.status === 'active', onClick: () => handleFilterChange('status', 'active') },
+        { name: 'Inactive', count: stats?.inactive || 0, active: filters?.status === 'inactive', onClick: () => handleFilterChange('status', 'inactive') },
+    ];
 
     return (
         <AdminLayout user={auth?.user}>
@@ -181,53 +145,20 @@ const AcademicClassListPage = ({ auth, classes, filters, stats }) => {
                 </Link>
             </div>
 
-            <div className="bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)]">
-                <AcademicClassStats stats={stats} />
-                <AcademicClassToolbar
-                    search={search}
-                    setSearch={setSearch}
-                    filters={filters}
-                    handleReset={handleReset}
-                    selectedIds={selectedIds}
-                    selectAllAcrossPages={selectAllAcrossPages}
-                    totalCount={totalCount}
-                    perPageCount={perPageCount}
-                    handleClearSelection={handleClearSelection}
-                    handleBulkDeleteClick={handleBulkDeleteClick}
-                    handleSelectAllAcrossPages={handleSelectAllAcrossPages}
-                    showOnlySelected={showOnlySelected}
-                    setShowOnlySelected={setShowOnlySelected}
-                    allColumns={allColumns}
-                    visibleColumns={visibleColumns}
-                    toggleColumn={toggleColumn}
-                />
-                <AcademicClassTable
-                    classes={displayClasses}
-                    selectedIds={selectedIds}
-                    selectAllAcrossPages={selectAllAcrossPages}
-                    toggleSelectAll={toggleSelectAll}
-                    toggleSelect={toggleSelect}
-                    handleDelete={handleDeleteClick}
-                    isProcessing={isProcessing}
-                    visibleColumns={visibleColumns}
-                    stats={stats}
-                />
-                <AcademicClassPagination
-                    classes={classes}
-                    total={stats?.all ?? 0}
-                    handlePerPageChange={handlePerPageChange}
-                    handlePageChange={handlePageChange}
+            <div className="mb-6">
+                <DataTable 
+                    columns={columns}
+                    data={classes?.data || []}
+                    pagination={classes}
+                    tabs={classTabs}
+                    selectable={true}
+                    itemNoun="classes"
+                    searchQuery={search}
+                    onSearchChange={setSearch}
+                    searchPlaceholder="Search classes by name..."
+                    onConfirmDelete={handleConfirmDelete}
                 />
             </div>
-
-            <DeleteConfirmModal
-                show={deleteModal.show}
-                onClose={() => setDeleteModal(prev => ({ ...prev, show: false }))}
-                onConfirm={handleConfirmDelete}
-                title={deleteModal.title}
-                message={deleteModal.message}
-                processing={processingDelete}
-            />
         </AdminLayout>
     );
 };

@@ -142,8 +142,8 @@ const RAW_MENU_GROUPS = [
                 icon: Settings,
                 children: [
                     // { label: "School Information", getPath: () => '#' },
-                    { label: "User Roles", getPath: () => '#' },
-                    { label: "Permissions", getPath: () => '#' },
+                    { label: "Roles & Permissions", getPath: () => route('admin.roles.index') },
+                    { label: "System Users", getPath: () => route('admin.users.index') },
                     { label: "SMS Settings", getPath: () => '#' },
                     { label: "Email Settings", getPath: () => '#' },
                     { label: "System Configuration", getPath: () => '#' },

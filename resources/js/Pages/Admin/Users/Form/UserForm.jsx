@@ -9,6 +9,7 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { User, Mail, Lock, Shield, Check, Info, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import SelectInput from '@/Components/Form/SelectInput';
 
 const UserForm = ({
     data,
@@ -17,6 +18,7 @@ const UserForm = ({
     processing,
     onSubmit,
     roles,
+    existingUsers = [],
     isEdit = false
 }) => {
     const [showPassword, setShowPassword] = React.useState(false);
@@ -46,6 +48,46 @@ const UserForm = ({
                     <h3 className="text-[14px] font-bold text-slate-800 mb-5 flex items-center gap-1.5 pb-2 border-b border-[#ebebeb]">
                         <User size={15} className="text-[#008060]" /> Account Credentials
                     </h3>
+                    
+                    {!isEdit && existingUsers?.length > 0 && (
+                        <div className="mb-5 pb-5 border-b border-[#ebebeb]">
+                            <label className="block text-[12px] font-bold text-slate-700 mb-1.5">
+                                Quickly assign roles to an existing user
+                            </label>
+                            <SelectInput
+                                value={data.existing_user_id || ''}
+                                options={existingUsers.map(u => ({ id: u.id, name: `${u.name} (${u.email})` }))}
+                                placeholder="-- Select an existing user to auto-fill --"
+                                onChange={(e) => {
+                                    const selectedId = e.target.value;
+                                    if (selectedId) {
+                                        const user = existingUsers.find(u => u.id == selectedId);
+                                        if (user) {
+                                            const userRoleNames = user.roles ? user.roles.map(r => r.name) : [];
+                                            setData(data => ({
+                                                ...data,
+                                                name: user.name,
+                                                email: user.email,
+                                                user_type: user.user_type || 'admin',
+                                                existing_user_id: user.id,
+                                                roles: userRoleNames
+                                            }));
+                                        }
+                                    } else {
+                                        setData(data => ({
+                                            ...data,
+                                            name: '',
+                                            email: '',
+                                            existing_user_id: null,
+                                            roles: []
+                                        }));
+                                    }
+                                }}
+                            />
+                            <p className="text-[11px] text-slate-500 mt-1">Select a user above to auto-fill their details, or fill out the form below to create a brand new user.</p>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         {/* Name */}
                         <div>
@@ -132,6 +174,7 @@ const UserForm = ({
                             </div>
                             {errors.password_confirmation && <p className="text-red-500 text-[11px] mt-1 font-semibold">{errors.password_confirmation}</p>}
                         </div>
+                        
                     </div>
                 </div>
 

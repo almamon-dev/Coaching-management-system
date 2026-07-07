@@ -9,7 +9,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import UserForm from '../Form/UserForm';
 
-const UserCreatePage = ({ auth, roles }) => {
+const UserCreatePage = ({ auth, roles, existingUsers }) => {
     // 1. Initialize useForm hook
     const { data, setData, post, processing, errors } = useForm({
         name: '',
@@ -18,6 +18,8 @@ const UserCreatePage = ({ auth, roles }) => {
         password_confirmation: '',
         roles: [],
         status: 'active',
+        user_type: 'admin',
+        existing_user_id: null,
         pre_verified: false
     });
 
@@ -63,6 +65,7 @@ const UserCreatePage = ({ auth, roles }) => {
                 processing={processing}
                 onSubmit={handleSubmit}
                 roles={roles}
+                existingUsers={existingUsers}
                 isEdit={false}
             />
         </>

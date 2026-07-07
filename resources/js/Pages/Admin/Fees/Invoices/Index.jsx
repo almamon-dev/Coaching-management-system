@@ -1,84 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Head, router, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Search, RotateCcw, FileText, CheckCircle2, XCircle, Clock, AlertTriangle } from 'lucide-react';
-import TextInput from '@/Components/Form/TextInput';
+import { FileText, CheckCircle2, XCircle, Clock, AlertTriangle, Eye, SquarePen, Trash2 } from 'lucide-react';
 import SelectInput from '@/Components/Form/SelectInput';
-import SortableHeader from '@/Components/Table/SortableHeader';
-import ColumnManager from '../../AcademicClasses/Components/ColumnManager';
-
-// ... (Toolbar component remains mostly the same, just skipping to the actual index)
-
-const InvoiceToolbar = ({ search, setSearch, handleReset, columns, visibleColumns, toggleColumn, filters, classes }) => {
-    return (
-        <div className="border-b border-[#ebebeb] bg-white relative z-30">
-            <div className="p-3 flex items-center justify-between gap-4 transition-opacity duration-200">
-                <div className="flex items-center gap-2">
-                    <div className="relative w-[320px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6d7175]" size={14} />
-                        <TextInput
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search by invoice number or student..."
-                            className="h-[32px] pl-9 pr-9 border-[#d1d1d1] focus:border-[#008060] focus:ring-0 rounded-[3px] placeholder:text-[#6d7175] font-medium text-[12px] shadow-none w-full"
-                        />
-                    </div>
-                    <div className="w-[180px]">
-                        <SelectInput
-                            value={filters?.class_id || 'all'}
-                            onChange={(e) => {
-                                router.get(route('admin.fee-invoices.index'), { ...filters, class_id: e.target.value, page: 1 }, { preserveState: true, preserveScroll: true, replace: true });
-                            }}
-                            showSearch={false}
-                            options={[{ id: 'all', name: 'All Classes' }, ...classes.map(c => ({ id: c.id, name: c.name }))]}
-                            className="w-full h-[32px] text-[12px]"
-                        />
-                    </div>
-                    <div className="w-[150px]">
-                        <SelectInput
-                            value={filters?.status || 'all'}
-                            onChange={(e) => {
-                                router.get(route('admin.fee-invoices.index'), { ...filters, status: e.target.value, page: 1 }, { preserveState: true, preserveScroll: true, replace: true });
-                            }}
-                            showSearch={false}
-                            options={[
-                                { id: 'all', name: 'All Statuses' },
-                                { id: 'unpaid', name: 'Unpaid' },
-                                { id: 'partial', name: 'Partial' },
-                                { id: 'paid', name: 'Paid' },
-                                { id: 'cancelled', name: 'Cancelled' }
-                            ]}
-                            className="w-full h-[32px] text-[12px]"
-                        />
-                    </div>
-                </div>
-                <div className="flex items-center gap-1.5 relative">
-                    <button onClick={handleReset} className="h-[32px] w-[32px] flex items-center justify-center bg-white border border-[#d1d1d1] text-[#6d7175] rounded-[3px] hover:border-[#008060] hover:text-[#008060] transition-all group cursor-pointer" title="Reset Filters">
-                        <RotateCcw size={14} className="group-hover:rotate-[-45deg] transition-transform" />
-                    </button>
-                    <div className="w-[1px] h-4 bg-[#ebebeb] mx-1" />
-                    <ColumnManager columns={columns} visibleColumns={visibleColumns} toggleColumn={toggleColumn} />
-                </div>
-            </div>
-        </div>
-    );
-};
+import DataTable from '@/Components/Table/DataTable';
 
 export default function Index({ auth, invoices, classes, filters }) {
-    const allColumns = [
-        { id: 'invoice_number', label: 'Invoice No.' },
-        { id: 'student', label: 'Student' },
-        { id: 'class', label: 'Class' },
-        { id: 'title', label: 'Title / Fee Group' },
-        { id: 'total_amount', label: 'Amount' },
-        { id: 'paid_amount', label: 'Paid' },
-        { id: 'due_date', label: 'Due Date' },
-        { id: 'status', label: 'Status' },
-    ];
-    
-    const [visibleColumns, setVisibleColumns] = useState(['invoice_number', 'student', 'class', 'title', 'total_amount', 'paid_amount', 'status']);
-    const toggleColumn = (id) => setVisibleColumns(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
-
     const [search, setSearch] = useState(filters?.search || '');
 
     useEffect(() => {
@@ -90,11 +17,10 @@ export default function Index({ auth, invoices, classes, filters }) {
         return () => clearTimeout(timer);
     }, [search]);
 
-    const handleReset = () => {
-        setSearch('');
-        router.get(route('admin.fee-invoices.index'), {}, { preserveState: true, preserveScroll: true, replace: true });
+    const handleFilterChange = (key, value) => {
+        router.get(route('admin.fee-invoices.index'), { ...filters, [key]: value, page: 1 }, { preserveState: true, preserveScroll: true, replace: true });
     };
-    
+
     const getStatusBadge = (status) => {
         switch(status) {
             case 'paid': return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[2px] bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200 uppercase tracking-wider"><CheckCircle2 size={10} /> Paid</span>;
@@ -104,144 +30,159 @@ export default function Index({ auth, invoices, classes, filters }) {
         }
     };
 
-    return (
-        <AdminLayout
-            user={auth.user}
-            header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h2 className="text-[18px] font-bold text-[#202223] tracking-tight">Fee Invoices</h2>
-                        <p className="text-[12px] text-[#6d7175] font-medium mt-0.5">Manage and track student fee billings.</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href={route('admin.fee-invoices.generate')}
-                            className="h-[32px] px-3 bg-[#008060] text-white text-[12px] font-bold rounded-[3px] hover:bg-[#006e52] transition-colors flex items-center gap-1.5 shadow-sm"
-                        >
-                            <FileText size={14} /> Generate Bulk Invoices
-                        </Link>
-                    </div>
+    const columns = [
+        {
+            header: 'Invoice No.',
+            accessor: 'invoice_number',
+            className: 'w-[120px]',
+            cell: (row) => <span className="text-[12px] text-[#202223] font-bold whitespace-nowrap">{row.invoice_number}</span>
+        },
+        {
+            header: 'Student',
+            accessor: 'student',
+            className: 'w-[200px]',
+            cell: (row) => (
+                <div>
+                    <span className="text-[12px] font-bold text-[#202223]">{row.student?.name}</span>
+                    <span className="text-[11px] text-[#6d7175] ml-1.5">#{row.student?.student_profile?.student_id || '-'}</span>
                 </div>
-            }
-        >
+            )
+        },
+        {
+            header: 'Class',
+            accessor: 'class',
+            className: 'w-[120px]',
+            cell: (row) => <span className="text-[12px] text-[#6d7175] whitespace-nowrap">{row.academic_class?.name || '-'}</span>
+        },
+        {
+            header: 'Title / Fee Group',
+            accessor: 'title',
+            className: 'w-auto',
+            cell: (row) => (
+                <div className="text-[12px] text-[#202223] font-medium">
+                    {row.title}
+                    <span className="text-[11px] text-[#008060] ml-1.5">({row.fee_group?.name})</span>
+                </div>
+            )
+        },
+        {
+            header: 'Amount',
+            accessor: 'total_amount',
+            className: 'w-[100px] text-right',
+            cell: (row) => <span className="text-[12px] text-[#202223] font-bold whitespace-nowrap tabular-nums flex justify-end">৳ {parseFloat(row.total_amount).toFixed(2)}</span>
+        },
+        {
+            header: 'Paid',
+            accessor: 'paid_amount',
+            className: 'w-[100px] text-right',
+            cell: (row) => <span className="text-[12px] text-[#202223] font-bold whitespace-nowrap tabular-nums flex justify-end">৳ {parseFloat(row.paid_amount).toFixed(2)}</span>
+        },
+        {
+            header: 'Due Date',
+            accessor: 'due_date',
+            className: 'w-[100px]',
+            cell: (row) => <span className="text-[12px] text-[#6d7175] whitespace-nowrap tabular-nums">{row.due_date}</span>
+        },
+        {
+            header: 'Status',
+            accessor: 'status',
+            className: 'w-[100px]',
+            cell: (row) => getStatusBadge(row.status)
+        },
+        {
+            header: 'Actions',
+            accessor: 'actions',
+            className: 'w-[100px] text-right',
+            cell: (row, tableActions) => (
+                <div className="flex items-center justify-end gap-1">
+                    <Link
+                        href={route('admin.fee-invoices.show', row.id)}
+                        className="h-[26px] w-[26px] flex items-center justify-center bg-[#008060] text-white rounded-[2px] hover:bg-[#006e52] transition-all cursor-pointer shadow-sm"
+                        title="View Invoice"
+                    >
+                        <Eye size={12} />
+                    </Link>
+                    <Link
+                        href={route('admin.fee-invoices.edit', row.id)}
+                        className="h-[26px] w-[26px] flex items-center justify-center bg-[#3151fe] text-white rounded-[2px] hover:bg-[#1a39d1] transition-all cursor-pointer shadow-sm"
+                        title="Edit Invoice"
+                    >
+                        <SquarePen size={12} />
+                    </Link>
+                    <button
+                        onClick={() => tableActions.deleteRow()}
+                        className="h-[26px] w-[26px] flex items-center justify-center rounded-[2px] transition-all border-none bg-[#ff4d4f] text-white hover:bg-[#cf1322] cursor-pointer shadow-sm"
+                        title="Delete Invoice"
+                    >
+                        <Trash2 size={12} />
+                    </button>
+                </div>
+            )
+        }
+    ];
+
+    const advancedFiltersNode = (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">Class</label>
+                <SelectInput
+                    value={filters?.class_id || ''}
+                    onChange={(e) => handleFilterChange('class_id', e.target.value)}
+                    options={[{ id: '', name: 'All Classes' }, ...classes.map(c => ({ id: c.id, name: c.name }))]}
+                    placeholder="Select class..."
+                />
+            </div>
+            <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">Status</label>
+                <SelectInput
+                    value={filters?.status || ''}
+                    onChange={(e) => handleFilterChange('status', e.target.value)}
+                    options={[
+                        { id: '', name: 'All Statuses' },
+                        { id: 'unpaid', name: 'Unpaid' },
+                        { id: 'partial', name: 'Partial' },
+                        { id: 'paid', name: 'Paid' },
+                        { id: 'cancelled', name: 'Cancelled' }
+                    ]}
+                    placeholder="Select status..."
+                />
+            </div>
+        </div>
+    );
+
+    return (
+        <AdminLayout user={auth.user}>
             <Head title="Fee Invoices" />
 
-            <div className="bg-white rounded-[4px] shadow-sm border border-[#ebebeb] overflow-visible">
-                <InvoiceToolbar 
-                    search={search} setSearch={setSearch} handleReset={handleReset}
-                    columns={allColumns} visibleColumns={visibleColumns} toggleColumn={toggleColumn}
-                    filters={filters} classes={classes}
-                />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-[20px] font-bold text-[#202223] tracking-tight">Fee Invoices</h1>
+                    <p className="text-[#6d7175] text-[13px] mt-0.5 font-medium">Manage and track student fee billings.</p>
+                </div>
+                <Link
+                    href={route('admin.fee-invoices.generate')}
+                    className="px-4 py-1.5 bg-[#008060] text-white rounded-[3px] font-bold text-[12px] hover:bg-[#006e52] transition-all flex items-center gap-2 shadow-sm"
+                >
+                    <FileText size={14} /> Generate Bulk Invoices
+                </Link>
+            </div>
 
-                <div className="overflow-x-auto custom-scrollbar">
-                    <table className="w-full text-left border-collapse min-w-[800px]">
-                        <thead>
-                            <tr className="bg-[#f4f6f8]">
-                                {visibleColumns.includes('invoice_number') && <SortableHeader label="Invoice No." field="invoice_number" currentSortField={filters?.sort_field} currentSortDirection={filters?.sort_direction} routeConfig={{ name: 'admin.fee-invoices.index', params: filters }} />}
-                                {visibleColumns.includes('student') && <th className="px-4 py-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] uppercase tracking-wider first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Student</th>}
-                                {visibleColumns.includes('class') && <th className="px-4 py-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] uppercase tracking-wider first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Class</th>}
-                                {visibleColumns.includes('title') && <th className="px-4 py-3 text-[12px] font-bold text-[#6d7175] bg-[#f4f6f8] uppercase tracking-wider first:rounded-tl-[6px] last:rounded-tr-[6px] border-b-0">Title</th>}
-                                {visibleColumns.includes('total_amount') && <SortableHeader label="Amount" field="total_amount" currentSortField={filters?.sort_field} currentSortDirection={filters?.sort_direction} routeConfig={{ name: 'admin.fee-invoices.index', params: filters }} align="right" />}
-                                {visibleColumns.includes('paid_amount') && <SortableHeader label="Paid" field="paid_amount" currentSortField={filters?.sort_field} currentSortDirection={filters?.sort_direction} routeConfig={{ name: 'admin.fee-invoices.index', params: filters }} align="right" />}
-                                {visibleColumns.includes('due_date') && <SortableHeader label="Due Date" field="due_date" currentSortField={filters?.sort_field} currentSortDirection={filters?.sort_direction} routeConfig={{ name: 'admin.fee-invoices.index', params: filters }} />}
-                                {visibleColumns.includes('status') && <SortableHeader label="Status" field="status" currentSortField={filters?.sort_field} currentSortDirection={filters?.sort_direction} routeConfig={{ name: 'admin.fee-invoices.index', params: filters }} />}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {invoices.data.length > 0 ? (
-                                invoices.data.map((invoice) => (
-                                    <tr key={invoice.id} className="border-b border-[#ebebeb] hover:bg-[#fafafa] transition-colors group">
-                                        {visibleColumns.includes('invoice_number') && (
-                                            <td className="px-3 py-2 text-[12px] text-[#202223] font-bold whitespace-nowrap">
-                                                {invoice.invoice_number}
-                                            </td>
-                                        )}
-                                        {visibleColumns.includes('student') && (
-                                            <td className="px-3 py-2">
-                                                <span className="text-[12px] font-bold text-[#202223]">{invoice.student?.name}</span>
-                                                <span className="text-[11px] text-[#6d7175] ml-1.5">#{invoice.student?.student_profile?.student_id || '-'}</span>
-                                            </td>
-                                        )}
-                                        {visibleColumns.includes('class') && (
-                                            <td className="px-3 py-2 text-[12px] text-[#6d7175] whitespace-nowrap">
-                                                {invoice.academic_class?.name || '-'}
-                                            </td>
-                                        )}
-                                        {visibleColumns.includes('title') && (
-                                            <td className="px-3 py-2 text-[12px] text-[#202223] font-medium">
-                                                {invoice.title}
-                                                <span className="text-[11px] text-[#008060] ml-1.5">({invoice.fee_group?.name})</span>
-                                            </td>
-                                        )}
-                                        {visibleColumns.includes('total_amount') && (
-                                            <td className="px-3 py-2 text-[12px] text-[#202223] font-bold text-right whitespace-nowrap tabular-nums">
-                                                ৳ {parseFloat(invoice.total_amount).toFixed(2)}
-                                            </td>
-                                        )}
-                                        {visibleColumns.includes('paid_amount') && (
-                                            <td className="px-3 py-2 text-[12px] text-[#202223] font-bold text-right whitespace-nowrap tabular-nums">
-                                                ৳ {parseFloat(invoice.paid_amount).toFixed(2)}
-                                            </td>
-                                        )}
-                                        {visibleColumns.includes('due_date') && (
-                                            <td className="px-3 py-2 text-[12px] text-[#6d7175] whitespace-nowrap tabular-nums">
-                                                {invoice.due_date}
-                                            </td>
-                                        )}
-                                        {visibleColumns.includes('status') && (
-                                            <td className="px-3 py-2 whitespace-nowrap">
-                                                {getStatusBadge(invoice.status)}
-                                            </td>
-                                        )}
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={visibleColumns.length} className="px-3 py-8 text-center bg-[#fafafa]">
-                                        <p className="text-[13px] font-medium text-[#6d7175]">No invoices found.</p>
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-                {/* Pagination */}
-                <div className="flex items-center justify-between px-4 py-3 border-t border-[#ebebeb]">
-                    <div className="flex items-center gap-2">
-                        <span className="text-[12px] font-bold text-[#6d7175]">Rows per page:</span>
-                        <div className="w-[70px]">
-                            <SelectInput
-                                value={filters?.per_page || '10'}
-                                onChange={(e) => router.get(route('admin.fee-invoices.index'), { ...filters, per_page: e.target.value, page: 1 }, { preserveState: true, preserveScroll: true, replace: true })}
-                                showSearch={false}
-                                options={[
-                                    { id: '10',  name: '10' },
-                                    { id: '25',  name: '25' },
-                                    { id: '50',  name: '50' },
-                                    { id: '100', name: '100' },
-                                ]}
-                                className="w-full h-[28px] text-[12px]"
-                            />
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <span className="text-[12px] text-[#6d7175] font-medium tabular-nums">
-                            {invoices.total > 0 ? `${invoices.from} - ${invoices.to} of ${invoices.total}` : '0'}
-                        </span>
-                        <div className="flex gap-1">
-                        <Link href={invoices.prev_page_url || '#'} preserveState preserveScroll
-                            as="button" disabled={!invoices.prev_page_url}
-                            className="w-7 h-7 flex items-center justify-center rounded-[2px] border border-slate-200 text-[#081621] hover:border-[#008060] hover:text-[#008060] disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white shadow-sm">
-                            <span className="text-[14px]">‹</span>
-                        </Link>
-                        <Link href={invoices.next_page_url || '#'} preserveState preserveScroll
-                            as="button" disabled={!invoices.next_page_url}
-                            className="w-7 h-7 flex items-center justify-center rounded-[2px] border border-slate-200 text-[#081621] hover:border-[#008060] hover:text-[#008060] disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white shadow-sm">
-                            <span className="text-[14px]">›</span>
-                        </Link>
-                    </div>
-                    </div>
-                </div>
+            <div className="mb-6">
+                <DataTable 
+                    columns={columns}
+                    data={invoices?.data || []}
+                    pagination={invoices}
+                    selectable={true}
+                    itemNoun="invoices"
+                    searchQuery={search}
+                    onSearchChange={setSearch}
+                    searchPlaceholder="Search by invoice number or student..."
+                    advancedFilters={advancedFiltersNode}
+                    onConfirmDelete={(selectedIds, close) => {
+                        // Implement bulk delete if backend route is ready
+                        close();
+                    }}
+                />
             </div>
         </AdminLayout>
     );

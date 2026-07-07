@@ -43,9 +43,15 @@ class UserController extends Controller
     public function create(): InertiaResponse
     {
         $roles = Role::select('id', 'name')->get();
+        $existingUsers = User::whereIn('user_type', ['admin', 'staff', 'teacher'])
+            ->with(['roles:id,name'])
+            ->select('id', 'name', 'email', 'user_type')
+            ->orderBy('name')
+            ->get();
 
         return Inertia::render('Admin/Users/Create/UserCreatePage', [
             'roles' => $roles,
+            'existingUsers' => $existingUsers,
         ]);
     }
 
@@ -56,21 +62,33 @@ class UserController extends Controller
     {
         $preVerified = filter_var($request->input('pre_verified', false), FILTER_VALIDATE_BOOLEAN);
 
-        $validated = $request->validate([
+        $isExisting = $request->filled('existing_user_id');
+
+        $rules = [
             'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email'    => 'required|string|email|max:255' . ($isExisting ? '' : '|unique:users'),
+            'password' => $isExisting ? ['nullable', 'confirmed', Rules\Password::defaults()] : ['required', 'confirmed', Rules\Password::defaults()],
             'roles'    => 'required|array',
+            'user_type' => 'nullable|in:admin,staff,teacher',
             'status'   => !$preVerified ? 'nullable' : 'required|in:active,disabled',
-        ]);
+            'existing_user_id' => 'nullable|exists:users,id'
+        ];
+
+        $validated = $request->validate($rules);
 
         $validated['pre_verified'] = $preVerified;
 
-        $service->execute($validated);
+        if ($isExisting) {
+            $user = User::findOrFail($validated['existing_user_id']);
+            // update existing user
+            app(\App\Services\Admin\User\UpdateUserService::class)->execute($user, $validated);
+        } else {
+            $service->execute($validated);
+        }
 
         return redirect()->route('admin.users.index')
-            ->with('success', !$preVerified 
-                ? 'Invitation sent successfully. Profile is pending verification.' 
+            ->with('success', !$preVerified
+                ? 'Invitation sent successfully. Profile is pending verification.'
                 : 'User successfully created and roles assigned.');
     }
 
@@ -80,7 +98,7 @@ class UserController extends Controller
     public function edit(User $user): InertiaResponse
     {
         // Don't edit customers through this administrative staff portal
-        if ($user->user_type !== 'admin') {
+        if (!in_array($user->user_type, ['admin', 'staff'])) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -99,7 +117,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user, UpdateUserService $service): RedirectResponse
     {
-        if ($user->user_type !== 'admin') {
+        if (!in_array($user->user_type, ['admin', 'staff'])) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -108,6 +126,7 @@ class UserController extends Controller
             'email'    => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'roles'    => 'required|array',
+            'user_type' => 'required|in:admin,staff',
             'status'   => 'required|in:active,disabled',
         ]);
 
@@ -122,7 +141,7 @@ class UserController extends Controller
      */
     public function destroy(User $user, DestroyUserService $service): RedirectResponse
     {
-        if ($user->user_type !== 'admin') {
+        if (!in_array($user->user_type, ['admin', 'staff'])) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -142,9 +161,9 @@ class UserController extends Controller
     public function bulkDestroy(Request $request, BulkDestroyUserService $service): RedirectResponse
     {
         $ids = $request->input('ids', []);
-        
+
         $deletedCount = $service->execute($ids);
-        
+
         if ($deletedCount > 0) {
             return redirect()->route('admin.users.index')
                 ->with('success', $deletedCount . ' staff users deleted successfully.');
