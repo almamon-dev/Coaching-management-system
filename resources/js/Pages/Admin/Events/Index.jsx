@@ -81,14 +81,18 @@ export default function Index({ events, counts = {}, currentTab = 'all' }) {
                         </>
                     )}
                     <Link 
-                        href="#" 
+                        href={route('admin.events.edit', row.id)} 
                         className="h-[26px] w-[26px] flex items-center justify-center bg-[#3151fe] text-white rounded-[2px] hover:bg-[#1a39d1] transition-all cursor-pointer shadow-sm"
                         title="Edit Event"
                     >
                         <Edit size={12} />
                     </Link>
                     <button 
-                        onClick={() => tableActions && tableActions.deleteRow()}
+                        onClick={() => {
+                            if(confirm('Are you sure you want to delete this event?')) {
+                                router.delete(route('admin.events.destroy', row.id));
+                            }
+                        }}
                         className="h-[26px] w-[26px] flex items-center justify-center rounded-[2px] transition-all border-none bg-[#ff4d4f] text-white hover:bg-[#cf1322] cursor-pointer shadow-sm"
                         title="Delete Event"
                     >
@@ -121,7 +125,7 @@ export default function Index({ events, counts = {}, currentTab = 'all' }) {
                     <h1 className="text-[20px] font-bold text-[#202223] tracking-tight">Events Management</h1>
                     <p className="text-[13px] text-[#6d7175] mt-0.5 font-medium">Manage school events and approve requests</p>
                 </div>
-                <Link href="#">
+                <Link href={route('admin.events.create')}>
                     <button className="px-4 py-1.5 bg-[#008060] text-white rounded-[3px] font-bold text-[12px] hover:bg-[#006e52] transition-all flex items-center gap-2 shadow-sm">
                         <Plus size={14} strokeWidth={3} /> Create Event
                     </button>

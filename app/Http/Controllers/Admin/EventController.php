@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Event;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -35,6 +37,104 @@ class EventController extends Controller
             'counts' => $counts,
             'currentTab' => $request->tab ?? 'all'
         ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('Admin/Events/Create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'date' => 'required|date',
+            'time' => 'nullable|string',
+            'location' => 'required|string|max:255',
+            'contact_person' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:255',
+            'registration_required' => 'required|in:yes,no',
+            'registration_deadline' => 'nullable|date',
+            'status' => 'required|in:published,draft,pending',
+        ]);
+
+        $validated['slug'] = Str::slug($validated['title']);
+        
+        // Ensure slug uniqueness
+        $originalSlug = $validated['slug'];
+        $count = 1;
+        while (Event::where('slug', $validated['slug'])->exists()) {
+            $validated['slug'] = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        $validated['user_id'] = auth()->id();
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('events', 'public');
+        }
+
+        Event::create($validated);
+
+        return redirect()->route('events.index')->with('success', 'Event created successfully.');
+    }
+
+    public function edit(Event $event)
+    {
+        return Inertia::render('Admin/Events/Edit', [
+            'event' => $event,
+        ]);
+    }
+
+    public function update(Request $request, Event $event)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'date' => 'required|date',
+            'time' => 'nullable|string',
+            'location' => 'required|string|max:255',
+            'contact_person' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:255',
+            'registration_required' => 'required|in:yes,no',
+            'registration_deadline' => 'nullable|date',
+            'status' => 'required|in:published,draft,pending',
+        ]);
+
+        if ($request->title !== $event->title) {
+            $validated['slug'] = Str::slug($validated['title']);
+            
+            $originalSlug = $validated['slug'];
+            $count = 1;
+            while (Event::where('slug', $validated['slug'])->where('id', '!=', $event->id)->exists()) {
+                $validated['slug'] = $originalSlug . '-' . $count;
+                $count++;
+            }
+        }
+
+        if ($request->hasFile('image')) {
+            if ($event->image) {
+                Storage::disk('public')->delete($event->image);
+            }
+            $validated['image'] = $request->file('image')->store('events', 'public');
+        }
+
+        $event->update($validated);
+
+        return redirect()->route('events.index')->with('success', 'Event updated successfully.');
+    }
+
+    public function destroy(Event $event)
+    {
+        if ($event->image) {
+            Storage::disk('public')->delete($event->image);
+        }
+        $event->delete();
+        
+        return redirect()->route('events.index')->with('success', 'Event deleted successfully.');
     }
 
     public function approve(Event $event)
