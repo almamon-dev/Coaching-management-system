@@ -31,6 +31,7 @@ const RAW_MENU_GROUPS = [
                 key: "academic",
                 label: "Academic Management",
                 icon: GraduationCap,
+                permissions: ["view-academic"],
                 children: [
                     { label: "Academic Years", getPath: () => route('admin.academic_sessions.index') },
                     { label: "Classes", getPath: () => route('admin.classes.index') },
@@ -44,6 +45,7 @@ const RAW_MENU_GROUPS = [
                 key: "students",
                 label: "Student Management",
                 icon: Users,
+                permissions: ["view-students"],
                 children: [
                     { label: "Students", getPath: () => route('admin.students.index') },
                     { label: "New Admission", getPath: () => route('admin.students.create') },
@@ -57,6 +59,7 @@ const RAW_MENU_GROUPS = [
                 key: "teachers",
                 label: "Teacher Management",
                 icon: UserCheck,
+                permissions: ["view-teachers"],
                 children: [
                     { label: "Teachers", getPath: () => route('admin.teachers.index') },
                     { label: "Departments", getPath: () => route('admin.departments.index') },
@@ -68,6 +71,7 @@ const RAW_MENU_GROUPS = [
                 key: "guardians",
                 label: "Guardian Management",
                 icon: ShieldCheck,
+                permissions: ["view-users"], // Using view-users as a proxy or we can just leave it for now
                 children: [
                     { label: "Guardians", getPath: () => '#' },
                 ],
@@ -76,6 +80,7 @@ const RAW_MENU_GROUPS = [
                 key: "fees",
                 label: "Fees Management",
                 icon: Wallet,
+                permissions: ["view-fees"],
                 children: [
                     { label: "Fee Types & Heads", getPath: () => route('admin.fee-types.index') },
                     { label: "Fee Setup (Groups)", getPath: () => route('admin.fee-groups.index') },
@@ -87,6 +92,7 @@ const RAW_MENU_GROUPS = [
                 key: "attendance",
                 label: "Attendance Management",
                 icon: ClipboardCheck,
+                permissions: ["view-attendance"],
                 children: [
                     { label: "Student Attendance", getPath: () => route('admin.attendance.index') },
                     { label: "Teacher Attendance", getPath: () => route('admin.teacher_attendance.index') },
@@ -99,6 +105,7 @@ const RAW_MENU_GROUPS = [
                 key: "examinations",
                 label: "Examination Management",
                 icon: BookOpen,
+                permissions: ["view-examinations"],
                 children: [
                     { label: "Exams", getPath: () => route('admin.exams.index') },
                     { label: "Marks Entry", getPath: () => route('admin.marks.entry') },
@@ -111,6 +118,7 @@ const RAW_MENU_GROUPS = [
                 key: "notice_board",
                 label: "Notice Board",
                 icon: Bell,
+                permissions: ["view-notices"],
                 children: [
                     { label: "Notices", getPath: () => route('admin.notices.index') },
                 ],
@@ -119,6 +127,7 @@ const RAW_MENU_GROUPS = [
                 key: "events",
                 label: "Event Management",
                 icon: Calendar,
+                permissions: ["view-events"],
                 children: [
                     { label: "Events", getPath: () => route('admin.events.index') },
                 ],
@@ -127,21 +136,21 @@ const RAW_MENU_GROUPS = [
                 key: "reports",
                 label: "Reports",
                 icon: FileText,
+                permissions: ["view-reports"],
                 children: [
                     { label: "Student Reports", getPath: () => route('admin.reports.students.index') },
                     { label: "Teacher Reports", getPath: () => route('admin.reports.teachers.index') },
                     { label: "Attendance Reports", getPath: () => route('admin.reports.attendance.index') },
                     { label: "Exam Reports", getPath: () => route('admin.reports.exams.index') },
                     { label: "Promotion Reports", getPath: () => route('admin.reports.promotions.index') },
-                    // { label: "Export PDF/Excel", getPath: () => '#' },
                 ],
             },
             {
                 key: "settings",
                 label: "Settings",
                 icon: Settings,
+                permissions: ["view-settings", "view-roles", "view-users"],
                 children: [
-                    // { label: "School Information", getPath: () => '#' },
                     { label: "Roles & Permissions", getPath: () => route('admin.roles.index') },
                     { label: "System Users", getPath: () => route('admin.users.index') },
                     { label: "SMS Settings", getPath: () => '#' },
@@ -313,7 +322,9 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
     const { url, props } = usePage();
     const currentPath = useMemo(() => url.split("?")[0], [url]);
 
+    const userPermissions = useMemo(() => props.auth?.user?.permissions || [], [props.auth?.user?.permissions]);
     const userRoles = useMemo(() => props.auth?.user?.roles || [], [props.auth?.user?.roles]);
+    const isSuperAdmin = userRoles.includes('Super Admin');
     const openTicketsCount = props.auth?.user?.open_tickets_count || 0;
 
     const filteredMenuGroups = useMemo(() => {
@@ -323,14 +334,14 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
             const allowedItems = [];
             for (let i = 0; i < group.items.length; i++) {
                 const item = group.items[i];
-                if (!item.roles || item.roles.some(r => userRoles.includes(r))) {
+                if (!item.permissions || isSuperAdmin || item.permissions.some(p => userPermissions.includes(p))) {
                     allowedItems.push(item);
                 }
             }
             if (allowedItems.length > 0) processed.push({ ...group, items: allowedItems });
         }
         return processed;
-    }, [userRoles]);
+    }, [userPermissions, isSuperAdmin]);
 
     return (
         <div className="w-full h-full flex flex-col bg-white border-r border-slate-200/60 relative select-none">
@@ -348,18 +359,20 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
             </div>
 
             {/* QUICK LINK: DASHBOARD */}
-            <div className="p-2 shrink-0">
-                <Link
-                    href="/dashboard"
-                    prefetch={["hover", "mount"]}
-                    showProgress={false}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-150 group
-                        ${currentPath === "/dashboard" ? "bg-[#f0f9f7] text-[#008060] font-bold" : "text-slate-650 hover:bg-slate-50 hover:text-slate-900"}`}
-                >
-                    <LayoutDashboard size={18} className={currentPath === "/dashboard" ? "text-[#008060]" : "text-slate-400 group-hover:text-[#008060]"} />
-                    {!isCollapsed && <span className="text-[13px] font-medium tracking-tight">Dashboard Overview</span>}
-                </Link>
-            </div>
+            {isSuperAdmin && (
+                <div className="p-2 shrink-0">
+                    <Link
+                        href="/dashboard"
+                        prefetch={["hover", "mount"]}
+                        showProgress={false}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-150 group
+                            ${currentPath === "/dashboard" ? "bg-[#f0f9f7] text-[#008060] font-bold" : "text-slate-650 hover:bg-slate-50 hover:text-slate-900"}`}
+                    >
+                        <LayoutDashboard size={18} className={currentPath === "/dashboard" ? "text-[#008060]" : "text-slate-400 group-hover:text-[#008060]"} />
+                        {!isCollapsed && <span className="text-[13px] font-medium tracking-tight">Dashboard Overview</span>}
+                    </Link>
+                </div>
+            )}
 
             {/* MAIN NAVIGATION SCROLL AREA */}
             <div className="flex-1 overflow-y-auto no-scrollbar pb-6">

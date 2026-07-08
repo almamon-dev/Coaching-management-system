@@ -154,7 +154,9 @@ const Header = ({ onMenuClick, onToggleSidebar }) => {
                     </div>
                     <div className="leading-tight hidden sm:block">
                         <p className="text-[12.5px] font-bold text-slate-800">{auth?.user?.name || "Admin"}</p>
-                        <p className="text-[10.5px] text-slate-500 font-medium">Super Admin</p>
+                        <p className="text-[10.5px] text-slate-500 font-medium capitalize">
+                            {auth?.user?.roles?.filter(r => !['user', 'student'].includes(r)).join(', ') || auth?.user?.user_type || 'User'}
+                        </p>
                     </div>
                     <ChevronDown size={14} className="text-slate-400 hidden sm:block ml-1 group-hover:text-slate-600 transition-colors" />
 

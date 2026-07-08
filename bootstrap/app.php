@@ -74,4 +74,22 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => $e->getMessage() !== 'This action is unauthorized.' ? $e->getMessage() : 'You do not have permission to access this page.'
             ])->toResponse($request)->setStatusCode(403);
         });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, \Illuminate\Http\Request $request) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Not Found.'], 404);
+            }
+            return \Inertia\Inertia::render('Errors/404')->toResponse($request)->setStatusCode(404);
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, \Illuminate\Http\Request $request) {
+            if (!config('app.debug') && in_array($e->getStatusCode(), [500, 503, 404, 403])) {
+                if ($request->wantsJson()) {
+                    return response()->json(['message' => 'Server Error.'], $e->getStatusCode());
+                }
+                return \Inertia\Inertia::render('Errors/' . $e->getStatusCode(), [
+                    'status' => $e->getStatusCode()
+                ])->toResponse($request)->setStatusCode($e->getStatusCode());
+            }
+        });
     })->create();

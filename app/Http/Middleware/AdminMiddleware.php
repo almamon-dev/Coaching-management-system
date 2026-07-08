@@ -20,7 +20,7 @@ class AdminMiddleware
         
         $hasAdminAccess = $user && (
             in_array($user->user_type, ['admin', 'staff']) || 
-            $user->roles()->count() > 0
+            $user->roles()->whereNotIn('name', ['teacher', 'student', 'user'])->count() > 0
         );
 
         if ($hasAdminAccess) {

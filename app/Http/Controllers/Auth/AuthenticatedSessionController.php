@@ -35,28 +35,28 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
  
         $user = auth()->user();
- 
         $routeName = Route::currentRouteName();
         // Portal-specific authorization
-        $hasAdminAccess = $user->user_type === 'admin' || $user->roles()->count() > 0;
+        $adminRolesCount = $user->roles()->whereNotIn('name', ['teacher', 'student', 'user'])->count();
+        $hasAdminAccess = in_array($user->user_type, ['admin', 'staff']) || $adminRolesCount > 0;
 
         if (in_array($routeName, ['admin.login', 'admin.login.store']) && !$hasAdminAccess) {
             Auth::guard('web')->logout();
-            return redirect()->route('admin.login')->withErrors([
+            throw \Illuminate\Validation\ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
 
         if (in_array($routeName, ['teacher.login', 'teacher.login.store']) && !in_array($user->user_type, ['staff', 'teacher'])) {
             Auth::guard('web')->logout();
-            return redirect()->route('teacher.login')->withErrors([
+            throw \Illuminate\Validation\ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
 
         if (in_array($routeName, ['student.login', 'student.login.store']) && in_array($user->user_type, ['admin', 'staff', 'teacher'])) {
             Auth::guard('web')->logout();
-            return redirect()->route('student.login')->withErrors([
+            throw \Illuminate\Validation\ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }

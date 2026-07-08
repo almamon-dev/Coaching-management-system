@@ -102,13 +102,6 @@ export default function Index({ auth, invoices, classes, filters }) {
                     >
                         <Eye size={12} />
                     </Link>
-                    <Link
-                        href={route('admin.fee-invoices.edit', row.id)}
-                        className="h-[26px] w-[26px] flex items-center justify-center bg-[#3151fe] text-white rounded-[2px] hover:bg-[#1a39d1] transition-all cursor-pointer shadow-sm"
-                        title="Edit Invoice"
-                    >
-                        <SquarePen size={12} />
-                    </Link>
                     <button
                         onClick={() => tableActions.deleteRow()}
                         className="h-[26px] w-[26px] flex items-center justify-center rounded-[2px] transition-all border-none bg-[#ff4d4f] text-white hover:bg-[#cf1322] cursor-pointer shadow-sm"

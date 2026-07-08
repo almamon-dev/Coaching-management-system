@@ -118,18 +118,8 @@ class RoleAndPermissionSeeder extends Seeder
 
         // C. Teacher
         $teacherRole = Role::findOrCreate('teacher', 'web');
-        $teacherRole->givePermissionTo([
-            'view-students',
-            'view-attendance',
-            'mark-attendance',
-            'view-academic',
-            'view-examinations',
-            'manage-marks',
-            'view-notices',
-            'view-events',
-            'view-library',
-            'view-reports',
-        ]);
+        $teacherRole->givePermissionTo([]);
+
         
         // D. Accountant
         $accountantRole = Role::findOrCreate('Accountant', 'web');

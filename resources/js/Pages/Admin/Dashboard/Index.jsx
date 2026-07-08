@@ -73,6 +73,25 @@ const recentActivities = [
 ];
 
 export default function Index({ auth }) {
+    const isSuperAdmin = auth?.user?.roles?.includes('Super Admin');
+
+    if (!isSuperAdmin) {
+        return (
+            <AdminLayout user={auth?.user}>
+                <Head title="Welcome" />
+                <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
+                    <div className="text-[64px] mb-6">👋</div>
+                    <h1 className="text-[28px] font-black text-slate-800 tracking-tight mb-2">
+                        Welcome back, {auth?.user?.name}!
+                    </h1>
+                    <p className="text-[15px] text-slate-500 font-medium max-w-md">
+                        You have successfully logged into the admin portal. Please select an option from the sidebar to manage your assigned modules.
+                    </p>
+                </div>
+            </AdminLayout>
+        );
+    }
+
     return (
         <AdminLayout user={auth?.user}>
             <Head title="Admin Dashboard" />
