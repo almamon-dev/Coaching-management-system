@@ -6,7 +6,7 @@ import SelectInput from '@/Components/Form/SelectInput';
 const PagePagination = ({ pages, filters, total, handlePerPageChange }) => {
     const fromIdx = pages.from || 0;
     const toIdx = pages.to || 0;
-    const total = pages.total || 0;
+    const displayTotal = total || pages.total || 0;
 
     const prevUrl = pages.prev_page_url;
     const nextUrl = pages.next_page_url;
@@ -34,7 +34,7 @@ const PagePagination = ({ pages, filters, total, handlePerPageChange }) => {
 
             <div className="flex items-center gap-4">
                 <span className="text-[12px] text-[#202223] font-bold tabular-nums">
-                    {fromIdx} - {toIdx} of {total}
+                    {fromIdx} - {toIdx} of {displayTotal}
                 </span>
 
                 <div className="flex gap-1">

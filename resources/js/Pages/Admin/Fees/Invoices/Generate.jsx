@@ -4,7 +4,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import { ArrowLeft, FileText, Check, AlertTriangle } from 'lucide-react';
 import TextInput from '@/Components/Form/TextInput';
 import SelectInput from '@/Components/Form/SelectInput';
-import PrimaryButton from '@/Components/PrimaryButton';
+import PrimaryButton from '@/Components/Button/PrimaryButton';
 
 export default function Generate({ auth, classes, feeGroups }) {
     const { data, setData, post, processing, errors } = useForm({
