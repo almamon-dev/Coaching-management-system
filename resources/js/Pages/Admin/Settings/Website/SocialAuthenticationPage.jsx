@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head } from '@inertiajs/react';
-import { Shield, Home, Chrome, Github, ShieldAlert, Key, Share2 } from 'lucide-react';
+import { Shield, Home, Globe, GitBranch, ShieldAlert, Key, Share2 } from 'lucide-react';
 
 export default function SocialAuthentication() {
     const [formData, setFormData] = useState({
@@ -62,7 +62,7 @@ export default function SocialAuthentication() {
                     <div className="px-7 py-5 border-b border-[#e3e4e8] flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-[#fef2f2] rounded-lg flex items-center justify-center text-[#ea4335]">
-                                <Chrome size={20} />
+                                <Globe size={20} />
                             </div>
                             <h2 className="text-[17px] font-bold text-[#2f3344]">Google Authentication</h2>
                         </div>
@@ -131,7 +131,7 @@ export default function SocialAuthentication() {
                     <div className="px-7 py-5 border-b border-[#e3e4e8] flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-[#f1f2f4] rounded-lg flex items-center justify-center text-[#24292e]">
-                                <Github size={20} />
+                                <GitBranch size={20} />
                             </div>
                             <h2 className="text-[17px] font-bold text-[#2f3344]">GitHub Authentication</h2>
                         </div>

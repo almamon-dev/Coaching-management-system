@@ -16,6 +16,7 @@ import {
     LogOut,
     Wallet,
     Calendar,
+    Image,
 } from "lucide-react";
 
 /*
@@ -130,6 +131,15 @@ const RAW_MENU_GROUPS = [
                 permissions: ["view-events"],
                 children: [
                     { label: "Events", getPath: () => route('admin.events.index') },
+                ],
+            },
+            {
+                key: "gallery",
+                label: "Campus Life / Gallery",
+                icon: Image,
+                permissions: ["view-events"], // Grouping under same permissions for now
+                children: [
+                    { label: "Galleries", getPath: () => route('admin.galleries.index') },
                 ],
             },
             {

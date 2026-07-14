@@ -27,6 +27,9 @@ use Inertia\Inertia;
         Route::post('events/{event}/reject', [\App\Http\Controllers\Admin\EventController::class, 'reject'])->name('events.reject');
     });
 
+    // Gallery / Campus Life Management
+    Route::resource('galleries', \App\Http\Controllers\Admin\GalleryController::class);
+
     // Attendance Management
     Route::middleware('permission:view-attendance')->group(function () {
         Route::get('attendance', [\App\Http\Controllers\Admin\Attendance\AttendanceController::class, 'index'])->name('attendance.index');

@@ -37,16 +37,31 @@ class HomeController extends Controller
                     'title' => $event->title,
                     'slug' => $event->slug,
                     'description' => $event->description,
-                    'image' => $event->image,
+                    'image' => \App\Support\Media\FileUrlGenerator::generate($event->image),
                     'date' => $event->date->format('Y-m-d'),
                     'time' => $event->time ? date('h:i A', strtotime($event->time)) : null,
                     'location' => $event->location,
                 ];
             });
 
+        $galleries = \App\Models\Gallery::where('status', 'published')
+            ->orderBy('sort_order', 'asc')
+            ->latest()
+            ->take(4)
+            ->get()
+            ->map(function($gallery) {
+                return [
+                    'id' => encrypt($gallery->id),
+                    'title' => $gallery->title,
+                    'category' => $gallery->category,
+                    'image' => \App\Support\Media\FileUrlGenerator::generate($gallery->image),
+                ];
+            });
+
         return Inertia::render('Frontend/Home', [
             'notices' => $notices,
             'events' => $events,
+            'galleries' => $galleries,
         ]);
     }
 }

@@ -9,6 +9,8 @@ use App\Models\Section;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Support\Media\FileUploader;
+use App\Support\Media\FileRemover;
 
 class AssignmentController extends Controller
 {
@@ -61,7 +63,7 @@ class AssignmentController extends Controller
 
         $filePath = null;
         if ($request->hasFile('attachment')) {
-            $filePath = $request->file('attachment')->store('assignments', 'public');
+            $filePath = FileUploader::upload('assignments', $request->file('attachment'));
         }
 
         Assignment::create([
@@ -82,6 +84,9 @@ class AssignmentController extends Controller
     {
         if ($assignment->teacher_id !== auth()->id()) {
             abort(403);
+        }
+        if ($assignment->file_path) {
+            FileRemover::delete($assignment->file_path);
         }
         $assignment->delete();
         return redirect()->back()->with('success', 'Assignment deleted successfully.');

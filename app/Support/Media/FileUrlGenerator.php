@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support\Media;
 
-use Illuminate\Support\Facades\Storage;
+
 
 final class FileUrlGenerator
 {
@@ -27,7 +27,7 @@ final class FileUrlGenerator
             $filePath = substr($filePath, 8);
         }
 
-        // Return a relative path to avoid APP_URL port mismatch issues
-        return '/storage/' . $filePath;
+        // Return a relative path for the public folder
+        return '/' . $filePath;
     }
 }

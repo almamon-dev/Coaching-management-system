@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Support\Media;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 final class FileUploader
@@ -23,7 +22,7 @@ final class FileUploader
         $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
         $path = "{$basePath}/{$filename}";
 
-        Storage::putFileAs($basePath, $file, $filename);
+        $file->move(public_path($basePath), $filename);
 
         return $path;
     }
@@ -42,7 +41,12 @@ final class FileUploader
         $filename = time() . '_' . Str::random(8) . '.' . $extension;
         $path = "{$basePath}/{$filename}";
 
-        Storage::put($path, file_get_contents($filePath));
+        $destinationDir = public_path($basePath);
+        if (!is_dir($destinationDir)) {
+            mkdir($destinationDir, 0755, true);
+        }
+
+        copy($filePath, public_path($path));
 
         return $path;
     }

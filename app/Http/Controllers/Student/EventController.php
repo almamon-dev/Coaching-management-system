@@ -43,6 +43,6 @@ class EventController extends Controller
 
         Event::create($validated);
 
-        return redirect()->route('student.events.index')->with('success', 'Event request submitted for verification.');
+        return redirect()->route('user.events.index')->with('success', 'Event request submitted for verification.');
     }
 }

@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Setting;
 use Inertia\Inertia;
+use App\Support\Media\FileUploader;
+use App\Support\Media\FileRemover;
 
 class SettingController extends Controller
 {
@@ -311,13 +313,13 @@ class SettingController extends Controller
         
         // Handle File Uploads
         if ($request->hasFile('site_logo')) {
-            $path = $request->file('site_logo')->store('settings', 'public');
-            $settings['site_logo'] = '/storage/' . $path;
+            $path = FileUploader::upload('settings', $request->file('site_logo'));
+            $settings['site_logo'] = \App\Support\Media\FileUrlGenerator::generate($path);
         }
 
         if ($request->hasFile('site_favicon')) {
-            $path = $request->file('site_favicon')->store('settings', 'public');
-            $settings['site_favicon'] = '/storage/' . $path;
+            $path = FileUploader::upload('settings', $request->file('site_favicon'));
+            $settings['site_favicon'] = \App\Support\Media\FileUrlGenerator::generate($path);
         }
 
         // Keys that should also be updated in .env

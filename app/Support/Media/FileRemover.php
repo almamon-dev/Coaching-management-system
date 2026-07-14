@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support\Media;
 
-use Illuminate\Support\Facades\Storage;
+
 
 final class FileRemover
 {
@@ -23,8 +23,9 @@ final class FileRemover
             $filePath = substr($filePath, 8);
         }
 
-        if (Storage::exists($filePath)) {
-            return Storage::delete($filePath);
+        $fullPath = public_path($filePath);
+        if (file_exists($fullPath) && is_file($fullPath)) {
+            return unlink($fullPath);
         }
 
         return false;

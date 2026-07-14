@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Event;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use App\Support\Media\FileUploader;
+use App\Support\Media\FileRemover;
 
 class EventController extends Controller
 {
@@ -73,12 +74,12 @@ class EventController extends Controller
         $validated['user_id'] = auth()->id();
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('events', 'public');
+            $validated['image'] = FileUploader::upload('events', $request->file('image'));
         }
 
         Event::create($validated);
 
-        return redirect()->route('events.index')->with('success', 'Event created successfully.');
+        return redirect()->route('admin.events.index')->with('success', 'Event created successfully.');
     }
 
     public function edit(Event $event)
@@ -117,24 +118,24 @@ class EventController extends Controller
 
         if ($request->hasFile('image')) {
             if ($event->image) {
-                Storage::disk('public')->delete($event->image);
+                FileRemover::delete($event->image);
             }
-            $validated['image'] = $request->file('image')->store('events', 'public');
+            $validated['image'] = FileUploader::upload('events', $request->file('image'));
         }
 
         $event->update($validated);
 
-        return redirect()->route('events.index')->with('success', 'Event updated successfully.');
+        return redirect()->route('admin.events.index')->with('success', 'Event updated successfully.');
     }
 
     public function destroy(Event $event)
     {
         if ($event->image) {
-            Storage::disk('public')->delete($event->image);
+            FileRemover::delete($event->image);
         }
         $event->delete();
         
-        return redirect()->route('events.index')->with('success', 'Event deleted successfully.');
+        return redirect()->route('admin.events.index')->with('success', 'Event deleted successfully.');
     }
 
     public function approve(Event $event)

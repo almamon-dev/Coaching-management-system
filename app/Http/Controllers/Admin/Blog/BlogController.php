@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Blog;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use App\Support\Media\FileUploader;
+use App\Support\Media\FileRemover;
 
 class BlogController extends Controller
 {
@@ -61,7 +63,7 @@ class BlogController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('blogs', 'public');
+            $validated['image'] = FileUploader::upload('blogs', $request->file('image'));
         }
 
         Blog::create($validated);
@@ -89,7 +91,10 @@ class BlogController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('blogs', 'public');
+            if ($blog->image) {
+                FileRemover::delete($blog->image);
+            }
+            $validated['image'] = FileUploader::upload('blogs', $request->file('image'));
         }
 
         $blog->update($validated);
@@ -99,6 +104,9 @@ class BlogController extends Controller
 
     public function destroy(Blog $blog)
     {
+        if ($blog->image) {
+            FileRemover::delete($blog->image);
+        }
         $blog->delete();
         return redirect()->back()->with('success', 'Blog deleted successfully.');
     }
