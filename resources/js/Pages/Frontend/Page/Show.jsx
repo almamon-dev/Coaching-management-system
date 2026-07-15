@@ -3,36 +3,36 @@ import FrontendLayout from '@/Layouts/FrontendLayout';
 import { Head, Link } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
 
-export default function Show({ page, categories, brands }) {
+export default function Show({ page }) {
     return (
-        <FrontendLayout categories={categories} brands={brands}>
-            <Head title={`${page.meta_title || page.title} - GadgetZone`}>
+        <FrontendLayout>
+            <Head title={`${page.meta_title || page.title} - Lohadi High School`}>
                 <meta name="description" content={page.meta_description || ''} />
             </Head>
 
-            <div className="w-full bg-white min-h-[60vh] pb-12">
+            <div className="w-full bg-[#f8fafc] min-h-[60vh] pb-12">
                 {/* Breadcrumb */}
-                <div className="py-4 bg-white border-b border-slate-200/60">
-                    <div className="container mx-auto px-4 flex items-center gap-2 text-[13px]">
-                        <Link href="/" className="text-gray-600 hover:text-[#4f46e5] px-2">
+                <div className="py-4 bg-white border-b border-slate-200/60 shadow-sm">
+                    <div className="container mx-auto px-4 md:px-8 max-w-8xl flex items-center gap-2 text-[13px]">
+                        <Link href="/" className="text-gray-600 hover:text-[#16a34a] px-2 font-medium">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                             </svg>
                         </Link>
                         <ChevronRight size={14} className="text-gray-300" />
-                        <span className="text-gray-400">{page.title}</span>
+                        <span className="text-gray-500 font-medium">{page.title}</span>
                     </div>
                 </div>
 
-                <div className="container mx-auto px-4 py-8">
-                    <div className="max-w-7xl mx-auto bg-white">
-                        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 border-b border-slate-100 pb-4 mb-6">
+                <div className="container mx-auto px-4 md:px-8 max-w-8xl py-10">
+                    <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-slate-200 p-8 md:p-12">
+                        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 border-b border-slate-100 pb-5 mb-8">
                             {page.title}
                         </h1>
 
                         {/* Rich Dynamic Content */}
                         <div 
-                            className="dynamic-content text-slate-700 text-[14px] leading-relaxed space-y-6"
+                            className="dynamic-content text-slate-700 text-[15px] leading-relaxed space-y-6"
                             dangerouslySetInnerHTML={{ __html: page.content }}
                         />
                     </div>
@@ -49,8 +49,8 @@ export default function Show({ page, categories, brands }) {
                     .dynamic-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
                     .dynamic-content li { margin-bottom: 0.25rem; color: #475569; }
                     .dynamic-content strong { font-weight: 600; color: #0f172a; }
-                    .dynamic-content a { color: #4f46e5; text-decoration: underline; }
-                    .dynamic-content a:hover { color: #4338ca; }
+                    .dynamic-content a { color: #16a34a; text-decoration: underline; font-weight: 500; }
+                    .dynamic-content a:hover { color: #15803d; }
                 `}} />
             </div>
         </FrontendLayout>

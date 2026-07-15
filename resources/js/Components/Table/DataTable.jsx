@@ -67,7 +67,7 @@ export default function DataTable({
     const totalCount = pagination?.meta?.total || pagination?.total || (data?.length || 0);
 
     return (
-        <div className="bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] overflow-hidden">
+        <div className="bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)]">
             {headerContent}
             
             {/* Optional Tabs */}
@@ -134,7 +134,7 @@ export default function DataTable({
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto custom-scrollbar relative min-h-[200px]">
+            <div className="overflow-x-auto custom-scrollbar relative h-auto">
                 <table className="w-full min-w-[800px] border-collapse text-left">
                     <thead>
                         <tr className="bg-[#f4f6f8]">

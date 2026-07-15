@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Gallery;
+use App\Models\Founder;
+use App\Models\ImportantLink;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -58,10 +61,24 @@ class HomeController extends Controller
                 ];
             });
 
+        $founders = \App\Models\Founder::where('is_active', true)
+            ->orderBy('order', 'asc')
+            ->get()
+            ->map(function($founder) {
+                return [
+                    'id' => encrypt($founder->id),
+                    'name' => $founder->name,
+                    'role' => $founder->role,
+                    'description' => $founder->description,
+                    'image' => \App\Support\Media\FileUrlGenerator::generate($founder->image),
+                ];
+            });
+
         return Inertia::render('Frontend/Home', [
             'notices' => $notices,
             'events' => $events,
             'galleries' => $galleries,
+            'founders' => $founders,
         ]);
     }
 }

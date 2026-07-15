@@ -30,6 +30,12 @@ use Inertia\Inertia;
     // Gallery / Campus Life Management
     Route::resource('galleries', \App\Http\Controllers\Admin\GalleryController::class);
 
+    // Founders & Land Donors
+    Route::resource('founders', \App\Http\Controllers\Admin\FounderController::class)->except(['create', 'show', 'edit']);
+
+    // Important Links (Notice Board section)
+    Route::resource('important-links', \App\Http\Controllers\Admin\ImportantLinkController::class)->except(['create', 'show', 'edit']);
+
     // Attendance Management
     Route::middleware('permission:view-attendance')->group(function () {
         Route::get('attendance', [\App\Http\Controllers\Admin\Attendance\AttendanceController::class, 'index'])->name('attendance.index');
@@ -135,6 +141,13 @@ use Inertia\Inertia;
             Route::get('exams', [\App\Http\Controllers\Admin\Reports\ExamReportController::class, 'index'])->name('exams.index');
         });
     });
+
+    // Sexual Harassment Management
+    Route::resource('harassment-complaints', \App\Http\Controllers\Admin\HarassmentComplaintController::class)->only(['index', 'show', 'destroy'])->middleware('permission:view-reports');
+    Route::put('harassment-complaints/{complaint}/status', [\App\Http\Controllers\Admin\HarassmentComplaintController::class, 'updateStatus'])->name('harassment-complaints.update-status')->middleware('permission:view-reports');
+
+    // Academic Resources Management
+    Route::resource('academic-resources', \App\Http\Controllers\Admin\AcademicResourceController::class)->only(['index', 'store', 'destroy']);
 
     Route::get('/dashboard', [\App\Http\Controllers\Admin\Dashboard\DashboardController::class, 'index'])->name('dashboard');
     

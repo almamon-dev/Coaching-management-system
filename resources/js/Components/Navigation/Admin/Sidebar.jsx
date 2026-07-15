@@ -17,6 +17,7 @@ import {
     Wallet,
     Calendar,
     Image,
+    ShieldAlert,
 } from "lucide-react";
 
 /*
@@ -40,6 +41,7 @@ const RAW_MENU_GROUPS = [
                     { label: "Subjects", getPath: () => route('admin.subjects.index') },
                     { label: "Assign Subjects", getPath: () => route('admin.subject-allocation.index') },
                     { label: "Class Routine", getPath: () => route('admin.class_routines.index') },
+                    { label: "Academic Resources", getPath: () => route('admin.academic-resources.index') },
                 ],
             },
             {
@@ -140,6 +142,16 @@ const RAW_MENU_GROUPS = [
                 permissions: ["view-events"], // Grouping under same permissions for now
                 children: [
                     { label: "Galleries", getPath: () => route('admin.galleries.index') },
+                    { label: "Founders & Donors", getPath: () => route('admin.founders.index') },
+                ],
+            },
+            {
+                key: "complaints",
+                label: "Complaints & Incidents",
+                icon: ShieldAlert,
+                permissions: ["view-reports"],
+                children: [
+                    { label: "Harassment Reports", getPath: () => route('admin.harassment-complaints.index') },
                 ],
             },
             {
@@ -359,11 +371,11 @@ export default function Sidebar({ isCollapsed, toggleCollapse }) {
             <div className="h-[70px] flex items-center px-4 shrink-0 bg-white border-b border-slate-200/60 overflow-hidden relative">
                 {!isCollapsed ? (
                     <Link href="/dashboard" className="flex items-center px-2 h-[70px]">
-                        <SchoolLogo variant="wide" />
+                        <SchoolLogo variant="sidebar" />
                     </Link>
                 ) : (
                     <Link href="/dashboard" className="flex items-center justify-center w-full h-[70px]">
-                        <SchoolLogo variant="icon" />
+                        <SchoolLogo variant="sidebar-icon" />
                     </Link>
                 )}
             </div>

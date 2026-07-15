@@ -72,20 +72,20 @@ export default function NoticeBoardSection({ notices = [] }) {
                                 </div>
                                 <div className="flex flex-col py-1.5 min-h-[220px]">
                                     {[
-                                        'News',
-                                        'Notice',
-                                        'FAQ',
-                                        'Campus Events',
-                                        'Research Events',
-                                        'Upcoming Events',
-                                        'Sexual Harassment Prevention'
+                                        { title: 'News', url: route('coming.soon') },
+                                        { title: 'Notice', url: route('notices.index') },
+                                        { title: 'FAQ', url: route('coming.soon') },
+                                        { title: 'Campus Events', url: route('events') },
+                                        { title: 'Research Events', url: route('coming.soon') },
+                                        { title: 'Upcoming Events', url: route('events') },
+                                        { title: 'Sexual Harassment Prevention', url: route('complaints.create') }
                                     ].map((link, idx) => (
                                         <Link
                                             key={idx}
-                                            href={route('coming.soon')}
+                                            href={link.url}
                                             className="py-2 px-4 text-[#333333] hover:text-[#009ca6] hover:bg-white/60 transition-colors text-[13px] font-medium"
                                         >
-                                            {link}
+                                            {link.title}
                                         </Link>
                                     ))}
                                 </div>

@@ -60,6 +60,9 @@ Route::get('/gallery', function () {
     return Inertia::render('Frontend/Gallery');
 })->name('gallery');
 
+// Academics Route
+Route::get('/academics/resources', [\App\Http\Controllers\Frontend\AcademicResourceController::class, 'index'])->name('academics.resources');
+
 Route::get('/admissions', function () {
     return Inertia::render('Frontend/Admissions');
 })->name('admissions');
@@ -76,5 +79,9 @@ Route::get('/coming-soon', function () {
 })->name('coming.soon');
 
 require __DIR__.'/auth.php';
+
+// Sexual Harassment Complaint Routes
+Route::get('/sexual-harassment-report', [\App\Http\Controllers\Frontend\HarassmentComplaintController::class, 'create'])->name('complaints.create');
+Route::post('/sexual-harassment-report', [\App\Http\Controllers\Frontend\HarassmentComplaintController::class, 'store'])->name('complaints.store');
 
 Route::get('/info/{slug}', [\App\Http\Controllers\Frontend\PageController::class, 'show'])->name('frontend.pages.show');

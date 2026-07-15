@@ -10,25 +10,20 @@ import FacultiesSection from './Partials/Home/FacultiesSection';
 import UpcomingEventsSection from './Partials/Home/UpcomingEventsSection';
 import CampusLifeSection from './Partials/Home/CampusLifeSection';
 
-export default function Home({ notices = [], events = [], galleries = [] }) {
+export default function Home({ notices = [], events = [], galleries = [], founders = [] }) {
     return (
         <>
             <Head title="Lohadi High School - Enterprise School System" />
-
             <Hero />
-            
             <StatisticsSection />
-            
             <AboutSection />
-            
             <NoticeBoardSection notices={notices} />
-            
             <FacultiesSection />
             
             <UpcomingEventsSection events={events} />
             
             <CampusLifeSection galleries={galleries} />
-            <FoundersSection />
+            <FoundersSection founders={founders} />
         </>
     );
 }

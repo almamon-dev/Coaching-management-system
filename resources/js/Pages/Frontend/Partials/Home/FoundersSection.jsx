@@ -1,6 +1,10 @@
 import React from 'react';
 
-export default function FoundersSection() {
+export default function FoundersSection({ founders = [] }) {
+    if (!founders || founders.length === 0) {
+        return null; // Don't show the section if there are no founders
+    }
+
     return (
         <section className="py-10 bg-transparent">
             <div className="container mx-auto px-4 md:px-8 max-w-8xl">
@@ -18,28 +22,22 @@ export default function FoundersSection() {
                         </div>
 
                         <div className="w-full md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-                            {/* Founder 1 */}
-                            <div className="bg-white p-3.5 rounded-xl shadow-sm border border-slate-100 flex items-center gap-3.5 hover:shadow-md transition-shadow">
-                                <div className="w-12 h-12 bg-slate-200 rounded-full flex-shrink-0 overflow-hidden">
-                                    <img src="https://ui-avatars.com/api/?name=Founder+Name&background=16a34a&color=fff" alt="Founder" className="w-full h-full object-cover" />
+                            {founders.map((founder, index) => (
+                                <div key={founder.id || index} className="bg-white p-3.5 rounded shadow-sm border border-slate-100 flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-slate-200 rounded-full flex-shrink-0 overflow-hidden">
+                                        <img 
+                                            src={founder.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(founder.name)}&background=16a34a&color=fff`} 
+                                            alt={founder.name} 
+                                            className="w-full h-full object-cover" 
+                                        />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-[14px] text-slate-900 leading-tight mb-0.5">{founder.name}</h4>
+                                        <p className="text-[9px] text-[#16a34a] font-bold uppercase tracking-wider mb-1">{founder.role}</p>
+                                        <p className="text-[11px] text-slate-500 leading-tight">{founder.description}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-[14px] text-slate-900 leading-tight mb-0.5">Late [Founder Name]</h4>
-                                    <p className="text-[9px] text-[#16a34a] font-bold uppercase tracking-wider mb-1">Chief Founder</p>
-                                    <p className="text-[11px] text-slate-500 leading-tight">Established the first academic building in 1942.</p>
-                                </div>
-                            </div>
-                            {/* Donor 1 */}
-                            <div className="bg-white p-3.5 rounded-xl shadow-sm border border-slate-100 flex items-center gap-3.5 hover:shadow-md transition-shadow">
-                                <div className="w-12 h-12 bg-slate-200 rounded-full flex-shrink-0 overflow-hidden">
-                                    <img src="https://ui-avatars.com/api/?name=Land+Donor&background=009ca6&color=fff" alt="Donor" className="w-full h-full object-cover" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-[14px] text-slate-900 leading-tight mb-0.5">Late [Donor Name]</h4>
-                                    <p className="text-[9px] text-[#009ca6] font-bold uppercase tracking-wider mb-1">Honorable Land Donor</p>
-                                    <p className="text-[11px] text-slate-500 leading-tight">Donated land for the main campus and playground.</p>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>

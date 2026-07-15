@@ -115,11 +115,30 @@ export default function Header() {
                         <Link href="/" className="text-[14px] font-bold text-slate-700 hover:text-[#16a34a] transition-colors">
                             Home
                         </Link>
-                        <div className="group relative cursor-pointer flex items-center gap-1">
+                        <div className="group relative cursor-pointer flex items-center gap-1 py-4">
                             <span className="text-[14px] font-bold text-slate-700 group-hover:text-[#16a34a] transition-colors">
                                 Academics
                             </span>
-                            <ChevronDown size={14} className="text-slate-400 group-hover:text-[#16a34a]" />
+                            <ChevronDown size={14} className="text-slate-400 group-hover:text-[#16a34a] transition-transform duration-200 group-hover:rotate-180" />
+                            
+                            {/* Dropdown Menu */}
+                            <div className="absolute top-[100%] left-0 w-52 bg-white shadow-xl border border-slate-100 rounded-md py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 translate-y-2 group-hover:translate-y-0">
+                                <Link href={route('academics.resources', { type: 'routine' })} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
+                                    Class Routine
+                                </Link>
+                                <Link href={route('academics.resources', { type: 'calendar' })} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
+                                    Academic Calendar
+                                </Link>
+                                <Link href={route('academics.resources', { type: 'syllabus' })} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
+                                    Syllabus & Curriculum
+                                </Link>
+                                <Link href={route('coming.soon')} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
+                                    Exam Results
+                                </Link>
+                                <Link href={route('coming.soon')} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
+                                    Rules & Regulations
+                                </Link>
+                            </div>
                         </div>
                         <Link href={route('faculties.index')} className="text-[14px] font-bold text-slate-700 hover:text-[#16a34a] transition-colors">
                             Faculty & Staff
