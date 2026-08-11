@@ -1,201 +1,178 @@
 import React, { useState, useEffect } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Plus, SquarePen, Trash2, Mail, BookOpen, Eye } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { Plus, Eye, User, GraduationCap } from 'lucide-react';
 import DataTable from '@/Components/Table/DataTable';
-
-import Notify from '@/Utils/Notify';
 import SelectInput from '@/Components/Form/SelectInput';
 
-export default function Index({ auth, students, classes, sections, filters, stats }) {
-    const [search, setSearch] = useState(filters?.search || "");
+export default function StudentIndex({ students, courses, batches, filters }) {
+    const [search, setSearch] = useState(filters?.search || '');
+    const [selectedCourse, setSelectedCourse] = useState(filters?.course_id || '');
+    const [selectedBatch, setSelectedBatch] = useState(filters?.batch_id || '');
+    const [selectedStatus, setSelectedStatus] = useState(filters?.status || '');
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (search !== (filters?.search || "")) {
-                handleFilterChange('search', search);
+            if (search !== (filters?.search || '')) {
+                router.get(route('admin.students.index'), {
+                    ...filters,
+                    search,
+                    page: 1
+                }, { preserveState: true, preserveScroll: true, replace: true });
             }
-        }, 500);
+        }, 400);
         return () => clearTimeout(timer);
     }, [search]);
 
     const handleFilterChange = (key, value) => {
-        router.get(route('admin.students.index'), { ...filters, [key]: value, page: 1 }, { preserveState: true, preserveScroll: true, replace: true });
-    };
-
-    const handleConfirmDelete = (selectedIds, closeModal) => {
-        if (selectedIds.length > 1) {
-            closeModal();
-            Notify.error('Action Not Available', 'Bulk delete for students is not implemented in backend yet.');
-        } else {
-            router.delete(route("admin.students.destroy", selectedIds[0]), {
-                preserveScroll: true,
-                onSuccess: () => {
-                    closeModal();
-                    Notify.success('Deleted', 'Student has been deleted.');
-                },
-                onError: () => {
-                    closeModal();
-                    Notify.error('Action Failed', 'Could not delete student.');
-                }
-            });
-        }
+        router.get(route('admin.students.index'), {
+            ...filters,
+            [key]: value,
+            page: 1
+        }, { preserveState: true, preserveScroll: true, replace: true });
     };
 
     const columns = [
         {
-            header: 'SL',
-            accessor: 'serial',
-            className: 'w-[50px] text-center',
-            cell: (row, _, index) => {
-                const serialNumber = (students.from || 1) + index;
-                return <span className="text-[12px] font-bold text-slate-500">{serialNumber}</span>;
-            }
+            header: "Student ID",
+            accessor: "student_id",
+            className: "w-[120px]",
+            cell: (row) => <span className="font-bold text-[#16a34a] text-xs">{row.student_id}</span>
         },
         {
-            header: 'Student ID',
-            accessor: 'student_id',
-            className: 'w-[80px]',
+            header: "Student Name",
+            accessor: "name",
             cell: (row) => (
-                <span className="text-[12.5px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">
-                    {row.student_id}
-                </span>
-            )
-        },
-        {
-            header: 'Student Detail',
-            accessor: 'name',
-            cell: (row) => (
-                <div className="flex items-center gap-2">
-                    <div className="w-[28px] h-[28px] bg-[#e4f1ef] text-[#008060] font-bold text-[12px] rounded-full flex items-center justify-center shadow-sm shrink-0">
-                        {row.user?.name?.substring(0, 2).toUpperCase() || 'ST'}
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-[13px] font-bold text-slate-800 tracking-tight">
-                            {row.user?.name}
-                        </span>
-                        <div className="flex items-center gap-1.5 mt-0.5 text-[10.5px] font-medium text-slate-500">
-                            <Mail size={10} />
-                            <span>{row.user?.email}</span>
-                        </div>
-                    </div>
+                <div>
+                    <div className="font-bold text-slate-900 text-xs">{row.name}</div>
+                    <div className="text-[11px] text-slate-500">{row.phone || row.email || 'No contact info'}</div>
                 </div>
             )
         },
         {
-            header: 'Class & Section',
-            accessor: 'class',
+            header: "Subject & Batch",
+            accessor: "course",
             cell: (row) => (
-                <div className="flex items-center gap-1.5 text-[12.5px]">
-                    <BookOpen size={13} className="text-[#008060]" />
-                    <span className="font-bold text-slate-700">{row.latest_enrollment?.academic_class?.name || 'N/A'}</span>
-                    <span className="text-slate-300">•</span>
-                    <span className="text-slate-600">{row.latest_enrollment?.section?.name || 'N/A'}</span>
+                <div>
+                    <div className="text-xs font-semibold text-slate-800">{row.course ? row.course.title : 'N/A'}</div>
+                    <div className="text-[11px] text-slate-500">{row.batch ? row.batch.name : 'N/A'}</div>
                 </div>
             )
         },
         {
-            header: 'Roll No.',
-            accessor: 'roll_number',
+            header: "Guardian Contact",
+            accessor: "guardian_phone",
             cell: (row) => (
-                <span className="text-[13px] font-bold text-slate-700">
-                    {row.latest_enrollment?.roll_number || 'N/A'}
+                <div>
+                    <div className="text-xs font-semibold text-slate-800">{row.guardian_name || 'N/A'}</div>
+                    <div className="text-[11px] text-slate-500">{row.guardian_phone || 'N/A'}</div>
+                </div>
+            )
+        },
+        {
+            header: "School / College",
+            accessor: "school_college",
+            cell: (row) => <span className="text-xs text-slate-600">{row.school_college || 'N/A'}</span>
+        },
+        {
+            header: "Status",
+            accessor: "status",
+            className: "w-[100px]",
+            cell: (row) => (
+                <span className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full capitalize ${
+                    row.status === 'active' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'
+                }`}>
+                    {row.status}
                 </span>
             )
         },
         {
-            header: 'Actions',
-            accessor: 'actions',
-            className: 'text-right w-[120px]',
-            cell: (row, tableActions) => (
-                <div className="flex items-center justify-end gap-1">
+            header: "Actions",
+            accessor: "actions",
+            className: "text-right w-[110px]",
+            cell: (row) => (
+                <div className="flex items-center justify-end">
                     <Link
                         href={route('admin.students.show', row.id)}
-                        className="h-[26px] w-[26px] flex items-center justify-center bg-[#008060] text-white rounded-[2px] hover:bg-[#006e52] transition-all cursor-pointer shadow-sm"
-                        title="View Student Details"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-[#16a34a] hover:underline"
                     >
-                        <Eye size={12} />
+                        <Eye size={14} /> Profile
                     </Link>
-                    <Link
-                        href={route('admin.students.edit', row.id)}
-                        className="h-[26px] w-[26px] flex items-center justify-center bg-[#3151fe] text-white rounded-[2px] hover:bg-[#1a39d1] transition-all cursor-pointer shadow-sm"
-                        title="Edit Student"
-                    >
-                        <SquarePen size={12} />
-                    </Link>
-                    <button
-                        onClick={() => tableActions.deleteRow()}
-                        className="h-[26px] w-[26px] flex items-center justify-center rounded-[2px] transition-all border-none bg-[#ff4d4f] text-white hover:bg-[#cf1322] cursor-pointer shadow-sm"
-                        title="Delete Student"
-                    >
-                        <Trash2 size={12} />
-                    </button>
                 </div>
             )
         }
     ];
 
-    const advancedFiltersNode = (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-            <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">Class</label>
-                <SelectInput
-                    value={filters?.class || ''}
-                    onChange={(e) => handleFilterChange('class', e.target.value)}
-                    options={[{ id: '', name: 'All Classes' }, ...classes]}
-                    placeholder="Select class..."
-                />
-            </div>
-            <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">Section</label>
-                <SelectInput
-                    value={filters?.section || ''}
-                    onChange={(e) => handleFilterChange('section', e.target.value)}
-                    options={[{ id: '', name: 'All Sections' }, ...sections]}
-                    placeholder="Select section..."
-                />
-            </div>
+    const advancedFilters = (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <SelectInput
+                value={selectedCourse}
+                onChange={(e) => {
+                    const val = e.target ? e.target.value : e;
+                    setSelectedCourse(val);
+                    handleFilterChange('course_id', val);
+                }}
+                options={[{ id: '', name: 'All Courses' }, ...courses.map(c => ({ id: c.id, name: c.title }))]}
+                placeholder="Filter by Course"
+            />
+            <SelectInput
+                value={selectedBatch}
+                onChange={(e) => {
+                    const val = e.target ? e.target.value : e;
+                    setSelectedBatch(val);
+                    handleFilterChange('batch_id', val);
+                }}
+                options={[{ id: '', name: 'All Batches' }, ...batches.map(b => ({ id: b.id, name: b.name }))]}
+                placeholder="Filter by Batch"
+            />
+            <SelectInput
+                value={selectedStatus}
+                onChange={(e) => {
+                    const val = e.target ? e.target.value : e;
+                    setSelectedStatus(val);
+                    handleFilterChange('status', val);
+                }}
+                options={[
+                    { id: '', name: 'All Status' },
+                    { id: 'active', name: 'Active' },
+                    { id: 'inactive', name: 'Inactive' },
+                    { id: 'passed_out', name: 'Passed Out' },
+                    { id: 'dropped', name: 'Dropped' }
+                ]}
+                placeholder="Filter by Status"
+            />
         </div>
     );
 
-    const studentTabs = [
-        { name: 'All Students', count: stats?.all || 0, active: (filters?.status || 'all') === 'all', onClick: () => handleFilterChange('status', 'all') },
-        { name: 'Active', count: stats?.active || 0, active: filters?.status === 'active', onClick: () => handleFilterChange('status', 'active') },
-        { name: 'Suspended', count: stats?.suspended || 0, active: filters?.status === 'suspended', onClick: () => handleFilterChange('status', 'suspended') },
-    ];
-
     return (
-        <AdminLayout user={auth?.user}>
+        <AdminLayout>
             <Head title="Student Management" />
-            
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-[20px] font-bold text-[#202223] tracking-tight">Student Management</h1>
-                    <p className="text-[#6d7175] text-[13px] mt-0.5 font-medium">Manage admitted students, view details and update records.</p>
+                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Student Management</h1>
+                    <p className="text-sm text-slate-500">Manage all registered student records, batch assignments and profiles.</p>
                 </div>
                 <Link
-                    href={route('admin.students.create')}
-                    className="px-4 py-1.5 bg-[#008060] text-white rounded-[3px] font-bold text-[12px] hover:bg-[#006e52] transition-all flex items-center gap-2 shadow-sm"
+                    href={route('admin.admissions.create')}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] shadow-sm transition-all"
                 >
-                    <Plus size={14} /> Student Admission
+                    <Plus size={16} /> Add / Admit Student
                 </Link>
             </div>
 
-            <div className="mb-6">
-                <DataTable 
-                    columns={columns}
-                    data={students?.data || []}
-                    pagination={students}
-                    tabs={studentTabs}
-                    selectable={true}
-                    itemNoun="students"
-                    searchQuery={search}
-                    onSearchChange={setSearch}
-                    searchPlaceholder="Search students by name or ID..."
-                    advancedFilters={advancedFiltersNode}
-                    onConfirmDelete={handleConfirmDelete}
-                />
-            </div>
+            {/* MODULAR DATATABLE INTEGRATION */}
+            <DataTable
+                columns={columns}
+                data={students.data}
+                pagination={students}
+                selectable={true}
+                itemNoun="students"
+                searchQuery={search}
+                onSearchChange={setSearch}
+                searchPlaceholder="Search student name, ID, phone..."
+                advancedFilters={advancedFilters}
+            />
         </AdminLayout>
     );
 }

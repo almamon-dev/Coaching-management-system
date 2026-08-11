@@ -11,23 +11,18 @@ class Assignment extends Model
 
     protected $fillable = [
         'title',
-        'description',
-        'academic_class_id',
-        'section_id',
+        'batch_id',
         'subject_id',
         'teacher_id',
+        'description',
+        'attachment_url',
         'due_date',
-        'file_path',
+        'max_marks',
     ];
 
-    public function academicClass()
+    public function batch()
     {
-        return $this->belongsTo(AcademicClass::class);
-    }
-
-    public function section()
-    {
-        return $this->belongsTo(Section::class);
+        return $this->belongsTo(Batch::class);
     }
 
     public function subject()
@@ -37,6 +32,11 @@ class Assignment extends Model
 
     public function teacher()
     {
-        return $this->belongsTo(User::class, 'teacher_id');
+        return $this->belongsTo(TeacherProfile::class, 'teacher_id');
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(AssignmentSubmission::class);
     }
 }

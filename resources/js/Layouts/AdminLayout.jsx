@@ -21,8 +21,6 @@ import { usePage } from "@inertiajs/react";
 const MemoSidebar = memo(Sidebar);
 const MemoHeader = memo(Header);
 
-
-
 /*
 |--------------------------------------------------------------------------
 | MAIN LAYOUT
@@ -33,123 +31,55 @@ export default function AdminLayout({ children }) {
 
     const { flash } = usePage().props;
 
-    /*
-    |--------------------------------------------------------------------------
-    | STATES
-    |--------------------------------------------------------------------------
-    */
-
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const [isCollapsed, setIsCollapsed] = useState(() => {
-
-        /*
-        |--------------------------------------------------------------------------
-        | LOCAL STORAGE PERSIST
-        |--------------------------------------------------------------------------
-        */
-
         const saved = localStorage.getItem("admin-sidebar");
-
         return saved
             ? JSON.parse(saved)
             : false;
-
     });
 
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOGGLE SIDEBAR
-    |--------------------------------------------------------------------------
-    */
-
     const handleToggleSidebar = useCallback(() => {
-
         setIsCollapsed((prev) => {
-
             const updated = !prev;
-
             localStorage.setItem(
                 "admin-sidebar",
                 JSON.stringify(updated)
             );
-
             return updated;
-
         });
-
     }, []);
 
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | MOBILE MENU
-    |--------------------------------------------------------------------------
-    */
-
     const handleMobileMenu = useCallback(() => {
-
         setIsMobileOpen(true);
-
     }, []);
 
     const closeMobileMenu = useCallback(() => {
-
         setIsMobileOpen(false);
-
     }, []);
 
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FLASH NOTIFICATION
-    |--------------------------------------------------------------------------
-    */
-
     useEffect(() => {
-
         if (flash?.success) {
-
             Notify.success(
                 "Success",
                 flash.success
             );
-
         }
 
         if (flash?.error) {
-
             Notify.error(
                 "Error",
                 flash.error
             );
-
         }
-
     }, [flash]);
 
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | CLOSE MOBILE ON RESIZE
-    |--------------------------------------------------------------------------
-    */
-
     useEffect(() => {
-
         const handleResize = () => {
-
             if (window.innerWidth >= 1024) {
-
                 setIsMobileOpen(false);
-
             }
-
         };
 
         window.addEventListener(
@@ -158,26 +88,18 @@ export default function AdminLayout({ children }) {
         );
 
         return () => {
-
             window.removeEventListener(
                 "resize",
                 handleResize
             );
-
         };
-
     }, []);
 
-
-
     return (
-
         <div className="h-screen overflow-hidden bg-[#f6f6f7]">
 
             {/* MOBILE OVERLAY */}
-
             {isMobileOpen && (
-
                 <div
                     onClick={closeMobileMenu}
                     className="
@@ -186,17 +108,13 @@ export default function AdminLayout({ children }) {
                         lg:hidden
                     "
                 />
-
             )}
 
-
-
             {/* SIDEBAR */}
-
             <aside
                 className={`
                     fixed top-0 left-0 z-[100]
-                    h-screen bg-white border-r border-slate-200
+                    h-screen bg-white shadow-sm
                     will-change-transform
                     lg:translate-x-0
                     transition-transform duration-200 lg:transition-none
@@ -206,18 +124,13 @@ export default function AdminLayout({ children }) {
                     ${isCollapsed ? "w-[68px]" : "w-[240px]"}
                 `}
             >
-
                 <MemoSidebar
                     isCollapsed={isCollapsed}
                     toggleCollapse={handleToggleSidebar}
                 />
-
             </aside>
 
-
-
             {/* MAIN WRAPPER */}
-
             <div
                 className={`
                     h-screen flex flex-col
@@ -225,18 +138,13 @@ export default function AdminLayout({ children }) {
                     ${isCollapsed ? "lg:pl-[68px]" : "lg:pl-[240px]"}
                 `}
             >
-
                 {/* HEADER */}
-
                 <MemoHeader
                     onMenuClick={handleMobileMenu}
                     onToggleSidebar={handleToggleSidebar}
                 />
 
-
-
                 {/* CONTENT */}
-
                 <main
                     className="
                         flex-1 overflow-y-auto
@@ -244,19 +152,11 @@ export default function AdminLayout({ children }) {
                         contain-layout
                     "
                 >
-
                     <div className="p-4 md:p-6 lg:p-8">
-
                         {children}
-
                     </div>
-
                 </main>
-
             </div>
-
         </div>
-
     );
-
 }

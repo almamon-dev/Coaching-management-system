@@ -33,46 +33,21 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
- 
+
         $user = auth()->user();
-        $routeName = Route::currentRouteName();
-        // Portal-specific authorization
-        $adminRolesCount = $user->roles()->whereNotIn('name', ['teacher', 'student', 'user'])->count();
-        $hasAdminAccess = in_array($user->user_type, ['admin', 'staff']) || $adminRolesCount > 0;
-
-        if (in_array($routeName, ['admin.login', 'admin.login.store']) && !$hasAdminAccess) {
-            Auth::guard('web')->logout();
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
-        }
-
-        if (in_array($routeName, ['teacher.login', 'teacher.login.store']) && !in_array($user->user_type, ['staff', 'teacher'])) {
-            Auth::guard('web')->logout();
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
-        }
-
-        if (in_array($routeName, ['student.login', 'student.login.store']) && in_array($user->user_type, ['admin', 'staff', 'teacher'])) {
-            Auth::guard('web')->logout();
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
-        }
 
         $request->session()->regenerate();
- 
-        // Redirect based on the portal they logged into
-        if (in_array($routeName, ['admin.login', 'admin.login.store'])) {
-            $url = route('admin.dashboard', absolute: false);
-        } elseif (in_array($routeName, ['teacher.login', 'teacher.login.store'])) {
-            $url = route('teacher.dashboard', absolute: false);
-        } else {
-            $url = route('user.dashboard', absolute: false);
+
+        // Smart Role-Based Redirect for all logged in users
+        if (in_array($user->user_type, ['super_admin', 'admin', 'manager', 'accountant', 'staff', 'teacher'])) {
+            return redirect()->intended(route('admin.dashboard', absolute: false));
         }
- 
-        return redirect()->to($url);
+
+        if ($user->user_type === 'guardian') {
+            return redirect()->intended(route('guardian.dashboard', absolute: false));
+        }
+
+        return redirect()->intended(route('user.dashboard', absolute: false));
     }
 
     /**

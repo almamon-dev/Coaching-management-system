@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { Search, ChevronDown, Menu, X, Share2, Phone, Video } from 'lucide-react';
-import { useTranslation } from '@/Hooks/useTranslation';
+import { Search, Menu, X, Share2 } from 'lucide-react';
 import SchoolLogo from '@/Components/SchoolLogo';
 
 export default function Header() {
     const { auth } = usePage().props;
-    const { t } = useTranslation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const topBarLinks = [
         { name: 'Student Portal', url: route('student.login') },
-        { name: 'Admissions', url: route('admissions') },
-        { name: 'Staff Faculty Portal', url: route('portals.index') },
-        { name: 'Library', url: route('coming.soon') },
-        { name: 'Notice', url: '/#notice-board' },
-        { name: 'News', url: route('events') },
-        { name: 'Document Request', url: route('coming.soon') }
+        { name: 'Admission Info', url: route('admissions') },
+        { name: 'Notice Board', url: '/#notice-board' },
+        { name: 'Hotline: +880 1711-000000', url: 'tel:+8801711000000' }
     ];
 
     const mainNavLinks = [
-        'About Us', 'Admission', 'Academics', 'Administration', 'Research', 'Campus Life', 'Quick Link'
+        { name: 'Home', url: '/' },
+        { name: 'Batches & Classes', url: route('faculties.index') },
+        { name: 'About Center', url: '/#about-section' },
+        { name: 'Notices', url: route('notices.index') },
+        { name: 'Admission', url: route('admissions') }
     ];
 
     const handleShare = async (e) => {
@@ -29,7 +28,7 @@ export default function Header() {
             try {
                 await navigator.share({
                     title: document.title,
-                    text: 'Check out this page from Lohadi High School.',
+                    text: 'Check out our Coaching Center programs and batches.',
                     url: window.location.href,
                 });
             } catch (err) {
@@ -43,15 +42,15 @@ export default function Header() {
 
     return (
         <header className="sticky top-0 z-50 bg-white shadow-sm font-inter print:hidden">
-            {/* Top Bar (Cyan) */}
+            {/* Top Bar */}
             <div className="bg-[#16a34a] text-white text-[11px] font-bold hidden lg:block">
-                <div className="container mx-auto px-4 flex items-center justify-between">
+                <div className="container mx-auto px-4 max-w-8xl flex items-center justify-between">
 
-                    {/* Left side links */}
+                    {/* Left side essential links */}
                     <div className="flex items-center">
                         {topBarLinks.map((link, index) => {
-                            const isHashLink = link.url.includes('#');
-                            const linkClasses = "px-2.5 py-2 hover:bg-white/10 transition-colors border-r border-white/20 last:border-r-0";
+                            const isHashLink = link.url.includes('#') || link.url.startsWith('tel:');
+                            const linkClasses = "px-3 py-2 hover:bg-white/10 transition-colors border-r border-white/20 last:border-r-0 flex items-center gap-1";
 
                             return isHashLink ? (
                                 <a key={index} href={link.url} className={linkClasses}>
@@ -68,7 +67,7 @@ export default function Header() {
                     {/* Right side actions */}
                     <div className="flex items-center h-full">
                         <button
-                            onClick={() => alert('Search functionality will be implemented soon!')}
+                            onClick={() => alert('Search functionality will be available soon!')}
                             className="flex items-center gap-1 px-3 py-2 border-r border-white/20 hover:bg-white/10 cursor-pointer"
                         >
                             <Search size={12} strokeWidth={2.5} />
@@ -76,34 +75,19 @@ export default function Header() {
                         </button>
                         <button
                             onClick={handleShare}
-                            className="px-3 py-2 border-r border-white/20 hover:bg-white/10 flex items-center justify-center"
+                            className="px-3 py-2 hover:bg-white/10 flex items-center gap-1 cursor-pointer"
                             title="Share this page"
                         >
                             <Share2 size={12} strokeWidth={2.5} />
+                            <span>Share</span>
                         </button>
-                        <a
-                            href="tel:+8801711000000"
-                            className="px-3 py-2 border-r border-white/20 hover:bg-white/10 flex items-center justify-center"
-                            title="Call Administration"
-                        >
-                            <Phone size={12} strokeWidth={2.5} />
-                        </a>
-                        <a
-                            href="https://youtube.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-2 hover:bg-white/10 flex items-center justify-center"
-                            title="Watch Campus Video"
-                        >
-                            <Video size={12} strokeWidth={2.5} />
-                        </a>
                     </div>
                 </div>
             </div>
 
             {/* Main Header */}
             <div className="bg-white py-2 md:py-3 border-b border-slate-100">
-                <div className="container mx-auto px-4 flex items-center justify-between">
+                <div className="container mx-auto px-4 max-w-8xl flex items-center justify-between">
 
                     {/* Logo */}
                     <Link href="/" className="flex-shrink-0">
@@ -111,41 +95,21 @@ export default function Header() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden lg:flex items-center gap-6">
-                        <Link href="/" className="text-[14px] font-bold text-slate-700 hover:text-[#16a34a] transition-colors">
-                            Home
-                        </Link>
-                        <div className="group relative cursor-pointer flex items-center gap-1 py-4">
-                            <span className="text-[14px] font-bold text-slate-700 group-hover:text-[#16a34a] transition-colors">
-                                Academics
-                            </span>
-                            <ChevronDown size={14} className="text-slate-400 group-hover:text-[#16a34a] transition-transform duration-200 group-hover:rotate-180" />
-                            
-                            {/* Dropdown Menu */}
-                            <div className="absolute top-[100%] left-0 w-52 bg-white shadow-xl border border-slate-100 rounded-md py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 translate-y-2 group-hover:translate-y-0">
-                                <Link href={route('academics.resources', { type: 'routine' })} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
-                                    Class Routine
+                    <nav className="hidden lg:flex items-center gap-7">
+                        {mainNavLinks.map((link, idx) => {
+                            const isHashLink = link.url.includes('#');
+                            const linkClasses = "text-[14px] font-bold text-slate-700 hover:text-[#16a34a] transition-colors";
+
+                            return isHashLink ? (
+                                <a key={idx} href={link.url} className={linkClasses}>
+                                    {link.name}
+                                </a>
+                            ) : (
+                                <Link key={idx} href={link.url} className={linkClasses}>
+                                    {link.name}
                                 </Link>
-                                <Link href={route('academics.resources', { type: 'calendar' })} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
-                                    Academic Calendar
-                                </Link>
-                                <Link href={route('academics.resources', { type: 'syllabus' })} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
-                                    Syllabus & Curriculum
-                                </Link>
-                                <Link href={route('coming.soon')} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
-                                    Exam Results
-                                </Link>
-                                <Link href={route('coming.soon')} className="block px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#16a34a] border-b border-slate-50 last:border-0">
-                                    Rules & Regulations
-                                </Link>
-                            </div>
-                        </div>
-                        <Link href={route('faculties.index')} className="text-[14px] font-bold text-slate-700 hover:text-[#16a34a] transition-colors">
-                            Faculty & Staff
-                        </Link>
-                        <Link href={route('admissions')} className="text-[14px] font-bold text-slate-700 hover:text-[#16a34a] transition-colors">
-                            Admissions
-                        </Link>
+                            );
+                        })}
                     </nav>
 
                     {/* Mobile Menu Toggle */}
@@ -165,7 +129,7 @@ export default function Header() {
                 <div className="lg:hidden bg-white border-b border-slate-200 shadow-lg absolute w-full max-h-[80vh] overflow-y-auto">
                     <div className="bg-[#16a34a] text-white p-4 grid grid-cols-2 gap-2 text-xs font-bold">
                         {topBarLinks.map((link, index) => {
-                            const isHashLink = link.url.includes('#');
+                            const isHashLink = link.url.includes('#') || link.url.startsWith('tel:');
                             const linkClasses = "p-2 border border-white/20 rounded hover:bg-white/10";
 
                             return isHashLink ? (
@@ -180,27 +144,18 @@ export default function Header() {
                         })}
                     </div>
                     <nav className="flex flex-col py-2">
-                        {mainNavLinks.map((link, index) => {
-                            if (link === 'Admission') {
-                                return (
-                                    <Link
-                                        key={index}
-                                        href={route('admissions')}
-                                        className="flex items-center justify-between px-5 py-3 text-[15px] font-bold text-slate-700 hover:bg-[#16a34a]/5 hover:text-[#16a34a] border-b border-slate-50 last:border-0 cursor-pointer"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <span>{link}</span>
-                                    </Link>
-                                );
-                            }
-                            return (
-                                <div
-                                    key={index}
-                                    className="flex items-center justify-between px-5 py-3 text-[15px] font-bold text-slate-700 hover:bg-[#16a34a]/5 hover:text-[#16a34a] border-b border-slate-50 last:border-0 cursor-pointer"
-                                >
-                                    <span>{link}</span>
-                                    <ChevronDown size={16} />
-                                </div>
+                        {mainNavLinks.map((link, idx) => {
+                            const isHashLink = link.url.includes('#');
+                            const linkClasses = "px-5 py-3 text-[15px] font-bold text-slate-700 hover:bg-[#16a34a]/5 hover:text-[#16a34a] border-b border-slate-50";
+
+                            return isHashLink ? (
+                                <a key={idx} href={link.url} className={linkClasses} onClick={() => setMobileMenuOpen(false)}>
+                                    {link.name}
+                                </a>
+                            ) : (
+                                <Link key={idx} href={link.url} className={linkClasses} onClick={() => setMobileMenuOpen(false)}>
+                                    {link.name}
+                                </Link>
                             );
                         })}
                         {auth?.user ? (

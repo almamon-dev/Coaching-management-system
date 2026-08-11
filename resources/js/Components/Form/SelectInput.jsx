@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { ChevronDown, Check, Search, SearchX, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -13,7 +13,7 @@ export default function SelectInput({
     multiple = false,
     disabled = false,
     showSearch = true,
-    direction = "down",
+    direction = "auto",
     onCreate: onCreateProp,
     icon: Icon,
     children
@@ -29,6 +29,9 @@ export default function SelectInput({
         .filter(opt => opt.id !== undefined);
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [openUp, setOpenUp] = useState(direction === 'up');
+    const containerRef = useRef(null);
+
     const finalOptions = options.length > 0 ? options : childOptions;
 
     // Filter options based on search query
@@ -69,7 +72,6 @@ export default function SelectInput({
 
     const handleChange = (val) => {
         if (onChange) {
-            // Pass a mock event object to maintain compatibility with standard input handlers
             onChange({
                 target: {
                     name: name,
@@ -79,123 +81,117 @@ export default function SelectInput({
         }
     };
 
-    const onCreate = (name) => {
-        if (onCreateProp) {
-            onCreateProp(name);
-            setSearchQuery('');
+    const checkPosition = () => {
+        if (direction === 'up') {
+            setOpenUp(true);
+            return;
+        }
+        if (direction === 'down') {
+            setOpenUp(false);
+            return;
+        }
+        if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            setOpenUp(spaceBelow < 280);
         }
     };
 
-
     return (
-        <div className={cn("w-full", className, disabled && "opacity-60 cursor-not-allowed pointer-events-none")}>
+        <div ref={containerRef} className={cn("w-full relative", className, disabled && "opacity-60 cursor-not-allowed pointer-events-none")}>
             <Listbox value={normalizedValue} onChange={handleChange} multiple={multiple} disabled={disabled}>
-                {({ open }) => (
-                    <div className="relative h-full">
-                        <Listbox.Button className={cn(
-                            "relative w-full h-full min-h-[32px] cursor-pointer rounded-[3px] border border-[#d1d1d1] bg-white py-1 pr-10 text-left text-[12px] font-medium text-[#202223] focus:outline-none focus:border-[#008060] transition-all flex items-center",
-                            Icon ? "pl-9" : "pl-3"
-                        )}>
-                            {Icon && (
-                                <span className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center text-[#8c9196]">
-                                    <Icon size={14} aria-hidden="true" />
-                                </span>
-                            )}
-                            <span className={cn("block", multiple ? "break-words whitespace-normal pb-0.5" : "truncate")}>
-                                {getSelectedDisplay()}
-                            </span>
-                            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
-                                <ChevronDown size={14} aria-hidden="true" />
-                            </span>
-                        </Listbox.Button>
-                        <Transition
-                            show={open}
-                            as={Fragment}
-                            afterLeave={() => setSearchQuery('')}
-                            leaveFrom="opacity-100 scale-100"
-                            leaveTo="opacity-0 scale-95"
-                        >
-                            <Listbox.Options className={cn(
-                                "absolute z-[100] max-h-64 w-full overflow-hidden rounded-[3px] bg-white text-[12px] shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_1px_rgba(0,0,0,0.1)] border border-[#ebebeb] focus:outline-none flex flex-col",
-                                direction === "up" ? "bottom-full mb-1" : "mt-1"
-                            )}>
-                                {/* Search Input Container */}
-                                {showSearch && (
-                                    <div className="p-1.5 bg-[#F3F4F7] shrink-0 border-b border-[#EEEEEE]">
-                                        <input
-                                            type="text"
-                                            autoFocus
-                                            placeholder="Search..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full h-7 px-2.5 text-[12px] bg-[#F3F4F7] border-none focus:ring-0 outline-none placeholder:text-slate-400 font-medium"
-                                            onKeyDown={(e) => e.stopPropagation()}
-                                        />
-                                    </div>
+                {({ open }) => {
+                    if (open) {
+                        setTimeout(checkPosition, 0);
+                    }
+
+                    return (
+                        <div className="relative h-full">
+                            <Listbox.Button 
+                                onClick={checkPosition}
+                                className={cn(
+                                    "relative w-full h-full min-h-[34px] cursor-pointer rounded-[3px] border border-slate-200 bg-white py-1 pr-10 text-left text-[12px] font-medium text-slate-800 focus:outline-none focus:ring-0 focus:border-slate-300 transition-all flex items-center",
+                                    Icon ? "pl-9" : "pl-3"
                                 )}
-
-                                {/* Options List */}
-                                <div className="overflow-y-auto py-1 flex-1 max-h-[300px] custom-scrollbar">
-                                    {filteredOptions.length === 0 && !onCreateProp ? (
-                                        <div className="py-10 px-4 flex flex-col items-center justify-center text-slate-400 gap-2">
-                                            <SearchX size={32} strokeWidth={1} />
-                                            <span className="text-[11px] font-medium uppercase tracking-wider">No results found</span>
+                            >
+                                {Icon && (
+                                    <span className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center text-[#8c9196]">
+                                        <Icon size={14} aria-hidden="true" />
+                                    </span>
+                                )}
+                                <span className={cn("block", multiple ? "break-words whitespace-normal pb-0.5" : "truncate")}>
+                                    {getSelectedDisplay()}
+                                </span>
+                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
+                                    <ChevronDown size={14} className={cn("transition-transform duration-150", open && "rotate-180")} aria-hidden="true" />
+                                </span>
+                            </Listbox.Button>
+                            <Transition
+                                show={open}
+                                as={Fragment}
+                                afterLeave={() => setSearchQuery('')}
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Listbox.Options className={cn(
+                                    "absolute z-[100] max-h-64 w-full overflow-hidden rounded-[3px] bg-white text-[12px] shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-slate-200 focus:outline-none flex flex-col",
+                                    openUp ? "bottom-full mb-1" : "top-full mt-1"
+                                )}>
+                                    {/* Search Input Container */}
+                                    {showSearch && (
+                                        <div className="p-1.5 bg-[#F3F4F7] shrink-0 border-b border-[#EEEEEE]">
+                                            <input
+                                                type="text"
+                                                autoFocus
+                                                placeholder="Search..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="w-full h-7 px-2.5 text-[12px] bg-[#F3F4F7] border-none focus:ring-0 outline-none placeholder:text-slate-400 font-medium"
+                                                onKeyDown={(e) => e.stopPropagation()}
+                                            />
                                         </div>
-                                    ) : (
-                                        <>
-                                            {filteredOptions.map((option, idx) => {
-                                                const active = isSelected(option.id);
-                                                return (
-                                                    <Listbox.Option
-                                                        key={idx}
-                                                        className={({ active: isHovered }) =>
-                                                            cn(
-                                                                "relative cursor-pointer select-none py-1.5 px-3 border-b border-slate-50/50 last:border-0",
-                                                                active ? "text-[#008060] font-bold bg-emerald-50/20" : "text-[#202223] font-medium",
-                                                                isHovered ? "bg-slate-50 text-[#008060]" : ""
-                                                            )
-                                                        }
-                                                        value={option.id}
-                                                    >
-                                                        {() => (
-                                                            <div className="flex items-center justify-between">
-                                                                <div className="flex items-center gap-2">
-                                                                    {option.image && (
-                                                                        <img
-                                                                            src={option.image.startsWith('http') ? option.image : `/storage/${option.image}`}
-                                                                            className="w-4 h-4 object-contain"
-                                                                            alt=""
-                                                                        />
-                                                                    )}
-                                                                    <span className="block truncate">
-                                                                        {option.name}
-                                                                    </span>
-                                                                </div>
-                                                                {active && (
-                                                                    <Check size={14} className="text-[#008060]" />
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                    </Listbox.Option>
-                                                );
-                                            })}
-
-                                            {onCreateProp && searchQuery && !filteredOptions.find(o => (o.name || "").toLowerCase() === searchQuery.toLowerCase()) && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => onCreate(searchQuery)}
-                                                    className="w-full text-left py-3 px-10 text-[12px] font-bold text-[#008060] hover:bg-[#e4f1ef] border-t border-slate-50 flex items-center gap-2 mt-1"
-                                                >
-                                                    <Plus size={14} /> Quick Add "{searchQuery}"
-                                                </button>
-                                            )}
-                                        </>
                                     )}
-                                </div>
-                            </Listbox.Options>
-                        </Transition>
-                    </div>
-                )}
+
+                                    {/* Options List */}
+                                    <div className="overflow-y-auto py-1 flex-1 max-h-[300px] custom-scrollbar">
+                                        {filteredOptions.length === 0 && !onCreateProp ? (
+                                            <div className="py-10 px-4 flex flex-col items-center justify-center text-slate-400 gap-2">
+                                                <SearchX size={32} strokeWidth={1} />
+                                                <span className="text-[11px] font-medium uppercase tracking-wider">No results found</span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                {filteredOptions.map((option, idx) => {
+                                                    const active = isSelected(option.id);
+                                                    return (
+                                                        <Listbox.Option
+                                                            key={idx}
+                                                            className={({ active: isHovered }) =>
+                                                                cn(
+                                                                    "relative cursor-pointer select-none py-1.5 px-3 border-b border-slate-50/50 last:border-0 flex items-center justify-between",
+                                                                    active ? "text-[#16a34a] font-bold bg-emerald-50/40" : "text-[#202223] font-medium",
+                                                                    isHovered ? "bg-slate-50 text-[#16a34a]" : ""
+                                                                )
+                                                            }
+                                                            value={option.id}
+                                                        >
+                                                            {() => (
+                                                                <>
+                                                                    <span className="truncate">{option.name}</span>
+                                                                    {active && <Check size={14} className="text-[#16a34a] shrink-0 ml-2" />}
+                                                                </>
+                                                            )}
+                                                        </Listbox.Option>
+                                                    );
+                                                })}
+                                            </>
+                                        )}
+                                    </div>
+                                </Listbox.Options>
+                            </Transition>
+                        </div>
+                    );
+                }}
             </Listbox>
         </div>
     );

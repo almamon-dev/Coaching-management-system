@@ -52,14 +52,14 @@ export default function AttendanceToolbar({
             {/* Actions */}
             <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
                 {/* Date Picker */}
-                <div className="flex-grow sm:flex-grow-0 flex items-center gap-2 bg-white border border-[#d1d1d1] rounded-[3px] px-3 py-1.5 shadow-sm focus-within:border-[#008060] focus-within:ring-1 focus-within:ring-[#008060] transition-all">
+                <div className="flex-grow sm:flex-grow-0 flex items-center gap-2 bg-white border border-[#d1d1d1] rounded-[3px] px-3 h-[34px] box-border shadow-sm focus-within:border-[#008060] focus-within:ring-1 focus-within:ring-[#008060] transition-all">
                     <Calendar size={14} className="text-[#6d7175]" />
                     <input 
                         type="date" 
                         value={data.date} 
                         onChange={handleDateChange}
                         max={today}
-                        className="border-none bg-transparent p-0 text-[13px] font-medium text-[#202223] focus:ring-0 cursor-pointer w-full sm:w-[125px]"
+                        className="border-none bg-transparent p-0 text-[13px] font-medium text-[#202223] focus:ring-0 cursor-pointer w-full sm:w-[125px] h-full"
                     />
                 </div>
 
@@ -67,7 +67,7 @@ export default function AttendanceToolbar({
                     <button 
                         type="button"
                         onClick={() => setBulkDropdownOpen(!bulkDropdownOpen)}
-                        className={`flex items-center justify-center gap-1.5 px-3 py-1.5 border rounded-[3px] text-[12px] font-semibold transition-colors ${selectedIds.length > 0 ? 'bg-[#e6f2ef] border-[#008060] text-[#008060] hover:bg-[#d0e8e1]' : 'bg-white border-[#d1d1d1] text-[#202223] hover:bg-slate-50'}`}
+                        className={`flex items-center justify-center gap-1.5 px-3 h-[34px] box-border border rounded-[3px] text-[12px] font-semibold transition-colors ${selectedIds.length > 0 ? 'bg-[#e6f2ef] border-[#008060] text-[#008060] hover:bg-[#d0e8e1]' : 'bg-white border-[#d1d1d1] text-[#202223] hover:bg-slate-50'}`}
                     >
                         Bulk Actions {selectedIds.length > 0 && `(${selectedIds.length})`} <ChevronDown size={14} />
                     </button>
@@ -93,14 +93,14 @@ export default function AttendanceToolbar({
                 <button 
                     type="button"
                     onClick={() => handleQuickAction('Clear')}
-                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-[#d1d1d1] text-[#202223] text-[12px] font-semibold rounded-[3px] hover:bg-slate-50 transition-colors"
+                    className="flex items-center justify-center gap-1.5 px-3 h-[34px] box-border bg-white border border-[#d1d1d1] text-[#202223] text-[12px] font-semibold rounded-[3px] hover:bg-slate-50 transition-colors"
                 >
                     <RefreshCcw size={13} /> Reset All
                 </button>
                 <button 
                     type="submit" 
                     disabled={processing} 
-                    className="flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 px-4 py-1.5 bg-[#008060] text-white text-[12px] font-bold rounded-[3px] hover:bg-[#006e52] shadow-sm transition-colors disabled:opacity-50"
+                    className="flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 px-4 h-[34px] box-border bg-[#008060] text-white text-[12px] font-bold rounded-[3px] hover:bg-[#006e52] shadow-sm transition-colors disabled:opacity-50 cursor-pointer"
                 >
                     <Save size={14} /> Save
                 </button>

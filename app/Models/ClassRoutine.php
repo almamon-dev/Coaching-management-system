@@ -10,24 +10,20 @@ class ClassRoutine extends Model
     use HasFactory;
 
     protected $fillable = [
-        'academic_class_id',
-        'section_id',
+        'batch_id',
         'subject_id',
         'teacher_id',
-        'day',
+        'room',
+        'class_date',
         'start_time',
         'end_time',
-        'room_number',
+        'status',
+        'notes',
     ];
 
-    public function academicClass()
+    public function batch()
     {
-        return $this->belongsTo(AcademicClass::class, 'academic_class_id');
-    }
-
-    public function section()
-    {
-        return $this->belongsTo(Section::class);
+        return $this->belongsTo(Batch::class);
     }
 
     public function subject()
@@ -37,6 +33,11 @@ class ClassRoutine extends Model
 
     public function teacher()
     {
-        return $this->belongsTo(User::class, 'teacher_id');
+        return $this->belongsTo(TeacherProfile::class, 'teacher_id');
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'class_routine_id');
     }
 }

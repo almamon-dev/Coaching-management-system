@@ -12,28 +12,28 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    // Public registration removed. Admin handles registration.
+    // Universal Login Route
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
+    // Dedicated Login Routes for Portal Shortcuts
     Route::get('admin-login', [AuthenticatedSessionController::class, 'create'])
         ->name('admin.login');
- 
+
     Route::post('admin-login', [AuthenticatedSessionController::class, 'store'])
         ->name('admin.login.store');
 
     Route::get('teacher-login', [AuthenticatedSessionController::class, 'create'])
         ->name('teacher.login');
- 
+
     Route::post('teacher-login', [AuthenticatedSessionController::class, 'store'])
         ->name('teacher.login.store');
 
     Route::get('student-login', [AuthenticatedSessionController::class, 'create'])
         ->name('student.login');
- 
+
     Route::post('student-login', [AuthenticatedSessionController::class, 'store'])
         ->name('student.login.store');
-
-    // Fallback route named 'login' to satisfy Laravel internals that hardcode route('login')
-    Route::get('login', fn() => redirect()->route('student.login'))->name('login');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');

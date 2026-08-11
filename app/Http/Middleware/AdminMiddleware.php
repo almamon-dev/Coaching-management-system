@@ -19,8 +19,8 @@ class AdminMiddleware
         $user = Auth::user();
         
         $hasAdminAccess = $user && (
-            in_array($user->user_type, ['admin', 'staff']) || 
-            $user->roles()->whereNotIn('name', ['teacher', 'student', 'user'])->count() > 0
+            in_array($user->user_type, ['super_admin', 'admin', 'manager', 'accountant', 'staff']) || 
+            $user->roles()->whereNotIn('name', ['teacher', 'student', 'guardian', 'user'])->count() > 0
         );
 
         if ($hasAdminAccess) {

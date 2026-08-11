@@ -13,7 +13,7 @@ export default function AttendanceTable({
 }) {
     return (
         <>
-            <div className="overflow-x-auto min-h-[400px]">
+            <div className="overflow-x-auto h-auto">
                 <table className="w-full text-left border-collapse font-sans border-t-0 [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0 [&_tr:last-child>td]:border-b-0">
                     <thead>
                         <tr className="bg-[#0bd462] text-white">

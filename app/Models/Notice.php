@@ -2,23 +2,34 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Notice extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'title',
         'content',
-        'type',
-        'target_audience',
-        'status',
+        'target_role',
+        'course_id',
+        'batch_id',
+        'category',
+        'priority',
         'published_at',
-        'created_by'
+        'created_by',
     ];
 
-    protected $casts = [
-        'published_at' => 'datetime',
-    ];
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
+    }
 
     public function creator()
     {

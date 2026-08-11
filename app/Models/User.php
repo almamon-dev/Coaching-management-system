@@ -103,4 +103,39 @@ class User extends Authenticatable
     {
         return $this->hasOne(TeacherProfile::class);
     }
+
+    public function guardianProfile()
+    {
+        return $this->hasOne(GuardianProfile::class);
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->user_type === 'super_admin' || $this->user_type === 'admin';
+    }
+
+    public function isManager()
+    {
+        return $this->user_type === 'manager';
+    }
+
+    public function isTeacher()
+    {
+        return $this->user_type === 'teacher';
+    }
+
+    public function isAccountant()
+    {
+        return $this->user_type === 'accountant';
+    }
+
+    public function isStudent()
+    {
+        return $this->user_type === 'student';
+    }
+
+    public function isGuardian()
+    {
+        return $this->user_type === 'guardian';
+    }
 }

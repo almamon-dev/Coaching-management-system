@@ -9,12 +9,23 @@ class Subject extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'code', 'type'];
+    protected $fillable = [
+        'name',
+        'code',
+        'course_id',
+        'total_lectures',
+        'total_lessons',
+        'description',
+        'syllabus_details',
+    ];
 
-    public function teachers()
+    public function course()
     {
-        return $this->belongsToMany(User::class, 'subject_teacher', 'subject_id', 'user_id')
-                    ->withPivot('academic_class_id', 'section_id')
-                    ->withTimestamps();
+        return $this->belongsTo(Course::class);
+    }
+
+    public function batches()
+    {
+        return $this->hasMany(Batch::class);
     }
 }

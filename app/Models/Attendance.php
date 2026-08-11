@@ -10,24 +10,26 @@ class Attendance extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'recorded_by',
+        'student_id',
+        'batch_id',
+        'class_routine_id',
         'date',
         'status',
-        'remarks',
+        'remark',
     ];
 
-    protected $casts = [
-        'date' => 'date',
-    ];
-
-    public function user()
+    public function student()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(StudentProfile::class, 'student_id');
     }
 
-    public function recorder()
+    public function batch()
     {
-        return $this->belongsTo(User::class, 'recorded_by');
+        return $this->belongsTo(Batch::class);
+    }
+
+    public function classRoutine()
+    {
+        return $this->belongsTo(ClassRoutine::class, 'class_routine_id');
     }
 }

@@ -4,28 +4,38 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Exam extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'academic_session_id',
-        'start_date',
-        'end_date',
+        'title',
+        'course_id',
+        'batch_id',
+        'exam_date',
+        'total_marks',
+        'pass_marks',
         'status',
-        'description',
     ];
 
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-    ];
-
-    public function academicSession(): BelongsTo
+    public function course()
     {
-        return $this->belongsTo(AcademicSession::class);
+        return $this->belongsTo(Course::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
+    }
+
+    public function marks()
+    {
+        return $this->hasMany(Mark::class);
+    }
+
+    public function results()
+    {
+        return $this->hasMany(Result::class);
     }
 }

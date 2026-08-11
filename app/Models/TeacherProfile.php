@@ -11,17 +11,16 @@ class TeacherProfile extends Model
 
     protected $fillable = [
         'user_id',
-        'employee_id',
+        'teacher_id',
+        'name',
+        'phone',
+        'email',
+        'qualification',
         'designation',
-        'department',
-        'joining_date',
-        'qualifications',
-        'specializations'
-    ];
-
-    protected $casts = [
-        'joining_date' => 'date',
-        'specializations' => 'array',
+        'specialization',
+        'address',
+        'status',
+        'notes',
     ];
 
     public function user()
@@ -29,8 +28,13 @@ class TeacherProfile extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function promotions()
+    public function batches()
     {
-        return $this->hasMany(TeacherPromotion::class);
+        return $this->hasMany(Batch::class, 'teacher_id');
+    }
+
+    public function routines()
+    {
+        return $this->hasMany(ClassRoutine::class, 'teacher_id');
     }
 }

@@ -1,226 +1,177 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { UserPlus } from 'lucide-react';
-import DeleteConfirmModal from '@/Components/Modal/DeleteConfirmModal';
-import TeacherTable from './Components/TeacherTable';
-import TeacherToolbar from './Components/TeacherToolbar';
-import TeacherPagination from './Components/TeacherPagination';
-import Notify from '@/Utils/Notify';
+import { Head, useForm, router } from '@inertiajs/react';
+import { UserCheck, Plus, Search, Eye, Edit, Trash2 } from 'lucide-react';
 
-export default function Index({ auth, teachers, filters, departments, designations }) {
-    const allColumns = [
-        { id: 'employee_id', label: 'Emp ID' },
-        { id: 'name', label: 'Teacher Detail' },
-        { id: 'designation', label: 'Designation' },
-        { id: 'department', label: 'Department' },
-    ];
+export default function TeacherIndex({ teachers, filters }) {
+    const [search, setSearch] = useState(filters.search || '');
+    const [showModal, setShowModal] = useState(false);
 
-    const [visibleColumns, setVisibleColumns] = useState(['employee_id', 'name', 'designation', 'department']);
-
-    const toggleColumn = (id) => {
-        setVisibleColumns(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
-    };
-
-    const totalCount = teachers?.meta?.total || teachers?.total || 0;
-    const perPageCount = teachers?.data?.length || 0;
-
-    const [search, setSearch] = useState(filters?.search || "");
-    const [selectedIds, setSelectedIds] = useState([]);
-    const [selectAllAcrossPages, setSelectAllAcrossPages] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-
-    const [deleteModal, setDeleteModal] = useState({
-        show: false,
-        teacher: null,
-        title: '',
-        message: '',
-        isBulk: false
+    const { data, setData, post, processing, errors, reset } = useForm({
+        name: '',
+        phone: '',
+        email: '',
+        qualification: '',
+        designation: '',
+        specialization: '',
+        address: '',
+        notes: '',
     });
-    const [processingDelete, setProcessingDelete] = useState(false);
 
-    useEffect(() => {
-        const start = (event) => {
-            const isSamePage = new URL(event.detail.visit.url, window.location.origin).pathname === window.location.pathname;
-            if (event.detail.visit.method === 'get' && !event.detail.visit.prefetch && !event.detail.visit.bg && isSamePage) {
-                setIsProcessing(true);
+    const handleSearch = (e) => {
+        e.preventDefault();
+        router.get(route('admin.teachers.index'), { search }, { preserveState: true });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post(route('admin.teachers.store'), {
+            onSuccess: () => {
+                reset();
+                setShowModal(false);
             }
-        };
-        const finish = () => setIsProcessing(false);
-        const unbindStart = router.on('start', start);
-        const unbindFinish = router.on('finish', finish);
-        return () => { unbindStart(); unbindFinish(); };
-    }, []);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (search !== (filters?.search || "")) {
-                setIsProcessing(true);
-                handleFilterChange('search', search);
-            }
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [search]);
-
-    const handleFilterChange = (key, value) => {
-        router.get(route('admin.teachers.index'), { ...filters, [key]: value, page: 1 }, { preserveState: true, preserveScroll: true, replace: true });
-    };
-
-    const handleReset = () => {
-        setSearch("");
-        router.get(route('admin.teachers.index'), {}, { replace: true, preserveScroll: true, preserveState: true });
-    };
-
-    const handlePageChange = (url) => {
-        if (url) router.get(url, {}, { preserveState: true, preserveScroll: true });
-    };
-
-    const handlePerPageChange = (e) => handleFilterChange('per_page', e.target.value);
-
-    const availableBulkIds = useMemo(() => teachers?.data?.map(u => u.id) || [], [teachers?.data]);
-
-    const toggleSelect = (id) => {
-        if (selectAllAcrossPages) setSelectAllAcrossPages(false);
-        setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-    };
-
-    const toggleSelectAll = () => {
-        if (selectedIds.length > 0 || selectAllAcrossPages) {
-            handleClearSelection();
-        } else {
-            setSelectedIds(availableBulkIds);
-        }
-    };
-
-    const handleSelectAllAcrossPages = () => {
-        setSelectAllAcrossPages(true);
-        setSelectedIds(availableBulkIds);
-    };
-
-    const handleClearSelection = () => {
-        setSelectedIds([]);
-        setSelectAllAcrossPages(false);
-        setShowOnlySelected(false);
-    };
-
-    const handleDeleteClick = (teacher) => {
-        setDeleteModal({
-            show: true,
-            teacher,
-            title: 'Delete Teacher',
-            message: `Are you sure you want to delete teacher ID "${teacher.employee_id}"? This action cannot be undone.`,
-            isBulk: false
         });
     };
-
-    const handleBulkDeleteClick = () => {
-        setDeleteModal({
-            show: true,
-            teacher: null,
-            title: 'Bulk Delete Teachers',
-            message: `Are you sure you want to delete ${selectAllAcrossPages ? totalCount : selectedIds.length} teachers? This will permanently remove them.`,
-            isBulk: true
-        });
-    };
-
-    const handleConfirmDelete = () => {
-        setProcessingDelete(true);
-        if (deleteModal.isBulk) {
-            setProcessingDelete(false);
-            setDeleteModal(prev => ({ ...prev, show: false }));
-            Notify.error('Action Not Available', 'Bulk delete for teachers is not implemented in backend yet.');
-        } else {
-            router.delete(route("admin.teachers.destroy", deleteModal.teacher.id), {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setProcessingDelete(false);
-                    setDeleteModal(prev => ({ ...prev, show: false }));
-                    Notify.success('Success', 'Teacher deleted successfully');
-                },
-                onError: () => {
-                    setProcessingDelete(false);
-                }
-            });
-        }
-    };
-
-    const [showOnlySelected, setShowOnlySelected] = useState(false);
-    const displayTeachers = useMemo(() => {
-        if (!teachers) return { data: [] };
-        return {
-            ...teachers,
-            data: showOnlySelected ? teachers.data.filter(p => selectedIds.includes(p.id)) : teachers.data
-        }
-    }, [teachers, showOnlySelected, selectedIds]);
 
     return (
-        <AdminLayout user={auth?.user}>
+        <AdminLayout>
             <Head title="Teacher Management" />
-            
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-[20px] font-bold text-[#202223] tracking-tight">Teacher Management</h1>
-                    <p className="text-[#6d7175] text-[13px] mt-0.5 font-medium">Manage faculty members, view details and update records.</p>
+                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Teacher Management</h1>
+                    <p className="text-sm text-slate-500">Manage coaching instructors, qualifications, specializations & batch assignments.</p>
                 </div>
-                <Link
-                    href={route('admin.teachers.create')}
-                    className="px-4 py-1.5 bg-[#008060] text-white rounded-[3px] font-bold text-[12px] hover:bg-[#006e52] transition-all flex items-center gap-2 shadow-sm"
+                <button
+                    onClick={() => setShowModal(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-lg shadow-sm"
                 >
-                    <UserPlus size={14} /> Add New Teacher
-                </Link>
+                    <Plus size={16} /> Add Teacher
+                </button>
             </div>
 
-            <div className="bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.1)]">
-                <TeacherToolbar
-                    search={search}
-                    setSearch={setSearch}
-                    filters={filters}
-                    handleFilterChange={handleFilterChange}
-                    handleReset={handleReset}
-                    selectedIds={selectedIds}
-                    selectAllAcrossPages={selectAllAcrossPages}
-                    totalCount={totalCount}
-                    perPageCount={perPageCount}
-                    handleClearSelection={handleClearSelection}
-                    handleBulkDeleteClick={handleBulkDeleteClick}
-                    handleSelectAllAcrossPages={handleSelectAllAcrossPages}
-                    showOnlySelected={showOnlySelected}
-                    setShowOnlySelected={setShowOnlySelected}
-                    allColumns={allColumns}
-                    visibleColumns={visibleColumns}
-                    toggleColumn={toggleColumn}
-                    departments={departments}
-                    designations={designations}
-                />
-                
-                <TeacherTable
-                    teachers={displayTeachers}
-                    selectedIds={selectedIds}
-                    selectAllAcrossPages={selectAllAcrossPages}
-                    toggleSelectAll={toggleSelectAll}
-                    toggleSelect={toggleSelect}
-                    handleDelete={handleDeleteClick}
-                    isProcessing={isProcessing}
-                    visibleColumns={visibleColumns}
-                />
+            {/* SEARCH */}
+            <form onSubmit={handleSearch} className="mb-6 flex gap-3">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-3 text-slate-400" size={16} />
+                    <input
+                        type="text"
+                        placeholder="Search teacher by name, ID, phone, specialization..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white"
+                    />
+                </div>
+                <button type="submit" className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg">Search</button>
+            </form>
 
-                <TeacherPagination
-                    teachers={teachers}
-                    filters={filters}
-                    total={totalCount}
-                    handlePerPageChange={handlePerPageChange}
-                    handlePageChange={handlePageChange}
-                />
+            {/* TEACHERS GRID */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {teachers.data.length > 0 ? (
+                    teachers.data.map((t) => (
+                        <div key={t.id} className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-4">
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">{t.teacher_id}</span>
+                                    <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${t.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
+                                        {t.status}
+                                    </span>
+                                </div>
+                                <h3 className="text-base font-bold text-slate-900">{t.name}</h3>
+                                <p className="text-xs text-slate-500">{t.designation || 'Instructor'}</p>
+
+                                <div className="mt-4 space-y-1 text-xs text-slate-600 border-t pt-3">
+                                    <div><span className="font-semibold text-slate-700">Specialization:</span> {t.specialization || 'N/A'}</div>
+                                    <div><span className="font-semibold text-slate-700">Qualification:</span> {t.qualification || 'N/A'}</div>
+                                    <div><span className="font-semibold text-slate-700">Phone:</span> {t.phone}</div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between border-t pt-3">
+                                <span className="text-xs text-slate-500 font-medium">{t.batches?.length || 0} Batches Assigned</span>
+                                <Link
+                                    href={route('admin.teachers.show', t.id)}
+                                    className="text-xs font-bold text-emerald-600 hover:text-emerald-800 flex items-center gap-1"
+                                >
+                                    <Eye size={14} /> Profile
+                                </Link>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="col-span-full bg-white p-8 rounded-xl border text-center text-slate-500">
+                        No teachers found.
+                    </div>
+                )}
             </div>
 
-            <DeleteConfirmModal
-                show={deleteModal.show}
-                onClose={() => setDeleteModal(prev => ({ ...prev, show: false }))}
-                onConfirm={handleConfirmDelete}
-                title={deleteModal.title}
-                message={deleteModal.message}
-                processing={processingDelete}
-            />
+            {/* ADD TEACHER MODAL */}
+            {showModal && (
+                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                    <div className="bg-white max-w-lg w-full p-6 rounded-xl shadow-xl space-y-4">
+                        <h3 className="text-lg font-bold text-slate-900 border-b pb-2">Add New Teacher</h3>
+                        <form onSubmit={handleSubmit} className="space-y-3">
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+                                <input
+                                    type="text"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    required
+                                    className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-700 mb-1">Phone *</label>
+                                    <input
+                                        type="text"
+                                        value={data.phone}
+                                        onChange={(e) => setData('phone', e.target.value)}
+                                        required
+                                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-700 mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-700 mb-1">Qualification</label>
+                                    <input
+                                        type="text"
+                                        value={data.qualification}
+                                        onChange={(e) => setData('qualification', e.target.value)}
+                                        placeholder="e.g. M.Sc in Physics"
+                                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-700 mb-1">Specialization</label>
+                                    <input
+                                        type="text"
+                                        value={data.specialization}
+                                        onChange={(e) => setData('specialization', e.target.value)}
+                                        placeholder="e.g. Physics & Math"
+                                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-2 pt-3 border-t">
+                                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg">Cancel</button>
+                                <button type="submit" disabled={processing} className="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg">Save Teacher</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }

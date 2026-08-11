@@ -19,13 +19,14 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
 
-            // User Type & Basic Info
-            $table->enum('user_type', ['user', 'admin', 'staff', 'teacher'])->default('user');
+            // User Type / Role & Basic Info
+            $table->string('user_type')->default('student'); // super_admin, manager, teacher, accountant, student, guardian
             $table->enum('status', ['active', 'disabled'])->default('active');
             $table->timestamp('deletion_requested_at')->nullable();
             $table->string('company_name')->nullable();
             $table->string('phone')->nullable();
             $table->string('profile_picture')->nullable();
+            $table->foreignId('guardian_id')->nullable();
 
             // Verification Fields
             $table->boolean('is_verified')->default(false);

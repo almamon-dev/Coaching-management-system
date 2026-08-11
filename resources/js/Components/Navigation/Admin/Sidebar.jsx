@@ -1,5 +1,4 @@
-import React, { useMemo } from "react";
-import SchoolLogo from "@/Components/SchoolLogo";
+import React, { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import {
     LayoutDashboard,
@@ -7,7 +6,6 @@ import {
     GraduationCap,
     Users,
     UserCheck,
-    ShieldCheck,
     ClipboardCheck,
     BookOpen,
     Bell,
@@ -16,410 +14,340 @@ import {
     LogOut,
     Wallet,
     Calendar,
-    Image,
-    ShieldAlert,
+    FolderKanban,
+    FileCode,
+    Database,
+    Shield,
+    History,
+    DollarSign,
+    BookMarked,
+    FileQuestion,
+    Layers,
 } from "lucide-react";
 
-/*
-|--------------------------------------------------------------------------
-| STATIC STRUCTURAL SCHEMA (Zero Memory Overhead)
-|--------------------------------------------------------------------------
-*/
-const RAW_MENU_GROUPS = [
-    {
-        title: "",
-        items: [
-            {
-                key: "academic",
-                label: "Academic Management",
-                icon: GraduationCap,
-                permissions: ["view-academic"],
-                children: [
-                    { label: "Academic Years", getPath: () => route('admin.academic_sessions.index') },
-                    { label: "Classes", getPath: () => route('admin.classes.index') },
-                    { label: "Sections", getPath: () => route('admin.sections.index') },
-                    { label: "Subjects", getPath: () => route('admin.subjects.index') },
-                    { label: "Assign Subjects", getPath: () => route('admin.subject-allocation.index') },
-                    { label: "Class Routine", getPath: () => route('admin.class_routines.index') },
-                    { label: "Academic Resources", getPath: () => route('admin.academic-resources.index') },
-                ],
-            },
-            {
-                key: "students",
-                label: "Student Management",
-                icon: Users,
-                permissions: ["view-students"],
-                children: [
-                    { label: "Students", getPath: () => route('admin.students.index') },
-                    { label: "New Admission", getPath: () => route('admin.students.create') },
-                    { label: "Enrollments", getPath: () => route('admin.enrollments.index') },
-                    { label: "Student Promotion", getPath: () => route('admin.student-promotion.index') },
-                    { label: "Roll Generation", getPath: () => route('admin.roll-generation.index') },
-                    { label: "Student Transfer", getPath: () => route('admin.student-transfer.index') },
-                ],
-            },
-            {
-                key: "teachers",
-                label: "Teacher Management",
-                icon: UserCheck,
-                permissions: ["view-teachers"],
-                children: [
-                    { label: "Teachers", getPath: () => route('admin.teachers.index') },
-                    { label: "Departments", getPath: () => route('admin.departments.index') },
-                    { label: "Designations", getPath: () => route('admin.designations.index') },
-                    { label: "Teacher Promotion", getPath: () => route('admin.teacher-promotions.index') },
-                ],
-            },
-            {
-                key: "guardians",
-                label: "Guardian Management",
-                icon: ShieldCheck,
-                permissions: ["view-users"], // Using view-users as a proxy or we can just leave it for now
-                children: [
-                    { label: "Guardians", getPath: () => '#' },
-                ],
-            },
-            {
-                key: "fees",
-                label: "Fees Management",
-                icon: Wallet,
-                permissions: ["view-fees"],
-                children: [
-                    { label: "Fee Types & Heads", getPath: () => route('admin.fee-types.index') },
-                    { label: "Fee Setup (Groups)", getPath: () => route('admin.fee-groups.index') },
-                    { label: "Fee Invoices", getPath: () => route('admin.fee-invoices.index') },
-                    { label: "Fee Collection", getPath: () => route('admin.fee-collections.index') },
-                ],
-            },
-            {
-                key: "attendance",
-                label: "Attendance Management",
-                icon: ClipboardCheck,
-                permissions: ["view-attendance"],
-                children: [
-                    { label: "Student Attendance", getPath: () => route('admin.attendance.index') },
-                    { label: "Teacher Attendance", getPath: () => route('admin.teacher_attendance.index') },
-                    { label: "Daily Report", getPath: () => route('admin.attendance.daily_report') },
-                    { label: "Monthly Report", getPath: () => route('admin.attendance.monthly_report') },
-                    { label: "Attendance Analytics", getPath: () => route('admin.attendance.analytics') },
-                ],
-            },
-            {
-                key: "examinations",
-                label: "Examination Management",
-                icon: BookOpen,
-                permissions: ["view-examinations"],
-                children: [
-                    { label: "Exams", getPath: () => route('admin.exams.index') },
-                    { label: "Marks Entry", getPath: () => route('admin.marks.entry') },
-                    { label: "Grade Setup", getPath: () => route('admin.grades.index') },
-                    { label: "Result Generation", getPath: () => route('admin.results.generation') },
-                    { label: "Result Publish", getPath: () => route('admin.results.publish') },
-                ],
-            },
-            {
-                key: "notice_board",
-                label: "Notice Board",
-                icon: Bell,
-                permissions: ["view-notices"],
-                children: [
-                    { label: "Notices", getPath: () => route('admin.notices.index') },
-                ],
-            },
-            {
-                key: "events",
-                label: "Event Management",
-                icon: Calendar,
-                permissions: ["view-events"],
-                children: [
-                    { label: "Events", getPath: () => route('admin.events.index') },
-                ],
-            },
-            {
-                key: "gallery",
-                label: "Campus Life / Gallery",
-                icon: Image,
-                permissions: ["view-events"], // Grouping under same permissions for now
-                children: [
-                    { label: "Galleries", getPath: () => route('admin.galleries.index') },
-                    { label: "Founders & Donors", getPath: () => route('admin.founders.index') },
-                ],
-            },
-            {
-                key: "complaints",
-                label: "Complaints & Incidents",
-                icon: ShieldAlert,
-                permissions: ["view-reports"],
-                children: [
-                    { label: "Harassment Reports", getPath: () => route('admin.harassment-complaints.index') },
-                ],
-            },
-            {
-                key: "reports",
-                label: "Reports",
-                icon: FileText,
-                permissions: ["view-reports"],
-                children: [
-                    { label: "Student Reports", getPath: () => route('admin.reports.students.index') },
-                    { label: "Teacher Reports", getPath: () => route('admin.reports.teachers.index') },
-                    { label: "Attendance Reports", getPath: () => route('admin.reports.attendance.index') },
-                    { label: "Exam Reports", getPath: () => route('admin.reports.exams.index') },
-                    { label: "Promotion Reports", getPath: () => route('admin.reports.promotions.index') },
-                ],
-            },
-            {
-                key: "settings",
-                label: "Settings",
-                icon: Settings,
-                permissions: ["view-settings", "view-roles", "view-users"],
-                children: [
-                    { label: "Roles & Permissions", getPath: () => route('admin.roles.index') },
-                    { label: "System Users", getPath: () => route('admin.users.index') },
-                    { label: "SMS Settings", getPath: () => '#' },
-                    { label: "Email Settings", getPath: () => '#' },
-                    { label: "System Configuration", getPath: () => '#' },
-                ],
-            },
-            {
-                key: "logout",
-                label: "Logout",
-                icon: LogOut,
-                getPath: () => "/logout",
-                method: "post",
-            },
-        ],
-    },
-];
+export default function Sidebar({ isCollapsed }) {
+    const { url } = usePage();
+    const currentPath = url.split("?")[0];
 
-/*
-|--------------------------------------------------------------------------
-| BITWISE FASTEST PATH MATCHER
-|--------------------------------------------------------------------------
-*/
-const getRelativePath = (urlStr) => {
-    if (!urlStr) return "";
-    const cleanUrl = urlStr.charCodeAt(0) === 104
-        ? "/" + urlStr.split(/\/+/).slice(2).join("/")
-        : urlStr;
-    return cleanUrl.split("?")[0].replace(/\/$/, "");
-};
+    const getCleanPath = (fullUrlOrPath) => {
+        if (!fullUrlOrPath) return "";
+        try {
+            return fullUrlOrPath.startsWith("http") ? new URL(fullUrlOrPath).pathname : fullUrlOrPath;
+        } catch (e) {
+            return fullUrlOrPath;
+        }
+    };
 
-const checkPathActive = (targetPath, currentPath) => {
-    if (!targetPath) return false;
-    const current = getRelativePath(currentPath);
-    const target = getRelativePath(targetPath);
-    if (current === target) return true;
-    return current.startsWith(target + "/") && (/^\d+($|\/)/.test(current.substring(target.length + 1)) || current.substring(target.length + 1).startsWith('edit'));
-};
-
-/*
-|--------------------------------------------------------------------------
-| SUB-MENU ITEM COMPONENT (Inertia Prefetch + Zero Visual Effect)
-|--------------------------------------------------------------------------
-*/
-const SubMenuItem = React.memo(({ child, currentPath }) => {
-    const path = child.getPath();
-    const childActive = checkPathActive(path, currentPath);
-
-    return (
-        <Link
-            href={path}
-            prefetch={["hover", "mount"]}
-            showProgress={false}
-            className={`flex items-center gap-2.5 px-3 py-1.5 rounded-md text-[12.5px] transition-all duration-150 group/sub
-                ${childActive ? "text-[#008060] font-semibold bg-slate-50/50" : "text-slate-550 hover:text-[#008060] hover:bg-slate-50/30"}`}
-        >
-            <span className={`w-1 h-1 rounded-full transition-all duration-150 shrink-0 ${childActive ? "bg-[#008060] scale-125 shadow-[0_0_6px_#008060]" : "bg-slate-300 group-hover/sub:bg-[#008060]"
-                }`} />
-            <span>{child.label}</span>
-        </Link>
-    );
-});
-
-/*
-|--------------------------------------------------------------------------
-| NAV ITEM COMPONENT (Pure CSS Toggle + Zero JS Latency)
-|--------------------------------------------------------------------------
-*/
-const NavItem = React.memo(({ item, isCollapsed, currentPath, openTicketsCount }) => {
-    const hasChildren = !!item.children;
-
-    const isActive = !hasChildren && checkPathActive(item.getPath(), currentPath);
-    const isChildActive = useMemo(() => {
-        if (!hasChildren) return false;
-        for (let i = 0; i < item.children.length; i++) {
-            if (checkPathActive(item.children[i].getPath(), currentPath)) return true;
+    const checkActiveItem = (item) => {
+        if (item.route && typeof route !== "undefined") {
+            try {
+                if (route().current(item.route)) return true;
+            } catch (e) {}
+        }
+        if (item.path) {
+            const clean = getCleanPath(item.path);
+            if (currentPath === clean || currentPath.startsWith(clean + '/')) return true;
+        }
+        if (item.children) {
+            return item.children.some(child => checkActiveItem(child));
         }
         return false;
-    }, [hasChildren, item.children, currentPath]);
+    };
 
-    const Icon = item.icon;
+    const [openMenus, setOpenMenus] = useState(() => {
+        const initial = {};
+        if (currentPath.includes('/admin/courses') || currentPath.includes('/admin/batches')) {
+            initial.course_routine = true;
+        }
+        if (currentPath.includes('/admin/exams') || currentPath.includes('/admin/assignments') || currentPath.includes('/admin/study-materials')) {
+            initial.academic_content = true;
+        }
+        if (currentPath.includes('/admin/permissions') || currentPath.includes('/admin/activity-logs')) {
+            initial.security_logs = true;
+        }
+        if (currentPath.includes('/admin/settings') || currentPath.includes('/admin/backup')) {
+            initial.system_config = true;
+        }
+        return initial;
+    });
 
-    if (hasChildren) {
-        return (
-            <div className="space-y-0.5">
-                <label className="block w-full cursor-pointer select-none">
-                    <input
-                        type="checkbox"
-                        defaultChecked={isChildActive}
-                        className="peer hidden"
+    const overviewMenuItem = {
+        label: "Dashboard",
+        path: route('admin.dashboard'),
+        icon: <LayoutDashboard size={18} />,
+        route: "admin.dashboard"
+    };
+
+    const menuGroups = [
+        {
+            title: "ACADEMIC MANAGEMENT",
+            items: [
+                {
+                    label: "Academic Setup",
+                    icon: <BookOpen />,
+                    key: "course_routine",
+                    children: [
+                        { label: "Subject Management", path: route('admin.courses.index'), route: "admin.courses.index" },
+                        { label: "Batch Management", path: route('admin.batches.index'), route: "admin.batches.index" },
+                    ]
+                },
+                {
+                    label: "New Admission",
+                    path: route('admin.admissions.create'),
+                    icon: <GraduationCap />,
+                    route: "admin.admissions.create"
+                },
+                {
+                    label: "Student Management",
+                    path: route('admin.students.index'),
+                    icon: <Users />,
+                    route: "admin.students.index"
+                },
+                {
+                    label: "Academic Content",
+                    icon: <FileCode />,
+                    key: "academic_content",
+                    children: [
+                        { label: "Exams & Results", path: route('admin.exams.index'), route: "admin.exams.index" },
+                        { label: "Assignments & Homework", path: route('admin.assignments.index'), route: "admin.assignments.index" },
+                        { label: "Study Materials", path: route('admin.study-materials.index'), route: "admin.study-materials.index" },
+                    ]
+                },
+            ]
+        },
+        {
+            title: "FEES & ACCOUNTS",
+            items: [
+                {
+                    label: "Fee Collection & Dues",
+                    path: route('admin.fees.index'),
+                    icon: <Wallet />,
+                    route: "admin.fees.index"
+                },
+            ]
+        },
+        {
+            title: "COMMUNICATION & LOGS",
+            items: [
+                {
+                    label: "Notice Board",
+                    path: route('admin.notices.index'),
+                    icon: <Bell />,
+                    route: "admin.notices.index"
+                },
+                {
+                    label: "Student Attendance",
+                    path: route('admin.attendance.index'),
+                    icon: <ClipboardCheck />,
+                    route: "admin.attendance.index"
+                },
+                {
+                    label: "Reports & Analytics",
+                    path: route('admin.reports.index'),
+                    icon: <FileText />,
+                    route: "admin.reports.index"
+                },
+            ]
+        },
+        {
+            title: "SYSTEM SETTINGS",
+            items: [
+                {
+                    label: "System Configuration",
+                    icon: <Settings />,
+                    key: "system_config",
+                    children: [
+                        { label: "General Settings", path: route('admin.settings.index'), route: "admin.settings.index" },
+                        { label: "Database Backup", path: route('admin.backup.index'), route: "admin.backup.index" },
+                    ]
+                },
+                {
+                    label: "Logout",
+                    path: "/logout",
+                    icon: <LogOut />,
+                    method: "post",
+                }
+            ]
+        }
+    ];
+
+    const renderMenuItem = (item) => {
+        const active = checkActiveItem(item);
+        const isOpen = openMenus[item.key];
+
+        const content = (
+            <>
+                <div className={`flex-shrink-0 ${isCollapsed ? 'mb-1' : 'mr-3'} transition-transform duration-200 group-hover:scale-105 ${active || isOpen ? 'text-[#16a34a]' : 'text-slate-400 group-hover:text-[#16a34a]'}`}>
+                    {React.cloneElement(item.icon, {
+                        size: isCollapsed ? 22 : 18,
+                        strokeWidth: active || isOpen ? 2 : 1.5
+                    })}
+                </div>
+
+                {!isCollapsed && (
+                    <span className={`font-semibold leading-tight transition-all duration-200 text-[13px] flex-1 text-left whitespace-nowrap truncate ${active || isOpen ? 'text-[#16a34a]' : 'text-slate-600'}`}>
+                        {item.label}
+                    </span>
+                )}
+
+                {!isCollapsed && item.children && (
+                    <ChevronRight
+                        size={14}
+                        className={`flex-shrink-0 transition-all duration-200 text-slate-300 group-hover:text-slate-500 ${isOpen ? 'rotate-90 text-[#16a34a]' : ''}`}
                     />
+                )}
 
-                    <div className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-150 group
-                        peer-checked:[&_svg.chevron]:rotate-90 ${isChildActive ? "bg-[#f0f9f7] text-[#008060] font-semibold" : "text-slate-650 hover:bg-slate-50 hover:text-slate-900"}`}
-                    >
-                        {Icon && (
-                            <Icon
-                                size={18}
-                                strokeWidth={isChildActive ? 2.25 : 1.75}
-                                className={`transition-colors duration-200 ${isChildActive ? "text-[#008060]" : "text-slate-400 group-hover:text-[#008060]"}`}
-                            />
-                        )}
-
-                        {!isCollapsed && (
-                            <>
-                                <span className="text-[13px] font-medium truncate flex-1 tracking-tight">{item.label}</span>
-                                <ChevronRight
-                                    size={14}
-                                    className="chevron transition-transform duration-150 text-slate-400 group-hover:text-[#008060]"
-                                />
-                            </>
-                        )}
+                {isCollapsed && (
+                    <div className="absolute left-full ml-4 px-2 py-1 bg-slate-900 text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-md">
+                        {item.label}
                     </div>
-                    {!isCollapsed && (
-                        <div className="grid grid-rows-[0fr] peer-checked:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
-                            <div className="overflow-hidden">
-                                <div className="ml-5 space-y-0.5 mt-0.5">
-                                    {item.children.map((child) => (
-                                        <SubMenuItem key={child.label} child={child} currentPath={currentPath} />
-                                    ))}
-                                </div>
-                            </div>
+                )}
+            </>
+        );
+
+        if (item.children) {
+            return (
+                <div key={item.key || item.label}>
+                    <button
+                        type="button"
+                        onClick={() => setOpenMenus(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
+                        className={`w-full flex transition-all duration-200 group relative rounded-[3px] cursor-pointer
+                            ${isCollapsed
+                                ? 'flex-col items-center justify-center py-2.5 px-1'
+                                : 'flex-row items-center py-2 px-3'}
+                            ${active || isOpen
+                                ? 'bg-[#16a34a]/10 text-[#16a34a]'
+                                : 'text-[#475467] hover:bg-[#16a34a]/5 hover:text-[#16a34a]'}`}
+                    >
+                        {content}
+                    </button>
+
+                    {!isCollapsed && isOpen && (
+                        <div className="ml-6 mt-1 space-y-0.5 relative pl-3">
+                            {item.children.map((child, index) => {
+                                const isLast = index === item.children.length - 1;
+                                const isChildActive = checkActiveItem(child);
+
+                                return (
+                                    <div key={child.label} className="relative flex items-center group">
+                                        <div className="absolute -left-3.5 top-0 bottom-0 w-3.5 flex items-center justify-center pointer-events-none">
+                                            <svg className="w-full h-full overflow-visible" viewBox="0 0 16 32">
+                                                <line 
+                                                    x1="6" y1="0" x2="6" y2="16" 
+                                                    className={isChildActive ? "text-[#16a34a]" : "text-slate-300"}
+                                                    stroke="currentColor" strokeWidth="1.5" 
+                                                />
+                                                {!isLast && (
+                                                    <line 
+                                                        x1="6" y1="16" x2="6" y2="32" 
+                                                        className="text-slate-300"
+                                                        stroke="currentColor" strokeWidth="1.5" 
+                                                    />
+                                                )}
+                                                <line 
+                                                    x1="6" y1="16" x2="16" y2="16" 
+                                                    className={isChildActive ? "text-[#16a34a]" : "text-slate-300"}
+                                                    stroke="currentColor" strokeWidth="1.5" 
+                                                />
+                                            </svg>
+                                        </div>
+
+                                        <Link
+                                            href={child.path}
+                                            className={`flex items-center gap-2.5 w-full py-1.5 px-1.5 text-[12.5px] transition-all relative rounded ${
+                                                isChildActive
+                                                    ? "text-[#16a34a] font-bold"
+                                                    : "text-[#475467] hover:text-[#16a34a] font-medium"
+                                            }`}
+                                        >
+                                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${
+                                                isChildActive 
+                                                    ? "bg-[#16a34a] shadow-sm shadow-[#16a34a]/50 ring-2 ring-[#16a34a]/20" 
+                                                    : "bg-slate-300 group-hover:bg-[#16a34a]"
+                                            }`} />
+                                            <span className="truncate">{child.label}</span>
+                                        </Link>
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
-                </label>
-            </div>
-        );
-    }
-
-    const itemPath = item.getPath();
-    return (
-        <Link
-            href={itemPath}
-            prefetch={item.method && item.method !== "get" ? undefined : ["hover", "mount"]}
-            showProgress={false}
-            method={item.method || "get"}
-            as={item.method === "post" ? "button" : "a"}
-            className="block w-full text-left focus:outline-none"
-        >
-            <div className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-150 group cursor-pointer
-                ${isActive ? "bg-[#f0f9f7] text-[#008060] font-semibold" : "text-slate-650 hover:bg-slate-50 hover:text-slate-900"}`}
-            >
-                {Icon && (
-                    <Icon
-                        size={18}
-                        strokeWidth={isActive ? 2.25 : 1.75}
-                        className={`transition-colors duration-200 ${isActive ? "text-[#008060]" : "text-slate-400 group-hover:text-[#008060]"}`}
-                    />
-                )}
-                {!isCollapsed && (
-                    <>
-                        <span className="text-[13px] font-medium truncate flex-1 tracking-tight">{item.label}</span>
-                        {item.key === "tickets" && openTicketsCount > 0 && (
-                            <div className="px-1.5 min-w-[16px] h-4 rounded-full bg-[#008060] text-white text-[9px] flex items-center justify-center font-bold">{openTicketsCount}</div>
-                        )}
-                    </>
-                )}
-            </div>
-        </Link>
-    );
-});
-
-/*
-|--------------------------------------------------------------------------
-| MAIN SIDEBAR COMPONENT
-|--------------------------------------------------------------------------
-*/
-export default function Sidebar({ isCollapsed, toggleCollapse }) {
-    const { url, props } = usePage();
-    const currentPath = useMemo(() => url.split("?")[0], [url]);
-
-    const userPermissions = useMemo(() => props.auth?.user?.permissions || [], [props.auth?.user?.permissions]);
-    const userRoles = useMemo(() => props.auth?.user?.roles || [], [props.auth?.user?.roles]);
-    const isSuperAdmin = userRoles.includes('Super Admin');
-    const openTicketsCount = props.auth?.user?.open_tickets_count || 0;
-
-    const filteredMenuGroups = useMemo(() => {
-        const processed = [];
-        for (let g = 0; g < RAW_MENU_GROUPS.length; g++) {
-            const group = RAW_MENU_GROUPS[g];
-            const allowedItems = [];
-            for (let i = 0; i < group.items.length; i++) {
-                const item = group.items[i];
-                if (!item.permissions || isSuperAdmin || item.permissions.some(p => userPermissions.includes(p))) {
-                    allowedItems.push(item);
-                }
-            }
-            if (allowedItems.length > 0) processed.push({ ...group, items: allowedItems });
-        }
-        return processed;
-    }, [userPermissions, isSuperAdmin]);
-
-    return (
-        <div className="w-full h-full flex flex-col bg-white border-r border-slate-200/60 relative select-none">
-            {/* BRANDING HEADER */}
-            <div className="h-[70px] flex items-center px-4 shrink-0 bg-white border-b border-slate-200/60 overflow-hidden relative">
-                {!isCollapsed ? (
-                    <Link href="/dashboard" className="flex items-center px-2 h-[70px]">
-                        <SchoolLogo variant="sidebar" />
-                    </Link>
-                ) : (
-                    <Link href="/dashboard" className="flex items-center justify-center w-full h-[70px]">
-                        <SchoolLogo variant="sidebar-icon" />
-                    </Link>
-                )}
-            </div>
-
-            {/* QUICK LINK: DASHBOARD */}
-            {isSuperAdmin && (
-                <div className="p-2 shrink-0">
-                    <Link
-                        href="/dashboard"
-                        prefetch={["hover", "mount"]}
-                        showProgress={false}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-150 group
-                            ${currentPath === "/dashboard" ? "bg-[#f0f9f7] text-[#008060] font-bold" : "text-slate-650 hover:bg-slate-50 hover:text-slate-900"}`}
-                    >
-                        <LayoutDashboard size={18} className={currentPath === "/dashboard" ? "text-[#008060]" : "text-slate-400 group-hover:text-[#008060]"} />
-                        {!isCollapsed && <span className="text-[13px] font-medium tracking-tight">Dashboard Overview</span>}
-                    </Link>
                 </div>
-            )}
+            );
+        }
 
-            {/* MAIN NAVIGATION SCROLL AREA */}
-            <div className="flex-1 overflow-y-auto no-scrollbar pb-6">
-                {filteredMenuGroups.map((group) => (
-                    <div key={group.title} className="mt-3.5">
-                        {!isCollapsed && group.title && (
-                            <div className="px-5 mb-1.5">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{group.title}</span>
-                            </div>
-                        )}
-                        <div className="space-y-0.5 px-2">
-                            {group.items.map((item) => (
-                                <NavItem
-                                    key={item.key}
-                                    item={item}
-                                    isCollapsed={isCollapsed}
-                                    openTicketsCount={openTicketsCount}
-                                    currentPath={currentPath}
-                                />
-                            ))}
+        if (item.method === "post") {
+            return (
+                <Link
+                    key={item.label}
+                    href={item.path}
+                    method="post"
+                    as="button"
+                    className={`w-full flex transition-all duration-200 group relative rounded-[3px] cursor-pointer
+                        ${isCollapsed
+                            ? 'flex-col items-center justify-center py-2.5 px-1'
+                            : 'flex-row items-center py-2 px-3'}
+                        ${active
+                            ? 'bg-[#16a34a]/10 text-[#16a34a]'
+                            : 'text-[#475467] hover:bg-[#16a34a]/5 hover:text-[#16a34a]'}`}
+                >
+                    {content}
+                </Link>
+            );
+        }
+
+        return (
+            <Link
+                key={item.label}
+                href={item.path}
+                className={`w-full flex transition-all duration-200 group relative rounded-[3px]
+                    ${isCollapsed
+                        ? 'flex-col items-center justify-center py-2.5 px-1'
+                        : 'flex-row items-center py-2 px-3'}
+                    ${active
+                        ? 'bg-[#16a34a]/10 text-[#16a34a]'
+                        : 'text-[#475467] hover:bg-[#16a34a]/5 hover:text-[#16a34a]'}`}
+            >
+                {content}
+            </Link>
+        );
+    };
+
+    return (
+        <aside className="bg-white min-h-screen transition-all duration-300 shrink-0 flex flex-col w-full select-none">
+            {/* BRANDING HEADER */}
+            <div className={`h-[60px] flex items-center border-b border-slate-100 shrink-0 ${isCollapsed ? 'justify-center px-0' : 'px-4'}`}>
+                <Link href="/admin/dashboard" className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#16a34a] flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                        C
+                    </div>
+                    {!isCollapsed && (
+                        <div className="flex flex-col">
+                            <span className="font-bold text-slate-800 text-sm tracking-tight leading-tight">Apex Coaching</span>
+                            <span className="text-[10px] text-[#16a34a] font-semibold uppercase tracking-wider">Admin Panel</span>
+                        </div>
+                    )}
+                </Link>
+            </div>
+
+            {/* NAVIGATION SCROLL AREA */}
+            <div className="p-3 space-y-5 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
+                <div>
+                    {!isCollapsed && <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">OVERVIEW</p>}
+                    <div className="space-y-1">
+                        {renderMenuItem(overviewMenuItem)}
+                    </div>
+                </div>
+
+                {menuGroups.map((group, idx) => (
+                    <div key={idx}>
+                        {!isCollapsed && <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{group.title}</p>}
+                        <div className="space-y-1">
+                            {group.items.map(renderMenuItem)}
                         </div>
                     </div>
                 ))}
             </div>
-
-        </div>
+        </aside>
     );
 }

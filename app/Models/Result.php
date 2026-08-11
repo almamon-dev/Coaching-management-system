@@ -2,33 +2,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Exam;
-use App\Models\AcademicClass;
-use App\Models\Section;
 
 class Result extends Model
 {
-    protected $guarded = [];
+    use HasFactory;
 
-    public function student()
-    {
-        return $this->belongsTo(User::class, 'student_id');
-    }
+    protected $fillable = [
+        'exam_id',
+        'student_id',
+        'total_marks',
+        'obtained_marks',
+        'percentage',
+        'grade',
+        'gpa',
+        'pass_status',
+    ];
 
     public function exam()
     {
         return $this->belongsTo(Exam::class);
     }
 
-    public function academicClass()
+    public function student()
     {
-        return $this->belongsTo(AcademicClass::class);
-    }
-
-    public function section()
-    {
-        return $this->belongsTo(Section::class);
+        return $this->belongsTo(StudentProfile::class, 'student_id');
     }
 }

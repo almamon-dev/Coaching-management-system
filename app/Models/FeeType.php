@@ -10,10 +10,14 @@ class FeeType extends Model
     use HasFactory;
 
     protected $fillable = [
-        'category',
         'name',
         'code',
+        'default_amount',
         'description',
-        'is_active',
     ];
+
+    public function invoices()
+    {
+        return $this->hasMany(FeeInvoice::class);
+    }
 }

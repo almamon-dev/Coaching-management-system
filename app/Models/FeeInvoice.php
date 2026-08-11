@@ -2,40 +2,39 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FeeInvoice extends Model
 {
-    //
-    protected $guarded = [];
-    
-    protected $casts = [
-        'invoice_date' => 'date',
-        'due_date' => 'date',
+    use HasFactory;
+
+    protected $fillable = [
+        'invoice_no',
+        'student_id',
+        'fee_type_id',
+        'title',
+        'amount',
+        'discount',
+        'net_amount',
+        'paid_amount',
+        'due_amount',
+        'due_date',
+        'status',
     ];
-    
+
     public function student()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(StudentProfile::class, 'student_id');
     }
-    
-    public function academicClass()
+
+    public function feeType()
     {
-        return $this->belongsTo(AcademicClass::class);
+        return $this->belongsTo(FeeType::class);
     }
-    
-    public function feeGroup()
-    {
-        return $this->belongsTo(FeeGroup::class);
-    }
-    
-    public function items()
-    {
-        return $this->hasMany(FeeInvoiceItem::class);
-    }
-    
+
     public function payments()
     {
-        return $this->hasMany(FeePayment::class);
+        return $this->hasMany(FeePayment::class, 'invoice_id');
     }
 }

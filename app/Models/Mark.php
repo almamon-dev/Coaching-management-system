@@ -2,24 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Mark extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'exam_id',
-        'academic_class_id',
-        'section_id',
         'subject_id',
         'student_id',
-        'marks',
-        'comments',
+        'obtained_marks',
+        'is_absent',
+        'remarks',
     ];
-
-    public function student()
-    {
-        return $this->belongsTo(User::class, 'student_id');
-    }
 
     public function exam()
     {
@@ -31,13 +28,8 @@ class Mark extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function academicClass()
+    public function student()
     {
-        return $this->belongsTo(AcademicClass::class);
-    }
-
-    public function section()
-    {
-        return $this->belongsTo(Section::class);
+        return $this->belongsTo(StudentProfile::class, 'student_id');
     }
 }
