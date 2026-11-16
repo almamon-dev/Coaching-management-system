@@ -277,7 +277,7 @@ const RoleListPage = ({ auth, roles, filters, stats }) => {
 
             {/* Premium Create Permission Modal */}
             {isPermModalOpen && (
-                <div className="fixed inset-0 z-[1000] overflow-y-auto flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                <div className="fixed inset-0 z-[9999] overflow-y-auto flex items-center justify-center p-4 bg-black/50 backdrop-blur-[2px]">
                     <div className="bg-white rounded-[4px] border border-[#ebebeb] w-full max-w-[420px] shadow-lg p-6 space-y-4">
                         <div>
                             <h3 className="text-[15px] font-bold text-slate-800">Add New System Permission</h3>

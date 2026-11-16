@@ -9,8 +9,8 @@ export default function Footer() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
                     <div className="space-y-6">
-                        <Link href="/" className="flex-shrink-0">
-                            <SchoolLogo variant="wide" theme="white" className="h-[50px]" />
+                        <Link href="/" className="inline-flex bg-white/95 px-3 py-2 rounded-lg shadow-sm">
+                            <SchoolLogo variant="wide" className="[&_img]:h-9" />
                         </Link>
                         <p className="text-[14px] leading-relaxed text-indigo-200">
                             Knowledge · Discipline · Service. Established in 1968, Kirtonia Yousob Ali Bhuyan High School is committed to nurturing future leaders through quality education and strong values.

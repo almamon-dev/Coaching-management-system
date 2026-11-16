@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import { UserCheck, Plus, Search, Eye, Edit, Trash2 } from 'lucide-react';
 
 export default function TeacherIndex({ teachers, filters }) {
@@ -106,9 +107,9 @@ export default function TeacherIndex({ teachers, filters }) {
             </div>
 
             {/* ADD TEACHER MODAL */}
-            {showModal && (
-                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-                    <div className="bg-white max-w-lg w-full p-6 rounded-xl shadow-xl space-y-4">
+            {showModal && typeof document !== 'undefined' && createPortal(
+                <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="bg-white max-w-lg w-full p-6 rounded-xl shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
                         <h3 className="text-lg font-bold text-slate-900 border-b pb-2">Add New Teacher</h3>
                         <form onSubmit={handleSubmit} className="space-y-3">
                             <div>
@@ -170,7 +171,8 @@ export default function TeacherIndex({ teachers, filters }) {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </AdminLayout>
     );

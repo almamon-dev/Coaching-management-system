@@ -40,7 +40,9 @@ class Batch extends Model
 
     public function students()
     {
-        return $this->hasMany(StudentProfile::class);
+        return $this->belongsToMany(StudentProfile::class, 'batch_student', 'batch_id', 'student_id')
+            ->withPivot(['course_id', 'monthly_fee', 'roll_number', 'status', 'enrolled_at'])
+            ->withTimestamps();
     }
 
     public function routines()

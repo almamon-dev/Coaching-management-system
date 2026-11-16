@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
 import { Plus, X } from 'lucide-react';
@@ -182,9 +183,9 @@ export default function FeeIndex({ invoices, feeTypes, students, filters }) {
             />
 
             {/* CREATE INVOICE MODAL */}
-            {showInvoiceModal && (
-                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-white max-w-md w-full p-6 rounded-lg shadow-xl space-y-4 border border-slate-200/80">
+            {showInvoiceModal && typeof document !== 'undefined' && createPortal(
+                <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white max-w-md w-full p-6 rounded-lg shadow-xl space-y-4 border border-slate-200/80 overflow-visible relative my-auto">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                             <h3 className="text-base font-bold text-slate-900">Create Fee Invoice</h3>
                             <button onClick={() => setShowInvoiceModal(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-md">
@@ -256,13 +257,14 @@ export default function FeeIndex({ invoices, feeTypes, students, filters }) {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* COLLECT PAYMENT MODAL */}
-            {showCollectModal && selectedInvoice && (
-                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-white max-w-md w-full p-6 rounded-lg shadow-xl space-y-4 border border-slate-200/80">
+            {showCollectModal && selectedInvoice && typeof document !== 'undefined' && createPortal(
+                <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white max-w-md w-full p-6 rounded-lg shadow-xl space-y-4 border border-slate-200/80 overflow-visible relative my-auto">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                             <h3 className="text-base font-bold text-slate-900">Collect Payment</h3>
                             <button onClick={() => setShowCollectModal(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-md">
@@ -338,7 +340,8 @@ export default function FeeIndex({ invoices, feeTypes, students, filters }) {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </AdminLayout>
     );

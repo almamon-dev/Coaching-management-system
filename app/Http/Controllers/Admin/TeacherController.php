@@ -43,6 +43,16 @@ class TeacherController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return redirect()->route('admin.teachers.index');
+    }
+
+    public function edit($id)
+    {
+        return redirect()->route('admin.teachers.show', $id);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
+import SchoolLogo from "@/Components/SchoolLogo";
 import {
     LayoutDashboard,
     ChevronRight,
@@ -13,20 +14,15 @@ import {
     Settings,
     LogOut,
     Wallet,
-    Calendar,
-    FolderKanban,
     FileCode,
-    Database,
     Shield,
-    History,
     DollarSign,
-    BookMarked,
-    FileQuestion,
-    Layers,
 } from "lucide-react";
 
 export default function Sidebar({ isCollapsed }) {
-    const { url } = usePage();
+    const { url, props } = usePage();
+    const coachingMode = props?.settings?.coaching_mode || "single";
+    const centerName = props?.settings?.center_name || "Ullash Coaching Center";
     const currentPath = url.split("?")[0];
 
     const getCleanPath = (fullUrlOrPath) => {
@@ -42,7 +38,7 @@ export default function Sidebar({ isCollapsed }) {
         if (item.route && typeof route !== "undefined") {
             try {
                 if (route().current(item.route)) return true;
-            } catch (e) {}
+            } catch (e) { }
         }
         if (item.path) {
             const clean = getCleanPath(item.path);
@@ -56,7 +52,7 @@ export default function Sidebar({ isCollapsed }) {
 
     const [openMenus, setOpenMenus] = useState(() => {
         const initial = {};
-        if (currentPath.includes('/admin/courses') || currentPath.includes('/admin/batches')) {
+        if (currentPath.includes('/admin/courses') || currentPath.includes('/admin/batches') || currentPath.includes('/admin/class-routines')) {
             initial.course_routine = true;
         }
         if (currentPath.includes('/admin/exams') || currentPath.includes('/admin/assignments') || currentPath.includes('/admin/study-materials')) {
@@ -71,17 +67,16 @@ export default function Sidebar({ isCollapsed }) {
         return initial;
     });
 
-    const overviewMenuItem = {
-        label: "Dashboard",
-        path: route('admin.dashboard'),
-        icon: <LayoutDashboard size={18} />,
-        route: "admin.dashboard"
-    };
-
     const menuGroups = [
         {
-            title: "ACADEMIC MANAGEMENT",
+            title: "MAIN",
             items: [
+                {
+                    label: "Dashboard",
+                    path: route('admin.dashboard'),
+                    icon: <LayoutDashboard size={18} />,
+                    route: "admin.dashboard"
+                },
                 {
                     label: "Academic Setup",
                     icon: <BookOpen />,
@@ -89,8 +84,19 @@ export default function Sidebar({ isCollapsed }) {
                     children: [
                         { label: "Subject Management", path: route('admin.courses.index'), route: "admin.courses.index" },
                         { label: "Batch Management", path: route('admin.batches.index'), route: "admin.batches.index" },
+                        { label: "Class Routine", path: route('admin.class-routines.index'), route: "admin.class-routines.index" },
                     ]
                 },
+                ...(coachingMode === "multi"
+                    ? [
+                        {
+                            label: "Teacher Management",
+                            path: route('admin.teachers.index'),
+                            icon: <UserCheck />,
+                            route: "admin.teachers.index"
+                        }
+                    ]
+                    : []),
                 {
                     label: "New Admission",
                     path: route('admin.admissions.create'),
@@ -104,6 +110,12 @@ export default function Sidebar({ isCollapsed }) {
                     route: "admin.students.index"
                 },
                 {
+                    label: "Student Attendance",
+                    path: route('admin.attendance.index'),
+                    icon: <ClipboardCheck />,
+                    route: "admin.attendance.index"
+                },
+                {
                     label: "Academic Content",
                     icon: <FileCode />,
                     key: "academic_content",
@@ -113,33 +125,23 @@ export default function Sidebar({ isCollapsed }) {
                         { label: "Study Materials", path: route('admin.study-materials.index'), route: "admin.study-materials.index" },
                     ]
                 },
-            ]
-        },
-        {
-            title: "FEES & ACCOUNTS",
-            items: [
                 {
                     label: "Fee Collection & Dues",
                     path: route('admin.fees.index'),
                     icon: <Wallet />,
                     route: "admin.fees.index"
                 },
-            ]
-        },
-        {
-            title: "COMMUNICATION & LOGS",
-            items: [
+                {
+                    label: "Income & Expense",
+                    path: route('admin.operational-accounts.index'),
+                    icon: <DollarSign />,
+                    route: "admin.operational-accounts.index"
+                },
                 {
                     label: "Notice Board",
                     path: route('admin.notices.index'),
                     icon: <Bell />,
                     route: "admin.notices.index"
-                },
-                {
-                    label: "Student Attendance",
-                    path: route('admin.attendance.index'),
-                    icon: <ClipboardCheck />,
-                    route: "admin.attendance.index"
                 },
                 {
                     label: "Reports & Analytics",
@@ -150,8 +152,21 @@ export default function Sidebar({ isCollapsed }) {
             ]
         },
         {
-            title: "SYSTEM SETTINGS",
+            title: "SETTINGS",
             items: [
+                ...(coachingMode === "multi"
+                    ? [
+                        {
+                            label: "Security & Access",
+                            icon: <Shield />,
+                            key: "security_logs",
+                            children: [
+                                { label: "Role Permissions", path: route('admin.permissions.index'), route: "admin.permissions.index" },
+                                { label: "Activity Logs", path: route('admin.activity-logs.index'), route: "admin.activity-logs.index" },
+                            ]
+                        }
+                    ]
+                    : []),
                 {
                     label: "System Configuration",
                     icon: <Settings />,
@@ -232,39 +247,37 @@ export default function Sidebar({ isCollapsed }) {
                                     <div key={child.label} className="relative flex items-center group">
                                         <div className="absolute -left-3.5 top-0 bottom-0 w-3.5 flex items-center justify-center pointer-events-none">
                                             <svg className="w-full h-full overflow-visible" viewBox="0 0 16 32">
-                                                <line 
-                                                    x1="6" y1="0" x2="6" y2="16" 
+                                                <line
+                                                    x1="6" y1="0" x2="6" y2="16"
                                                     className={isChildActive ? "text-[#16a34a]" : "text-slate-300"}
-                                                    stroke="currentColor" strokeWidth="1.5" 
+                                                    stroke="currentColor" strokeWidth="1.5"
                                                 />
                                                 {!isLast && (
-                                                    <line 
-                                                        x1="6" y1="16" x2="6" y2="32" 
+                                                    <line
+                                                        x1="6" y1="16" x2="6" y2="32"
                                                         className="text-slate-300"
-                                                        stroke="currentColor" strokeWidth="1.5" 
+                                                        stroke="currentColor" strokeWidth="1.5"
                                                     />
                                                 )}
-                                                <line 
-                                                    x1="6" y1="16" x2="16" y2="16" 
+                                                <line
+                                                    x1="6" y1="16" x2="16" y2="16"
                                                     className={isChildActive ? "text-[#16a34a]" : "text-slate-300"}
-                                                    stroke="currentColor" strokeWidth="1.5" 
+                                                    stroke="currentColor" strokeWidth="1.5"
                                                 />
                                             </svg>
                                         </div>
 
                                         <Link
                                             href={child.path}
-                                            className={`flex items-center gap-2.5 w-full py-1.5 px-1.5 text-[12.5px] transition-all relative rounded ${
-                                                isChildActive
-                                                    ? "text-[#16a34a] font-bold"
-                                                    : "text-[#475467] hover:text-[#16a34a] font-medium"
-                                            }`}
+                                            className={`flex items-center gap-2.5 w-full py-1.5 px-1.5 text-[12.5px] transition-all relative rounded ${isChildActive
+                                                ? "text-[#16a34a] font-bold"
+                                                : "text-[#475467] hover:text-[#16a34a] font-medium"
+                                                }`}
                                         >
-                                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${
-                                                isChildActive 
-                                                    ? "bg-[#16a34a] shadow-sm shadow-[#16a34a]/50 ring-2 ring-[#16a34a]/20" 
-                                                    : "bg-slate-300 group-hover:bg-[#16a34a]"
-                                            }`} />
+                                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${isChildActive
+                                                ? "bg-[#16a34a] shadow-sm shadow-[#16a34a]/50 ring-2 ring-[#16a34a]/20"
+                                                : "bg-slate-300 group-hover:bg-[#16a34a]"
+                                                }`} />
                                             <span className="truncate">{child.label}</span>
                                         </Link>
                                     </div>
@@ -316,29 +329,20 @@ export default function Sidebar({ isCollapsed }) {
     return (
         <aside className="bg-white min-h-screen transition-all duration-300 shrink-0 flex flex-col w-full select-none">
             {/* BRANDING HEADER */}
-            <div className={`h-[60px] flex items-center border-b border-slate-100 shrink-0 ${isCollapsed ? 'justify-center px-0' : 'px-4'}`}>
-                <Link href="/admin/dashboard" className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#16a34a] flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                        C
-                    </div>
-                    {!isCollapsed && (
-                        <div className="flex flex-col">
-                            <span className="font-bold text-slate-800 text-sm tracking-tight leading-tight">Apex Coaching</span>
-                            <span className="text-[10px] text-[#16a34a] font-semibold uppercase tracking-wider">Admin Panel</span>
-                        </div>
+            <div className={`h-[64px] flex items-center border-b border-slate-100 shrink-0 ${isCollapsed ? 'justify-center px-0' : 'px-4'}`}>
+                <Link href="/admin/dashboard" className="flex flex-col items-start gap-0.5 min-w-0">
+                    {isCollapsed ? (
+                        <SchoolLogo variant="sidebar-icon" />
+                    ) : (
+                        <>
+                            <SchoolLogo variant="sidebar" />
+                        </>
                     )}
                 </Link>
             </div>
 
             {/* NAVIGATION SCROLL AREA */}
             <div className="p-3 space-y-5 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
-                <div>
-                    {!isCollapsed && <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">OVERVIEW</p>}
-                    <div className="space-y-1">
-                        {renderMenuItem(overviewMenuItem)}
-                    </div>
-                </div>
-
                 {menuGroups.map((group, idx) => (
                     <div key={idx}>
                         {!isCollapsed && <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{group.title}</p>}

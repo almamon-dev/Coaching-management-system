@@ -25,7 +25,7 @@ export default function NoticeShow({ notice, recentNotices }) {
 
             {/* Print Only Header */}
             <div className="hidden print:block text-center border-b-2 border-slate-800 pb-6 mb-8 pt-8">
-                <img src="/images/logo_final.png" alt="Lohadi High School" className="h-16 mx-auto mb-4" />
+                <img src="/images/Logo.png" alt="Logo" className="h-14 mx-auto mb-4 object-contain" />
                 <h1 className="text-2xl font-black text-slate-900 uppercase tracking-widest">Lohadi High School</h1>
                 <p className="text-slate-600">Kapasia, Gazipur, Bangladesh</p>
                 <div className="mt-4 pt-4 border-t border-slate-200">

@@ -15,7 +15,7 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        $batches = Batch::where('status', 'active')->get();
+        $batches = Batch::with(['course', 'teacher'])->where('status', 'active')->get();
         $batchId = $request->input('batch_id') ?? $batches->first()?->id;
         $date = $request->input('date', date('Y-m-d'));
 
@@ -23,9 +23,13 @@ class AttendanceController extends Controller
         $existingAttendances = [];
 
         if ($batchId) {
-            $students = StudentProfile::where('batch_id', $batchId)
-                ->where('status', 'active')
-                ->get();
+            $students = StudentProfile::where(function($q) use ($batchId) {
+                $q->whereHas('batches', function($b) use ($batchId) {
+                    $b->where('batches.id', $batchId);
+                })->orWhere('batch_id', $batchId);
+            })
+            ->where('status', 'active')
+            ->get();
 
             $existingAttendances = Attendance::where('batch_id', $batchId)
                 ->whereDate('date', $date)

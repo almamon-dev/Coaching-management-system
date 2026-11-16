@@ -30,6 +30,7 @@ export default function SelectInput({
 
     const [searchQuery, setSearchQuery] = useState('');
     const [openUp, setOpenUp] = useState(direction === 'up');
+    const [maxDropdownHeight, setMaxDropdownHeight] = useState(240);
     const containerRef = useRef(null);
 
     const finalOptions = options.length > 0 ? options : childOptions;
@@ -92,8 +93,28 @@ export default function SelectInput({
         }
         if (containerRef.current) {
             const rect = containerRef.current.getBoundingClientRect();
-            const spaceBelow = window.innerHeight - rect.bottom;
-            setOpenUp(spaceBelow < 280);
+            let spaceBelow = window.innerHeight - rect.bottom;
+            let spaceAbove = rect.top;
+
+            // Check if trapped inside any scrollable container (e.g., modal)
+            let parent = containerRef.current.parentElement;
+            while (parent && parent !== document.body && parent !== document.documentElement) {
+                const style = window.getComputedStyle(parent);
+                if (/(auto|scroll|hidden)/.test(style.overflow + style.overflowY)) {
+                    const parentRect = parent.getBoundingClientRect();
+                    spaceBelow = Math.min(spaceBelow, parentRect.bottom - rect.bottom);
+                    spaceAbove = Math.min(spaceAbove, rect.top - parentRect.top);
+                    break;
+                }
+                parent = parent.parentElement;
+            }
+
+            const shouldUp = (spaceBelow < 220 && spaceAbove > spaceBelow) || (spaceBelow < 170 && spaceAbove > 170);
+            const availableSpace = shouldUp ? spaceAbove : spaceBelow;
+            const computedMax = Math.max(140, Math.min(250, availableSpace - 16));
+
+            setOpenUp(shouldUp);
+            setMaxDropdownHeight(computedMax);
         }
     };
 
@@ -106,7 +127,7 @@ export default function SelectInput({
                     }
 
                     return (
-                        <div className="relative h-full">
+                        <div className={cn("relative h-full", open && "z-40")}>
                             <Listbox.Button 
                                 onClick={checkPosition}
                                 className={cn(
@@ -133,10 +154,13 @@ export default function SelectInput({
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Listbox.Options className={cn(
-                                    "absolute z-[100] max-h-64 w-full overflow-hidden rounded-[3px] bg-white text-[12px] shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-slate-200 focus:outline-none flex flex-col",
-                                    openUp ? "bottom-full mb-1" : "top-full mt-1"
-                                )}>
+                                <Listbox.Options 
+                                    style={{ maxHeight: `${maxDropdownHeight}px` }}
+                                    className={cn(
+                                        "absolute z-[100] w-full overflow-hidden rounded-[3px] bg-white text-[12px] shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-slate-200 focus:outline-none flex flex-col",
+                                        openUp ? "bottom-full mb-1" : "top-full mt-1"
+                                    )}
+                                >
                                     {/* Search Input Container */}
                                     {showSearch && (
                                         <div className="p-1.5 bg-[#F3F4F7] shrink-0 border-b border-[#EEEEEE]">
@@ -153,7 +177,10 @@ export default function SelectInput({
                                     )}
 
                                     {/* Options List */}
-                                    <div className="overflow-y-auto py-1 flex-1 max-h-[300px] custom-scrollbar">
+                                    <div 
+                                        style={{ maxHeight: `${Math.max(100, maxDropdownHeight - (showSearch ? 45 : 0))}px` }}
+                                        className="overflow-y-auto py-1 flex-1 custom-scrollbar"
+                                    >
                                         {filteredOptions.length === 0 && !onCreateProp ? (
                                             <div className="py-10 px-4 flex flex-col items-center justify-center text-slate-400 gap-2">
                                                 <SearchX size={32} strokeWidth={1} />

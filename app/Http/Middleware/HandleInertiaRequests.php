@@ -55,11 +55,12 @@ class HandleInertiaRequests extends Middleware
                 ] : null,
             ],
             'settings' => array_merge([
-                'center_name' => 'Apex Coaching & Learning Center',
+                'center_name' => 'Ullash Coaching Center',
                 'currency_symbol' => '৳',
                 'phone' => '+880 1711-000000',
                 'email' => 'info@apexcoaching.bd',
                 'address' => 'House 42, Road 11, Block E, Banani, Dhaka',
+                'coaching_mode' => 'single',
             ], $allSettings),
             'locale' => app()->getLocale(),
             'flash' => [

@@ -63,7 +63,7 @@ class FeeCollectionController extends Controller
         $invoice = FeeInvoice::create([
             'invoice_no' => 'INV-' . date('Ymd') . '-' . rand(1000, 9999),
             'student_id' => $validated['student_id'],
-            'fee_type_id' => $validated['fee_type_id'],
+            'fee_type_id' => $validated['fee_type_id'] ?? null,
             'title' => $validated['title'],
             'amount' => $amount,
             'discount' => $discount,

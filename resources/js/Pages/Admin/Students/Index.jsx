@@ -50,14 +50,38 @@ export default function StudentIndex({ students, courses, batches, filters }) {
             )
         },
         {
-            header: "Subject & Batch",
+            header: "Enrolled Subjects & Batches",
             accessor: "course",
-            cell: (row) => (
-                <div>
-                    <div className="text-xs font-semibold text-slate-800">{row.course ? row.course.title : 'N/A'}</div>
-                    <div className="text-[11px] text-slate-500">{row.batch ? row.batch.name : 'N/A'}</div>
-                </div>
-            )
+            cell: (row) => {
+                const enrolled = row.batches && row.batches.length > 0 ? row.batches : null;
+                if (enrolled && enrolled.length > 1) {
+                    return (
+                        <div className="space-y-1">
+                            <div className="flex flex-wrap gap-1">
+                                {enrolled.map(b => (
+                                    <span
+                                        key={b.id}
+                                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                    >
+                                        {b.course?.title || b.name}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="text-[10px] font-semibold text-slate-500">
+                                {enrolled.length} Enrolled Batches
+                            </div>
+                        </div>
+                    );
+                }
+                const singleBatch = enrolled ? enrolled[0] : row.batch;
+                const singleCourse = singleBatch?.course || row.course;
+                return (
+                    <div>
+                        <div className="text-xs font-semibold text-slate-800">{singleCourse ? singleCourse.title : 'N/A'}</div>
+                        <div className="text-[11px] text-slate-500">{singleBatch ? singleBatch.name : 'N/A'}</div>
+                    </div>
+                );
+            }
         },
         {
             header: "Guardian Contact",
@@ -72,7 +96,7 @@ export default function StudentIndex({ students, courses, batches, filters }) {
         {
             header: "School / College",
             accessor: "school_college",
-            cell: (row) => <span className="text-xs text-slate-600">{row.school_college || 'N/A'}</span>
+            cell: (row) => <span className="text-xs text-slate-600 block max-w-[160px] truncate" title={row.school_college || ''}>{row.school_college || 'N/A'}</span>
         },
         {
             header: "Status",
@@ -89,14 +113,20 @@ export default function StudentIndex({ students, courses, batches, filters }) {
         {
             header: "Actions",
             accessor: "actions",
-            className: "text-right w-[110px]",
+            className: "text-right w-[140px]",
             cell: (row) => (
-                <div className="flex items-center justify-end">
+                <div className="flex items-center justify-end gap-2.5">
                     <Link
                         href={route('admin.students.show', row.id)}
                         className="inline-flex items-center gap-1 text-xs font-bold text-[#16a34a] hover:underline"
                     >
-                        <Eye size={14} /> Profile
+                        <Eye size={13} /> Profile
+                    </Link>
+                    <Link
+                        href={route('admin.students.edit', row.id)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900"
+                    >
+                        Edit
                     </Link>
                 </div>
             )

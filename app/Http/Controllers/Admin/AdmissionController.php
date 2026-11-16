@@ -21,7 +21,9 @@ class AdmissionController extends Controller
 {
     public function create()
     {
-        $courses = Course::with('subjects')->where('status', 'active')->get();
+        $courses = Course::with(['batches' => fn($q) => $q->where('status', 'active')->with('teacher')])
+            ->where('status', 'active')
+            ->get();
         $batches = Batch::with(['course', 'subject', 'teacher'])->where('status', 'active')->get();
         $feeTypes = FeeType::all();
 
@@ -44,8 +46,10 @@ class AdmissionController extends Controller
             'guardian_name' => 'required|string|max:255',
             'guardian_phone' => 'required|string|max:20',
             'school_college' => 'nullable|string|max:255',
-            'course_id' => 'required|exists:courses,id',
-            'batch_id' => 'required|exists:batches,id',
+            'batch_ids' => 'nullable|array|min:1',
+            'batch_ids.*' => 'exists:batches,id',
+            'course_id' => 'nullable|exists:courses,id',
+            'batch_id' => 'nullable|exists:batches,id',
             
             // Payment Fields
             'admission_fee' => 'required|numeric|min:0',
@@ -55,8 +59,21 @@ class AdmissionController extends Controller
             'remarks' => 'nullable|string',
         ]);
 
-        $course = Course::findOrFail($validated['course_id']);
-        $batch = Batch::findOrFail($validated['batch_id']);
+        $selectedBatchIds = !empty($validated['batch_ids']) 
+            ? $validated['batch_ids'] 
+            : ($validated['batch_id'] ? [$validated['batch_id']] : []);
+
+        if (empty($selectedBatchIds) && !empty($validated['batch_id'])) {
+            $selectedBatchIds = [$validated['batch_id']];
+        }
+
+        if (empty($selectedBatchIds)) {
+            return back()->withErrors(['batch_ids' => 'Please select at least one batch/subject.']);
+        }
+
+        $selectedBatches = Batch::with('course')->whereIn('id', $selectedBatchIds)->get();
+        $primaryBatch = $selectedBatches->first();
+        $primaryCourse = $primaryBatch?->course;
 
         // Auto Generate Student ID
         $studentCount = StudentProfile::count() + 1;
@@ -85,21 +102,32 @@ class AdmissionController extends Controller
             'user_id' => $user->id,
             'student_id' => $studentIdStr,
             'name' => $validated['name'],
-            'dob' => $validated['dob'],
+            'dob' => $validated['dob'] ?? null,
             'gender' => $validated['gender'],
-            'phone' => $validated['phone'],
-            'email' => $validated['email'],
-            'address' => $validated['address'],
+            'phone' => $validated['phone'] ?? null,
+            'email' => $validated['email'] ?? null,
+            'address' => $validated['address'] ?? null,
             'guardian_name' => $validated['guardian_name'],
             'guardian_phone' => $validated['guardian_phone'],
             'guardian_id' => $guardian->id,
-            'school_college' => $validated['school_college'],
-            'course_id' => $course->id,
-            'batch_id' => $batch->id,
+            'school_college' => $validated['school_college'] ?? null,
+            'course_id' => $primaryCourse?->id,
+            'batch_id' => $primaryBatch?->id,
             'admission_date' => date('Y-m-d'),
             'status' => 'active',
-            'notes' => $validated['remarks'],
+            'notes' => $validated['remarks'] ?? null,
         ]);
+
+        // Attach all selected batches to batch_student pivot
+        foreach ($selectedBatches as $b) {
+            $courseFee = (float)($b->course?->fee ?? 0);
+            $student->batches()->attach($b->id, [
+                'course_id' => $b->course_id,
+                'monthly_fee' => $courseFee,
+                'status' => 'active',
+                'enrolled_at' => date('Y-m-d'),
+            ]);
+        }
 
         // Create Admission Fee Invoice
         $feeAmount = (float)$validated['admission_fee'];
@@ -108,10 +136,12 @@ class AdmissionController extends Controller
         $paidAmount = (float)$validated['paid_amount'];
         $dueAmount = max(0, $netAmount - $paidAmount);
 
+        $courseNames = $selectedBatches->map(fn($b) => $b->course?->title ?? $b->name)->unique()->implode(', ');
+
         $invoice = FeeInvoice::create([
             'invoice_no' => 'INV-' . date('Ymd') . '-' . rand(1000, 9999),
             'student_id' => $student->id,
-            'title' => 'Admission & Registration Fee (' . $course->title . ')',
+            'title' => 'Admission & Enrolled Subjects Fee (' . $courseNames . ')',
             'amount' => $feeAmount,
             'discount' => $discount,
             'net_amount' => $netAmount,

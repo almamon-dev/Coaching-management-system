@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import AttendanceToolbar from '@/Components/Attendance/AttendanceToolbar';
@@ -12,9 +12,9 @@ export default function AttendanceIndex({ batches, students, existingAttendances
     const [bulkDropdownOpen, setBulkDropdownOpen] = useState(false);
 
     // Initial state setup for attendances list array format
-    const initialAttendances = students.map(st => ({
+    const initialAttendances = (students || []).map(st => ({
         id: st.id,
-        status: existingAttendances[st.id] || 'present',
+        status: existingAttendances?.[st.id] || 'present',
         remarks: ''
     }));
 
@@ -23,6 +23,21 @@ export default function AttendanceIndex({ batches, students, existingAttendances
         date: selectedDate || new Date().toISOString().split('T')[0],
         attendances: initialAttendances,
     });
+
+    useEffect(() => {
+        setBatchId(selectedBatchId || (batches[0]?.id || ''));
+        const freshAttendances = (students || []).map(st => ({
+            id: st.id,
+            status: existingAttendances?.[st.id] || 'present',
+            remarks: ''
+        }));
+        setData(prev => ({
+            ...prev,
+            batch_id: selectedBatchId || (batches[0]?.id || ''),
+            date: selectedDate || prev.date,
+            attendances: freshAttendances,
+        }));
+    }, [students, existingAttendances, selectedBatchId, selectedDate]);
 
     const handleBatchChange = (newBatchId) => {
         setBatchId(newBatchId);
@@ -72,8 +87,10 @@ export default function AttendanceIndex({ batches, students, existingAttendances
     };
 
     const handleQuickAction = (action) => {
-        if (action === 'Clear') {
-            setData('attendances', data.attendances.map(a => ({ ...a, status: 'present', remarks: '' })));
+        if (action === 'Clear' || action === 'MarkAllPresent') {
+            setData('attendances', data.attendances.map(a => ({ ...a, status: 'present' })));
+        } else if (action === 'MarkAllAbsent') {
+            setData('attendances', data.attendances.map(a => ({ ...a, status: 'absent' })));
         }
     };
 

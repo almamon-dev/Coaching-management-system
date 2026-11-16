@@ -30,10 +30,13 @@ class SettingController extends Controller
             'currency_symbol' => 'required|string|max:10',
             'academic_year' => 'required|string|max:20',
             'receipt_footer_note' => 'nullable|string',
+            'coaching_mode' => 'nullable|in:single,multi',
         ]);
 
         foreach ($validated as $key => $value) {
-            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+            if ($value !== null) {
+                Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+            }
         }
 
         ActivityLog::create([
@@ -47,5 +50,21 @@ class SettingController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Coaching center settings updated successfully.');
+    }
+
+    public function toggleMode(Request $request)
+    {
+        $currentMode = Setting::where('key', 'coaching_mode')->value('value') ?? 'single';
+        $newMode = $request->input('mode', $currentMode === 'single' ? 'multi' : 'single');
+
+        if (!in_array($newMode, ['single', 'multi'])) {
+            $newMode = 'single';
+        }
+
+        Setting::updateOrCreate(['key' => 'coaching_mode'], ['value' => $newMode]);
+
+        $modeLabel = $newMode === 'single' ? 'Single Teacher Mode' : 'Multi-Teacher Mode';
+
+        return redirect()->back()->with('success', "Switched to {$modeLabel}.");
     }
 }

@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { Plus, AlertTriangle, X, Calendar, Clock, BookOpen, Layers } from 'lucide-react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
+import { Plus, AlertTriangle, X, Calendar, Clock, BookOpen, Layers, UserCheck } from 'lucide-react';
 import DataTable from '@/Components/Table/DataTable';
 import InputLabel from '@/Components/Form/InputLabel';
 import TextInput from '@/Components/Form/TextInput';
 import SelectInput from '@/Components/Form/SelectInput';
 import InputError from '@/Components/Form/InputError';
 
-export default function ClassRoutineIndex({ routines = [], batches = [], subjects = [] }) {
-    const { errors: pageErrors } = usePage().props;
+export default function ClassRoutineIndex({ routines = [], batches = [], subjects = [], teachers = [] }) {
+    const { errors: pageErrors, settings } = usePage().props;
+    const coachingMode = settings?.coaching_mode || 'single';
+    const isMultiTeacher = coachingMode === 'multi';
+
     const [showModal, setShowModal] = useState(false);
     const [search, setSearch] = useState('');
 
     const { data, setData, post, processing, errors, reset } = useForm({
         batch_id: batches[0]?.id || '',
-        room: 'Room 101',
+        teacher_id: teachers[0]?.id || '',
+        room: '',
         class_date: new Date().toISOString().split('T')[0],
-        start_time: '10:00',
-        end_time: '11:30',
-        status: 'scheduled',
+        start_time: '',
+        end_time: '',
+        status: '',
         notes: '',
     });
 
@@ -30,10 +35,18 @@ export default function ClassRoutineIndex({ routines = [], batches = [], subject
         });
     };
 
-    const batchOptions = batches.map(b => ({ 
-        id: b.id, 
-        name: `${b.name} — [${b.course?.title || 'Subject'}]` 
+    const batchOptions = batches.map(b => ({
+        id: b.id,
+        name: `${b.name} — [${b.course?.title || 'Subject'}]`
     }));
+
+    const teacherOptions = [
+        { id: '', name: 'Select Teacher (Optional)' },
+        ...teachers.map(t => ({
+            id: t.id,
+            name: `${t.name} (${t.specialization || t.teacher_id})`
+        }))
+    ];
 
     const selectedBatchObj = batches.find(b => String(b.id) === String(data.batch_id));
 
@@ -72,6 +85,20 @@ export default function ClassRoutineIndex({ routines = [], batches = [], subject
                 </span>
             )
         },
+        ...(isMultiTeacher
+            ? [
+                {
+                    header: "Teacher",
+                    accessor: "teacher",
+                    cell: (row) => (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700">
+                            <UserCheck size={13} />
+                            {row.teacher?.name || row.batch?.teacher?.name || 'Unassigned'}
+                        </span>
+                    )
+                }
+            ]
+            : []),
         {
             header: "Room",
             accessor: "room",
@@ -83,12 +110,31 @@ export default function ClassRoutineIndex({ routines = [], batches = [], subject
             accessor: "status",
             className: "w-[120px]",
             cell: (row) => (
-                <span className={`inline-block whitespace-nowrap px-2.5 py-0.5 text-[11px] font-bold rounded-full capitalize ${
-                    row.status === 'scheduled' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' :
-                    row.status === 'rescheduled' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600 border border-slate-200'
-                }`}>
+                <span className={`inline-block whitespace-nowrap px-2.5 py-0.5 text-[11px] font-bold rounded-full capitalize ${row.status === 'scheduled' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' :
+                        row.status === 'rescheduled' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600 border border-slate-200'
+                    }`}>
                     {row.status}
                 </span>
+            )
+        },
+        {
+            header: "Action",
+            accessor: "action",
+            className: "text-right w-[90px]",
+            cell: (row) => (
+                <div className="flex items-center justify-end">
+                    <button
+                        type="button"
+                        onClick={() => {
+                            if (confirm('Delete this scheduled class routine?')) {
+                                router.delete(route('admin.class-routines.destroy', row.id));
+                            }
+                        }}
+                        className="text-xs font-semibold text-rose-500 hover:text-rose-700 hover:underline cursor-pointer"
+                    >
+                        Delete
+                    </button>
+                </div>
             )
         }
     ];
@@ -118,10 +164,10 @@ export default function ClassRoutineIndex({ routines = [], batches = [], subject
             </div>
 
             {/* CONFLICT / GENERAL ERRORS */}
-            {pageErrors.room && (
+            {(pageErrors.room || pageErrors.teacher_id) && (
                 <div className="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold rounded-lg flex items-center gap-2">
                     <AlertTriangle size={18} className="text-rose-600 shrink-0" />
-                    <span>{pageErrors.room}</span>
+                    <span>{pageErrors.room || pageErrors.teacher_id}</span>
                 </div>
             )}
 
@@ -137,9 +183,9 @@ export default function ClassRoutineIndex({ routines = [], batches = [], subject
             />
 
             {/* SCHEDULE CLASS MODAL */}
-            {showModal && (
-                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-white max-w-lg w-full p-6 rounded-lg shadow-xl space-y-4 border border-slate-200/80">
+            {showModal && typeof document !== 'undefined' && createPortal(
+                <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white max-w-lg w-full p-6 rounded-lg shadow-xl space-y-4 border border-slate-200/80 overflow-visible relative my-auto">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                             <h3 className="text-base font-bold text-slate-900">Schedule Class Routine</h3>
                             <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-md">
@@ -166,6 +212,19 @@ export default function ClassRoutineIndex({ routines = [], batches = [], subject
                                         <span className="text-xs font-bold text-[#16a34a]">{selectedBatchObj.course.title} ({selectedBatchObj.course.code})</span>
                                     </div>
                                     <BookOpen size={18} className="text-[#16a34a]" />
+                                </div>
+                            )}
+
+                            {isMultiTeacher && (
+                                <div>
+                                    <InputLabel htmlFor="teacher_id" value="Assign Teacher" />
+                                    <SelectInput
+                                        value={data.teacher_id}
+                                        onChange={(e) => setData('teacher_id', e.target ? e.target.value : e)}
+                                        options={teacherOptions}
+                                        placeholder="Select Teacher"
+                                    />
+                                    <InputError message={errors.teacher_id} className="mt-1" />
                                 </div>
                             )}
 
@@ -233,7 +292,8 @@ export default function ClassRoutineIndex({ routines = [], batches = [], subject
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </AdminLayout>
     );

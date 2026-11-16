@@ -23,6 +23,22 @@ class Course extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'admission_fee' => 0,
+        'fee' => 0,
+        'status' => 'active',
+    ];
+
+    public function setAdmissionFeeAttribute($value)
+    {
+        $this->attributes['admission_fee'] = ($value !== null && $value !== '') ? (float)$value : 0;
+    }
+
+    public function setFeeAttribute($value)
+    {
+        $this->attributes['fee'] = ($value !== null && $value !== '') ? (float)$value : 0;
+    }
+
     public function subjects()
     {
         return $this->hasMany(Subject::class);

@@ -154,6 +154,27 @@ class ExamResultController extends Controller
         return redirect()->route('admin.exams.results', $exam->id)->with('success', 'Marks saved and results generated!');
     }
 
+    public function togglePublish($examId)
+    {
+        $exam = Exam::findOrFail($examId);
+        $newStatus = $exam->status === 'published' ? 'upcoming' : 'published';
+        $exam->update(['status' => $newStatus]);
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'user_name' => auth()->user()->name,
+            'user_role' => auth()->user()->user_type,
+            'action' => $newStatus === 'published' ? 'Exam Results Published' : 'Exam Results Unpublished',
+            'module' => 'Exams',
+            'description' => "Changed status of exam {$exam->title} to {$newStatus}",
+            'ip_address' => request()->ip(),
+        ]);
+
+        return redirect()->back()->with('success', $newStatus === 'published' 
+            ? 'Results successfully published! Students can now see their results on their portal.' 
+            : 'Results unpublished. They are now hidden from student portals.');
+    }
+
     public function showResults($examId)
     {
         $exam = Exam::with(['course', 'batch'])->findOrFail($examId);

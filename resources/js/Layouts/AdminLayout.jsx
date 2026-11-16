@@ -103,7 +103,7 @@ export default function AdminLayout({ children }) {
                 <div
                     onClick={closeMobileMenu}
                     className="
-                        fixed inset-0 z-[90]
+                        fixed inset-0 z-40
                         bg-black/40
                         lg:hidden
                     "
@@ -113,7 +113,7 @@ export default function AdminLayout({ children }) {
             {/* SIDEBAR */}
             <aside
                 className={`
-                    fixed top-0 left-0 z-[100]
+                    fixed top-0 left-0 z-40
                     h-screen bg-white shadow-sm
                     will-change-transform
                     lg:translate-x-0
@@ -139,7 +139,7 @@ export default function AdminLayout({ children }) {
                 `}
             >
                 {/* HEADER */}
-                <MemoHeader
+                <Header
                     onMenuClick={handleMobileMenu}
                     onToggleSidebar={handleToggleSidebar}
                 />
@@ -149,7 +149,6 @@ export default function AdminLayout({ children }) {
                     className="
                         flex-1 overflow-y-auto
                         no-scrollbar
-                        contain-layout
                     "
                 >
                     <div className="p-4 md:p-6 lg:p-8">

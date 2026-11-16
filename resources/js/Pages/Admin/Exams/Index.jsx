@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
-import { Plus, X, Calendar, Award } from 'lucide-react';
+import { Plus, X, Eye, Edit, Layers, FileText } from 'lucide-react';
 import InputLabel from '@/Components/Form/InputLabel';
 import TextInput from '@/Components/Form/TextInput';
 import SelectInput from '@/Components/Form/SelectInput';
 import InputError from '@/Components/Form/InputError';
+import DataTable from '@/Components/Table/DataTable';
 
-export default function ExamIndex({ exams, courses, batches }) {
+export default function ExamIndex({ exams = [], courses = [], batches = [] }) {
     const [showModal, setShowModal] = useState(false);
+    const [search, setSearch] = useState('');
+    const [selectedBatch, setSelectedBatch] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
 
     const { data, setData, post, processing, errors, reset } = useForm({
         title: '',
@@ -22,80 +27,196 @@ export default function ExamIndex({ exams, courses, batches }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route('admin.exams.store'), {
-            onSuccess: () => { reset(); setShowModal(false); }
+            onSuccess: () => { 
+                reset(); 
+                setShowModal(false); 
+            }
         });
     };
 
-    const batchOptions = batches.map(b => ({ id: b.id, name: b.name }));
+    const batchOptions = [
+        { id: '', name: 'All Batches' },
+        ...batches.map(b => ({ id: String(b.id), name: b.name }))
+    ];
+
+    const statusOptions = [
+        { id: '', name: 'All Status' },
+        { id: 'published', name: 'Published' },
+        { id: 'upcoming', name: 'Upcoming' },
+    ];
+
+    const filteredExams = useMemo(() => {
+        return exams.filter((ex) => {
+            const matchesSearch = !search || 
+                ex.title?.toLowerCase().includes(search.toLowerCase()) ||
+                ex.batch?.name?.toLowerCase().includes(search.toLowerCase()) ||
+                ex.course?.title?.toLowerCase().includes(search.toLowerCase());
+            
+            const matchesBatch = !selectedBatch || String(ex.batch_id) === String(selectedBatch);
+            const matchesStatus = !selectedStatus || 
+                (selectedStatus === 'published' ? ex.status === 'published' : ex.status !== 'published');
+
+            return matchesSearch && matchesBatch && matchesStatus;
+        });
+    }, [exams, search, selectedBatch, selectedStatus]);
+
+    const examColumns = [
+        {
+            header: 'Exam Title',
+            accessor: 'title',
+            cell: (row) => (
+                <div>
+                    <span className="font-bold text-slate-900 text-xs block max-w-[240px] truncate" title={row.title}>
+                        {row.title}
+                    </span>
+                    <span className="text-[11px] text-slate-400 block truncate">
+                        {row.course?.title || 'Coaching Exam'}
+                    </span>
+                </div>
+            ),
+        },
+        {
+            header: 'Batch',
+            accessor: 'batch.name',
+            cell: (row) => (
+                <span className="inline-block whitespace-nowrap text-[10.5px] font-bold text-[#16a34a] bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full">
+                    {row.batch?.name || '—'}
+                </span>
+            ),
+        },
+        {
+            header: 'Exam Date',
+            accessor: 'exam_date',
+            cell: (row) => (
+                <span className="inline-block whitespace-nowrap text-[11px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-[3px]">
+                    {row.exam_date}
+                </span>
+            ),
+        },
+        {
+            header: 'Marks',
+            accessor: 'total_marks',
+            cell: (row) => (
+                <span className="whitespace-nowrap text-xs font-bold text-slate-800">
+                    {row.total_marks} <span className="text-[10px] font-medium text-slate-400">(Pass: {row.pass_marks})</span>
+                </span>
+            ),
+        },
+        {
+            header: 'Students',
+            accessor: 'results',
+            className: 'text-center',
+            cell: (row) => (
+                <span className="inline-flex items-center gap-1 whitespace-nowrap text-[11px] font-bold text-slate-700">
+                    <FileText size={12} className="text-emerald-500" /> {row.results?.length || 0}
+                </span>
+            ),
+        },
+        {
+            header: 'Status',
+            accessor: 'status',
+            cell: (row) => (
+                <span className={`inline-block whitespace-nowrap px-2.5 py-0.5 text-[10.5px] font-bold rounded-full capitalize ${
+                    row.status === 'published' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
+                }`}>
+                    {row.status}
+                </span>
+            ),
+        },
+        {
+            header: 'Actions',
+            accessor: 'actions',
+            className: 'text-right',
+            cell: (row) => (
+                <div className="flex items-center justify-end gap-1.5">
+                    <Link
+                        href={route('admin.exams.marks', row.id)}
+                        className="inline-flex items-center gap-1 font-bold text-[#16a34a] hover:bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-[3px] text-[11px] transition-all"
+                        title="Enter Marks"
+                    >
+                        <Edit size={12} /> Enter Marks
+                    </Link>
+                    <Link
+                        href={route('admin.exams.results', row.id)}
+                        className="inline-flex items-center gap-1 font-bold text-slate-700 hover:bg-slate-100 border border-slate-200 px-2 py-1 rounded-[3px] text-[11px] transition-all"
+                        title="View Results"
+                    >
+                        <Eye size={12} /> Results
+                    </Link>
+                </div>
+            ),
+        },
+    ];
+
+    const examFilters = (
+        <div className="grid grid-cols-2 gap-3">
+            <SelectInput
+                value={selectedBatch}
+                onChange={(e) => {
+                    const val = e.target ? e.target.value : e;
+                    setSelectedBatch(val);
+                }}
+                options={batchOptions}
+                placeholder="Filter by Batch"
+                showSearch={false}
+            />
+            <SelectInput
+                value={selectedStatus}
+                onChange={(e) => {
+                    const val = e.target ? e.target.value : e;
+                    setSelectedStatus(val);
+                }}
+                options={statusOptions}
+                placeholder="Filter by Status"
+                showSearch={false}
+            />
+        </div>
+    );
 
     return (
         <AdminLayout>
-            <Head title="Exam & Result Management" />
+            <Head title="Exam Management" />
 
-            <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Exam & Result Management</h1>
+                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Exam Management</h1>
                     <p className="text-sm text-slate-500">Create coaching evaluations, enter marks & publish auto-calculated GPAs.</p>
                 </div>
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] shadow-sm transition-all cursor-pointer"
-                >
-                    <Plus size={16} /> Create Exam
-                </button>
+                <div>
+                    <button
+                        onClick={() => setShowModal(true)}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] shadow-sm transition-all cursor-pointer"
+                    >
+                        <Plus size={15} /> Create Exam
+                    </button>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {exams.map((ex) => (
-                    <div key={ex.id} className="bg-white p-5 rounded-lg border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-4">
-                        <div>
-                            <div className="flex items-center justify-between mb-2.5">
-                                <span className="text-[11px] font-bold text-[#16a34a] bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full">{ex.batch?.name || 'Batch'}</span>
-                                <span className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full capitalize ${ex.status === 'published' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
-                                    {ex.status}
-                                </span>
-                            </div>
-                            <h3 className="text-base font-bold text-slate-900 leading-snug">{ex.title}</h3>
-
-                            <div className="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs text-slate-600">
-                                <div>
-                                    <span className="text-slate-400 block text-[11px] font-semibold uppercase">Exam Date</span>
-                                    <b className="text-slate-800 flex items-center gap-1 font-semibold mt-0.5">
-                                        <Calendar size={13} className="text-[#16a34a]" /> {ex.exam_date}
-                                    </b>
-                                </div>
-                                <div>
-                                    <span className="text-slate-400 block text-[11px] font-semibold uppercase">Marks Limit</span>
-                                    <b className="text-slate-800 font-semibold mt-0.5 block">{ex.total_marks} Total (Pass: {ex.pass_marks})</b>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 border-t border-slate-100 pt-3">
-                            <Link
-                                href={route('admin.exams.marks', ex.id)}
-                                className="flex-1 text-center py-1.5 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-bold rounded-[3px] transition-all shadow-xs"
-                            >
-                                Enter Marks
-                            </Link>
-                            <Link
-                                href={route('admin.exams.results', ex.id)}
-                                className="flex-1 text-center py-1.5 bg-emerald-50 text-[#16a34a] hover:bg-emerald-100 text-xs font-bold rounded-[3px] border border-emerald-200 transition-all"
-                            >
-                                View Results
-                            </Link>
-                        </div>
-                    </div>
-                ))}
-            </div>
+            {/* EXAMS DATATABLE */}
+            <DataTable
+                columns={examColumns}
+                data={filteredExams}
+                selectable={true}
+                itemNoun="exams"
+                searchQuery={search}
+                onSearchChange={setSearch}
+                searchPlaceholder="Search exam title, batch..."
+                advancedFilters={examFilters}
+            />
 
             {/* CREATE EXAM MODAL */}
-            {showModal && (
-                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-white max-w-md w-full p-6 rounded-lg shadow-xl space-y-4 border border-slate-200/80">
+            {showModal && typeof document !== 'undefined' && createPortal(
+                <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white max-w-md w-full p-6 rounded-[4px] shadow-xl space-y-4 border border-slate-200/80 overflow-visible relative my-auto">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                            <h3 className="text-base font-bold text-slate-900">Create Coaching Exam</h3>
-                            <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-md">
+                            <div>
+                                <h3 className="text-base font-bold text-slate-900">Create Coaching Exam</h3>
+                                <p className="text-xs text-slate-500 mt-0.5">Define exam schedule, batch and grading parameters.</p>
+                            </div>
+                            <button 
+                                onClick={() => setShowModal(false)} 
+                                className="text-slate-400 hover:text-slate-600 p-1 rounded-md transition-colors cursor-pointer"
+                            >
                                 <X size={18} />
                             </button>
                         </div>
@@ -110,6 +231,7 @@ export default function ExamIndex({ exams, courses, batches }) {
                                     onChange={(e) => setData('title', e.target.value)}
                                     placeholder="e.g. Monthly Physics Model Test 01"
                                     required
+                                    className="mt-1"
                                 />
                                 <InputError message={errors.title} className="mt-1" />
                             </div>
@@ -117,11 +239,13 @@ export default function ExamIndex({ exams, courses, batches }) {
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <InputLabel htmlFor="batch_id" value="Batch *" />
-                                    <SelectInput
-                                        value={data.batch_id}
-                                        onChange={(e) => setData('batch_id', e.target ? e.target.value : e)}
-                                        options={batchOptions}
-                                    />
+                                    <div className="mt-1">
+                                        <SelectInput
+                                            value={data.batch_id}
+                                            onChange={(e) => setData('batch_id', e.target ? e.target.value : e)}
+                                            options={batches.map(b => ({ id: b.id, name: b.name }))}
+                                        />
+                                    </div>
                                     <InputError message={errors.batch_id} className="mt-1" />
                                 </div>
                                 <div>
@@ -132,6 +256,7 @@ export default function ExamIndex({ exams, courses, batches }) {
                                         value={data.exam_date}
                                         onChange={(e) => setData('exam_date', e.target.value)}
                                         required
+                                        className="mt-1"
                                     />
                                 </div>
                             </div>
@@ -146,6 +271,7 @@ export default function ExamIndex({ exams, courses, batches }) {
                                         onChange={(e) => setData('total_marks', e.target.value)}
                                         placeholder="100"
                                         required
+                                        className="mt-1"
                                     />
                                 </div>
                                 <div>
@@ -157,6 +283,7 @@ export default function ExamIndex({ exams, courses, batches }) {
                                         onChange={(e) => setData('pass_marks', e.target.value)}
                                         placeholder="40"
                                         required
+                                        className="mt-1"
                                     />
                                 </div>
                             </div>
@@ -165,21 +292,22 @@ export default function ExamIndex({ exams, courses, batches }) {
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-[3px] cursor-pointer"
+                                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-[3px] cursor-pointer transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] cursor-pointer shadow-sm"
+                                    className="px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] cursor-pointer shadow-sm transition-colors"
                                 >
                                     Create Exam
                                 </button>
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </AdminLayout>
     );

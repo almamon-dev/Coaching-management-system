@@ -8,7 +8,7 @@ import {
 export default function Welcome({ courses, notices, stats }) {
     const { auth, settings } = usePage().props;
 
-    const centerName = settings?.center_name || 'Apex Coaching & Learning Center';
+    const centerName = settings?.center_name || 'Ullash Coaching Center';
     const centerPhone = settings?.phone || '+880 1711-000000';
     const centerEmail = settings?.email || 'info@apexcoaching.bd';
     const centerAddress = settings?.address || 'House 42, Road 11, Block E, Banani, Dhaka';

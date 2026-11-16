@@ -39,7 +39,7 @@ const ConfirmModal = ({ show, onClose, onConfirm, title, message, type = 'warnin
 
     return (
         <Transition show={show} as={Fragment}>
-            <Dialog as="div" className="relative z-[1000]" onClose={onClose}>
+            <Dialog as="div" className="relative z-[9999]" onClose={onClose}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -52,7 +52,7 @@ const ConfirmModal = ({ show, onClose, onConfirm, title, message, type = 'warnin
                     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-[2px]" />
                 </Transition.Child>
 
-                <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
+                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                     <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                         <Transition.Child
                             as={Fragment}

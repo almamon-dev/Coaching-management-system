@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\AdmissionController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\BatchController;
+use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\Admin\ClassRoutineController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\FeeCollectionController;
 use App\Http\Controllers\Admin\ReceiptController;
@@ -31,9 +33,11 @@ Route::resource('students', StudentController::class);
 Route::get('/admissions/create', [AdmissionController::class, 'create'])->name('admissions.create');
 Route::post('/admissions', [AdmissionController::class, 'store'])->name('admissions.store');
 
-// Subject & Batch Management
+// Subject, Batch, Teacher & Routine Management
 Route::resource('courses', SubjectController::class);
 Route::resource('batches', BatchController::class);
+Route::resource('teachers', TeacherController::class);
+Route::resource('class-routines', ClassRoutineController::class);
 
 // Attendance Management
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
@@ -56,6 +60,7 @@ Route::post('/exams', [ExamResultController::class, 'storeExam'])->name('exams.s
 Route::get('/exams/{id}/marks', [ExamResultController::class, 'marksEntry'])->name('exams.marks');
 Route::post('/exams/{id}/marks', [ExamResultController::class, 'saveMarks'])->name('exams.marks.store');
 Route::get('/exams/{id}/results', [ExamResultController::class, 'showResults'])->name('exams.results');
+Route::post('/exams/{id}/publish', [ExamResultController::class, 'togglePublish'])->name('exams.publish');
 
 // Assignments & Materials
 Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
@@ -80,6 +85,7 @@ Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('act
 // Settings & Backup
 Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
 Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+Route::post('/settings/toggle-mode', [SettingController::class, 'toggleMode'])->name('settings.toggle-mode');
 
 Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
 Route::post('/backup/run', [BackupController::class, 'run'])->name('backup.run');

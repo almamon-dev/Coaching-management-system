@@ -36,20 +36,36 @@ export default function StudentShow({ student }) {
                             </span>
                         </div>
                         <p className="text-sm font-semibold text-emerald-700 mt-0.5">Student ID: {student.student_id}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{student.course?.title} • {student.batch?.name}</p>
+                        <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            {student.batches?.length > 0 ? (
+                                student.batches.map(b => (
+                                    <span key={b.id} className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                        {b.course?.title || b.name} ({b.name})
+                                    </span>
+                                ))
+                            ) : (
+                                <span className="text-xs text-slate-500">{student.course?.title} • {student.batch?.name}</span>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
+                    <Link
+                        href={route('admin.students.edit', student.id)}
+                        className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs rounded-lg shadow-2xs transition-colors"
+                    >
+                        Edit Profile
+                    </Link>
                     <Link
                         href={route('admin.fees.index')}
-                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs rounded-lg shadow-sm"
+                        className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-2xs transition-colors"
                     >
                         Collect Payment
                     </Link>
                     <Link
                         href={route('admin.students.index')}
-                        className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-lg"
+                        className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-colors"
                     >
                         Back to List
                     </Link>
@@ -79,6 +95,48 @@ export default function StudentShow({ student }) {
             {/* TAB CONTENT */}
             {activeTab === 'overview' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* ENROLLED SUBJECTS & BATCHES CARD */}
+                    <div className="md:col-span-2 bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2.5 gap-2">
+                            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                <BookMarked size={16} className="text-emerald-600" />
+                                Enrolled Subjects & Batches ({(student.batches?.length || (student.batch ? 1 : 0))})
+                            </h3>
+                            <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200 self-start sm:self-auto">
+                                Total Monthly Tuition: ৳{Number(student.batches?.reduce((acc, b) => acc + Number(b.pivot?.monthly_fee || b.course?.fee || 0), 0) || student.course?.fee || 0).toLocaleString()} / month
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {(student.batches?.length > 0 ? student.batches : (student.batch ? [student.batch] : [])).map(b => (
+                                <div key={b.id} className="p-3.5 bg-slate-50/70 rounded-lg border border-slate-200/80 space-y-1.5">
+                                    <div className="flex items-start justify-between gap-1">
+                                        <span className="text-xs font-bold text-slate-900">{b.course?.title || b.name}</span>
+                                        <span className="text-[10px] font-bold px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded">
+                                            ৳{Number(b.pivot?.monthly_fee || b.course?.fee || 0).toLocaleString()}/mo
+                                        </span>
+                                    </div>
+                                    <div className="text-[11px] font-semibold text-emerald-700">{b.name}</div>
+                                    {b.class_time && (
+                                        <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                                            <Clock size={11} className="text-slate-400" /> {b.class_time}
+                                        </div>
+                                    )}
+                                    {b.class_days && (
+                                        <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                                            <Calendar size={11} className="text-slate-400" /> {b.class_days}
+                                        </div>
+                                    )}
+                                    {b.teacher && (
+                                        <div className="text-[10px] text-slate-600 pt-1 border-t border-slate-200/60 font-medium">
+                                            Teacher: {b.teacher.name}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm space-y-4">
                         <h3 className="text-sm font-bold text-slate-900 border-b pb-2">Personal Information</h3>
                         <div className="grid grid-cols-2 gap-4 text-xs">

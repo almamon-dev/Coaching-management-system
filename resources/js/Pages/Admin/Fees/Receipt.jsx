@@ -81,9 +81,12 @@ export default function Receipt({ payment, settings }) {
             <div id="printable-receipt-card" className="max-w-2xl mx-auto bg-white p-5 md:p-6 rounded-xl border border-slate-200 shadow-2xs">
                 {/* HEADER */}
                 <div className="flex items-start justify-between border-b border-slate-200 pb-3 mb-4">
-                    <div>
-                        <h1 className="text-lg font-bold text-slate-900 tracking-tight">{settings?.center_name || 'Apex Coaching Center'}</h1>
-                        <p className="text-[11px] text-slate-500 font-medium mt-0.5">{settings?.address || 'Banani, Dhaka'} • Phone: {settings?.phone || '+880 1700-000000'}</p>
+                    <div className="flex items-center gap-3">
+                        <img src="/images/Logo.png" alt="Logo" className="h-9 w-auto object-contain" />
+                        <div>
+                            <h1 className="text-lg font-bold text-slate-900 tracking-tight">{settings?.center_name || 'Apex Coaching Center'}</h1>
+                            <p className="text-[11px] text-slate-500 font-medium mt-0.5">{settings?.address || 'Banani, Dhaka'} • Phone: {settings?.phone || '+880 1700-000000'}</p>
+                        </div>
                     </div>
 
                     <div className="text-right">

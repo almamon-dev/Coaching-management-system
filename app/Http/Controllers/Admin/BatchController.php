@@ -32,6 +32,21 @@ class BatchController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return redirect()->route('admin.batches.index');
+    }
+
+    public function show($id)
+    {
+        return redirect()->route('admin.batches.index');
+    }
+
+    public function edit($id)
+    {
+        return redirect()->route('admin.batches.index');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

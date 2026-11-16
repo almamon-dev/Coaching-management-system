@@ -30,8 +30,12 @@ export default defineConfig({
             output: {
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
-                        if (id.includes('/node_modules/react/') || id.includes('/node_modules/react-dom/') || id.includes('/node_modules/@inertiajs/')) {
-                             return 'vendor-core';
+                        if (
+                            id.includes('/node_modules/react/') ||
+                            id.includes('/node_modules/react-dom/') ||
+                            id.includes('/node_modules/scheduler/')
+                        ) {
+                            return 'vendor-core';
                         }
                         if (id.includes('recharts')) {
                             return 'vendor-charts';
@@ -48,7 +52,6 @@ export default defineConfig({
                         if (id.includes('@stripe')) {
                             return 'vendor-stripe';
                         }
-                        return 'vendor';
                     }
                 }
             }

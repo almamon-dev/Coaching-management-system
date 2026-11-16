@@ -17,7 +17,7 @@ class StudentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = StudentProfile::with(['course', 'batch', 'guardian']);
+        $query = StudentProfile::with(['course', 'batch', 'batches.course', 'guardian']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -30,11 +30,19 @@ class StudentController extends Controller
         }
 
         if ($request->filled('course_id')) {
-            $query->where('course_id', $request->course_id);
+            $courseId = $request->course_id;
+            $query->where(function($q) use ($courseId) {
+                $q->where('course_id', $courseId)
+                  ->orWhereHas('batches', fn($b) => $b->where('batches.course_id', $courseId));
+            });
         }
 
         if ($request->filled('batch_id')) {
-            $query->where('batch_id', $request->batch_id);
+            $batchId = $request->batch_id;
+            $query->where(function($q) use ($batchId) {
+                $q->where('batch_id', $batchId)
+                  ->orWhereHas('batches', fn($b) => $b->where('batches.id', $batchId));
+            });
         }
 
         if ($request->filled('status')) {
@@ -58,6 +66,8 @@ class StudentController extends Controller
         $student = StudentProfile::with([
             'course',
             'batch',
+            'batches.course',
+            'batches.teacher',
             'guardian',
             'attendances.classRoutine.subject',
             'feeInvoices.feeType',
@@ -70,6 +80,24 @@ class StudentController extends Controller
 
         return Inertia::render('Admin/Students/Show', [
             'student' => $student,
+        ]);
+    }
+
+    public function create()
+    {
+        return redirect()->route('admin.admissions.create');
+    }
+
+    public function edit($id)
+    {
+        $student = StudentProfile::with(['course', 'batch', 'batches.course', 'guardian'])->findOrFail($id);
+        $courses = Course::with(['batches' => fn($q) => $q->where('status', 'active')])->where('status', 'active')->get(['id', 'title', 'fee']);
+        $batches = Batch::with('course')->where('status', 'active')->get(['id', 'name', 'course_id', 'class_time']);
+
+        return Inertia::render('Admin/Students/Edit', [
+            'student' => $student,
+            'courses' => $courses,
+            'batches' => $batches,
         ]);
     }
 
@@ -97,7 +125,7 @@ class StudentController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'] ?? strtolower($studentIdStr) . '@student.local',
-            'phone' => $validated['phone'],
+            'phone' => $validated['phone'] ?? null,
             'user_type' => 'student',
             'password' => Hash::make('12345678'),
         ]);
@@ -119,20 +147,20 @@ class StudentController extends Controller
             'user_id' => $user->id,
             'student_id' => $studentIdStr,
             'name' => $validated['name'],
-            'dob' => $validated['dob'],
+            'dob' => $validated['dob'] ?? null,
             'gender' => $validated['gender'],
-            'phone' => $validated['phone'],
-            'email' => $validated['email'],
-            'address' => $validated['address'],
-            'guardian_name' => $validated['guardian_name'],
-            'guardian_phone' => $validated['guardian_phone'],
+            'phone' => $validated['phone'] ?? null,
+            'email' => $validated['email'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'guardian_name' => $validated['guardian_name'] ?? null,
+            'guardian_phone' => $validated['guardian_phone'] ?? null,
             'guardian_id' => $guardianId,
-            'school_college' => $validated['school_college'],
+            'school_college' => $validated['school_college'] ?? null,
             'course_id' => $validated['course_id'],
             'batch_id' => $validated['batch_id'],
             'admission_date' => date('Y-m-d'),
             'status' => 'active',
-            'notes' => $validated['notes'],
+            'notes' => $validated['notes'] ?? null,
         ]);
 
         ActivityLog::create([
@@ -162,11 +190,36 @@ class StudentController extends Controller
             'guardian_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:20',
             'school_college' => 'nullable|string|max:255',
-            'course_id' => 'required|exists:courses,id',
-            'batch_id' => 'required|exists:batches,id',
+            'batch_ids' => 'nullable|array',
+            'batch_ids.*' => 'exists:batches,id',
+            'course_id' => 'nullable|exists:courses,id',
+            'batch_id' => 'nullable|exists:batches,id',
             'status' => 'required|in:active,inactive,passed_out,dropped',
             'notes' => 'nullable|string',
         ]);
+
+        if (!empty($validated['batch_ids'])) {
+            $syncData = [];
+            foreach ($validated['batch_ids'] as $bId) {
+                $b = Batch::find($bId);
+                if ($b) {
+                    $syncData[$bId] = [
+                        'course_id' => $b->course_id,
+                        'monthly_fee' => (float)($b->course?->fee ?? 0),
+                        'status' => 'active',
+                        'enrolled_at' => $student->admission_date ?? date('Y-m-d'),
+                    ];
+                }
+            }
+            $student->batches()->sync($syncData);
+
+            $firstBatch = Batch::find($validated['batch_ids'][0]);
+            if ($firstBatch) {
+                $validated['batch_id'] = $firstBatch->id;
+                $validated['course_id'] = $firstBatch->course_id;
+            }
+        }
+        unset($validated['batch_ids']);
 
         $student->update($validated);
 

@@ -62,6 +62,7 @@ class SubjectController extends Controller
         ]);
 
         $validated['fee'] = $validated['monthly_fee'];
+        $validated['admission_fee'] = $validated['admission_fee'] ?? 0;
         unset($validated['monthly_fee']);
 
         $course = Course::create($validated);
@@ -77,6 +78,17 @@ class SubjectController extends Controller
         ]);
 
         return redirect()->route('admin.courses.index')->with('success', 'Subject created successfully.');
+    }
+
+    public function show($id)
+    {
+        $course = Course::withCount(['batches', 'students'])
+            ->with(['batches' => fn($q) => $q->with('teacher')->withCount('students')])
+            ->findOrFail($id);
+
+        return Inertia::render('Admin/Courses/Show', [
+            'course' => $course,
+        ]);
     }
 
     public function edit($id)
@@ -106,6 +118,7 @@ class SubjectController extends Controller
         ]);
 
         $validated['fee'] = $validated['monthly_fee'];
+        $validated['admission_fee'] = $validated['admission_fee'] ?? 0;
         unset($validated['monthly_fee']);
 
         $course->update($validated);

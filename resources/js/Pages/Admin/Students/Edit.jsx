@@ -1,424 +1,327 @@
-import React, { useState } from 'react';
-import { Head, useForm, Link } from '@inertiajs/react';
+import React from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import Notify from '@/Utils/Notify';
-import SelectInput from '@/Components/Form/SelectInput';
+import { Head, useForm, Link } from '@inertiajs/react';
+import { ArrowLeft, User, Save, BookOpen, Calendar, Clock, CheckCircle } from 'lucide-react';
+import InputLabel from '@/Components/Form/InputLabel';
 import TextInput from '@/Components/Form/TextInput';
-import { Save, User, BookOpen, Users, Lock, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import SelectInput from '@/Components/Form/SelectInput';
+import TextArea from '@/Components/Form/TextArea';
+import InputError from '@/Components/Form/InputError';
 
-export default function StudentEditPage({ auth, classes, student }) {
+export default function StudentEdit({ student, courses = [], batches = [] }) {
+    const initialBatchIds = (student.batches && student.batches.length > 0)
+        ? student.batches.map(b => b.id)
+        : (student.batch_id ? [student.batch_id] : []);
+
     const { data, setData, put, processing, errors } = useForm({
-        name: student.user?.name || '',
-        email: student.user?.email || '',
-        phone: student.user?.phone || '',
-        password: '',
-        password_confirmation: '',
-        academic_class_id: student.latest_enrollment?.academic_class_id || '',
-        section_id: student.latest_enrollment?.section_id || '',
-        roll_number: student.latest_enrollment?.roll_number || '',
+        name: student.name || '',
+        dob: student.dob || '',
+        gender: student.gender || 'male',
+        phone: student.phone || '',
+        email: student.email || '',
+        address: student.address || '',
         guardian_name: student.guardian_name || '',
         guardian_phone: student.guardian_phone || '',
-        guardian_email: student.guardian_email || '',
-        guardian_relation: student.guardian_relation || '',
-        dob: student.dob || '',
-        gender: student.gender || '',
-        blood_group: student.blood_group || '',
-        address: student.address || '',
+        school_college: student.school_college || '',
+        batch_ids: initialBatchIds,
+        course_id: student.course_id || '',
+        batch_id: student.batch_id || '',
+        status: student.status || 'active',
+        notes: student.notes || '',
     });
 
-    const [activeTab, setActiveTab] = useState('personal');
-    const [showPassword, setShowPassword] = useState(false);
-    const [availableSections, setAvailableSections] = useState([]);
+    const selectedBatches = batches.filter(b => data.batch_ids.includes(b.id));
+    const totalMonthlyFee = selectedBatches.reduce((sum, b) => {
+        const c = courses.find(course => String(course.id) === String(b.course_id));
+        return sum + Number(c?.fee || 0);
+    }, 0);
 
-    const generatePassword = () => {
-        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-        let pass = '';
-        for (let i = 0; i < 12; i++) {
-            pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    const handleCourseBatchToggle = (courseId, batchId) => {
+        let currentBatchIds = [...data.batch_ids];
+        const existingBatchForCourse = batches.find(
+            b => String(b.course_id) === String(courseId) && currentBatchIds.includes(b.id)
+        );
+
+        if (batchId === '' || batchId === null) {
+            if (existingBatchForCourse) {
+                currentBatchIds = currentBatchIds.filter(id => id !== existingBatchForCourse.id);
+            }
+        } else {
+            if (existingBatchForCourse) {
+                currentBatchIds = currentBatchIds.filter(id => id !== existingBatchForCourse.id);
+            }
+            currentBatchIds.push(Number(batchId));
         }
+
+        const primaryBatch = batches.find(b => b.id === currentBatchIds[0]);
+
         setData(prev => ({
             ...prev,
-            password: pass,
-            password_confirmation: pass
+            batch_ids: currentBatchIds,
+            batch_id: primaryBatch?.id || '',
+            course_id: primaryBatch?.course_id || '',
         }));
-    };
-
-    const handleClassChange = (val) => {
-        const classId = val;
-        setData('academic_class_id', classId);
-        
-        const selectedClass = classes.find(c => c.id == classId);
-        if (selectedClass && selectedClass.sections) {
-            setAvailableSections(selectedClass.sections);
-        } else {
-            setAvailableSections([]);
-        }
-        setData('section_id', '');
     };
 
     const submit = (e) => {
         e.preventDefault();
-        put(route('admin.students.update', student.id), {
-            onSuccess: () => Notify.success('Success', 'Student updated successfully.'),
-            onError: () => Notify.error('Validation Error', 'Please check the form for errors.'),
-        });
+        put(route('admin.students.update', student.id));
     };
 
-    const tabs = [
-        { id: 'personal', label: 'Personal Details', icon: User },
-        { id: 'academic', label: 'Academic Info', icon: BookOpen },
-        { id: 'guardian', label: 'Guardian Info', icon: Users },
-        { id: 'security', label: 'Security & Access', icon: Lock },
+    const statusOptions = [
+        { id: 'active', name: 'Active' },
+        { id: 'inactive', name: 'Inactive' },
+        { id: 'passed_out', name: 'Passed Out' },
+        { id: 'dropped', name: 'Dropped' },
+    ];
+
+    const genderOptions = [
+        { id: 'male', name: 'Male' },
+        { id: 'female', name: 'Female' },
+        { id: 'other', name: 'Other' },
     ];
 
     return (
-        <AdminLayout user={auth?.user}>
-            <Head title="Edit Student Profile" />
-            
-            <form onSubmit={submit}>
-                {/* Top Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <AdminLayout>
+            <Head title={`Edit Student - ${student.name}`} />
+
+            <div className="flex items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Edit Student</h1>
+                    <p className="text-sm text-slate-500">Update student profile, guardian details & enrolled subjects/batches.</p>
+                </div>
+                <Link
+                    href={route('admin.students.show', student.id)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-colors"
+                >
+                    <ArrowLeft size={15} /> Back to Profile
+                </Link>
+            </div>
+
+            <form onSubmit={submit} className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm max-w-4xl space-y-6">
+                <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                    <span className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <User size={16} className="text-emerald-600" /> Student Profile (ID: {student.student_id})
+                    </span>
+                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                        {student.student_id}
+                    </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <h1 className="text-[20px] font-bold text-[#202223] tracking-tight">Edit Student</h1>
-                        <p className="text-[#008060] text-[13px] mt-0.5 font-bold">Update profile information for {student.user?.name}.</p>
+                        <InputLabel htmlFor="name" value="Full Name *" />
+                        <TextInput
+                            id="name"
+                            value={data.name}
+                            onChange={(e) => setData('name', e.target.value)}
+                            required
+                        />
+                        <InputError message={errors.name} className="mt-1" />
                     </div>
-                    
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={route('admin.students.index')}
-                            className="px-4 py-2 bg-white border border-[#d1d1d1] text-[#202223] rounded-[4px] text-[13px] font-bold hover:bg-slate-50 transition-colors shadow-sm"
-                        >
-                            Cancel
-                        </Link>
-                        <button
-                            type="button"
-                            className="px-4 py-2 bg-white border border-[#d1d1d1] text-[#202223] rounded-[4px] text-[13px] font-bold hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2"
-                        >
-                            <Save size={14} /> Save as Draft
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={processing}
-                            className="px-5 py-2 bg-[#008060] text-white rounded-[4px] text-[13px] font-bold hover:bg-[#006e52] transition-colors disabled:opacity-70 flex items-center gap-2 shadow-sm"
-                        >
-                            <CheckCircle2 size={16} />
-                            Update Student
-                        </button>
+
+                    <div>
+                        <InputLabel htmlFor="gender" value="Gender *" />
+                        <SelectInput
+                            id="gender"
+                            value={data.gender}
+                            onChange={(e) => setData('gender', e.target.value)}
+                            options={genderOptions}
+                            required
+                        />
+                        <InputError message={errors.gender} className="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="dob" value="Date of Birth" />
+                        <TextInput
+                            id="dob"
+                            type="date"
+                            value={data.dob}
+                            onChange={(e) => setData('dob', e.target.value)}
+                        />
+                        <InputError message={errors.dob} className="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="phone" value="Student Mobile Phone" />
+                        <TextInput
+                            id="phone"
+                            value={data.phone}
+                            onChange={(e) => setData('phone', e.target.value)}
+                        />
+                        <InputError message={errors.phone} className="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="email" value="Email Address" />
+                        <TextInput
+                            id="email"
+                            type="email"
+                            value={data.email}
+                            onChange={(e) => setData('email', e.target.value)}
+                        />
+                        <InputError message={errors.email} className="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="school_college" value="School / College" />
+                        <TextInput
+                            id="school_college"
+                            value={data.school_college}
+                            onChange={(e) => setData('school_college', e.target.value)}
+                        />
+                        <InputError message={errors.school_college} className="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="guardian_name" value="Guardian Name" />
+                        <TextInput
+                            id="guardian_name"
+                            value={data.guardian_name}
+                            onChange={(e) => setData('guardian_name', e.target.value)}
+                        />
+                        <InputError message={errors.guardian_name} className="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="guardian_phone" value="Guardian Phone" />
+                        <TextInput
+                            id="guardian_phone"
+                            value={data.guardian_phone}
+                            onChange={(e) => setData('guardian_phone', e.target.value)}
+                        />
+                        <InputError message={errors.guardian_phone} className="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="status" value="Enrollment Status *" />
+                        <SelectInput
+                            id="status"
+                            value={data.status}
+                            onChange={(e) => setData('status', e.target.value)}
+                            options={statusOptions}
+                            required
+                        />
+                        <InputError message={errors.status} className="mt-1" />
                     </div>
                 </div>
 
-                {/* Main Layout Area */}
-                <div className="flex flex-col md:flex-row gap-6 items-start">
-                    
-                    {/* Left Sidebar Menu */}
-                    <div className="w-full md:w-[240px] shrink-0 bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] overflow-hidden sticky top-[90px]">
-                        <div className="flex flex-col py-2">
-                            {tabs.map((tab) => {
-                                const Icon = tab.icon;
-                                const isActive = activeTab === tab.id;
-                                return (
-                                    <button
-                                        key={tab.id}
-                                        type="button"
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`flex items-center gap-3 px-5 py-3 text-[13px] font-bold transition-all relative
-                                            ${isActive ? 'text-[#008060] bg-[#f9fbfb]' : 'text-[#6d7175] hover:bg-slate-50 hover:text-slate-900'}
-                                        `}
-                                    >
-                                        {isActive && (
-                                            <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#008060]" />
-                                        )}
-                                        <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
-                                        {tab.label}
-                                        {isActive && <span className="ml-auto text-[#008060]">›</span>}
-                                    </button>
-                                );
-                            })}
+                {/* MULTI-SUBJECT & MULTI-BATCH ASSIGNMENT */}
+                <div className="pt-4 border-t border-slate-100 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                <BookOpen size={16} className="text-emerald-600" />
+                                Enrolled Subjects & Batches ({data.batch_ids.length})
+                            </h3>
+                            <p className="text-xs text-slate-500">
+                                Check or uncheck subjects to add or remove this student from batches.
+                            </p>
                         </div>
+                        <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200 self-start sm:self-auto">
+                            Total Monthly Tuition: ৳{totalMonthlyFee.toLocaleString()} / mo
+                        </span>
                     </div>
 
-                    {/* Right Content Area */}
-                    <div className="flex-1 bg-white rounded-[4px] border border-[#ebebeb] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] p-6">
-                        
-                        {/* Tab 1: Personal Details */}
-                        {activeTab === 'personal' && (
-                            <div className="animate-in fade-in duration-300">
-                                <div className="mb-6">
-                                    <h2 className="text-[14px] font-bold text-slate-800 mb-1">Basic Information</h2>
-                                    <p className="text-[#6d7175] text-[12px]">Configure the essential personal details of the student.</p>
-                                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        {courses.map((course) => {
+                            const courseBatches = batches.filter(
+                                b => String(b.course_id) === String(course.id)
+                            );
+                            const activeBatchForCourse = courseBatches.find(
+                                b => data.batch_ids.includes(b.id)
+                            );
+                            const isEnrolled = Boolean(activeBatchForCourse);
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Full Name <span className="text-red-500">*</span></label>
-                                        <TextInput
-                                            type="text"
-                                            value={data.name}
-                                            onChange={e => setData('name', e.target.value)}
-                                            className="w-full"
-                                            placeholder="e.g. John Doe"
-                                            required={activeTab === 'personal'}
-                                        />
-                                        {errors.name && <div className="text-red-500 text-[11px] mt-1">{errors.name}</div>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Blood Group</label>
-                                        <SelectInput
-                                            value={data.blood_group}
-                                            onChange={e => setData('blood_group', e.target.value)}
-                                            options={[
-                                                { id: '', name: 'Select Blood Group' },
-                                                { id: 'A+', name: 'A+' }, { id: 'A-', name: 'A-' },
-                                                { id: 'B+', name: 'B+' }, { id: 'B-', name: 'B-' },
-                                                { id: 'O+', name: 'O+' }, { id: 'O-', name: 'O-' },
-                                                { id: 'AB+', name: 'AB+' }, { id: 'AB-', name: 'AB-' }
-                                            ]}
-                                            className="w-full"
-                                            showSearch={false}
-                                        />
-                                        {errors.blood_group && <div className="text-red-500 text-[11px] mt-1">{errors.blood_group}</div>}
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Email Address <span className="text-red-500">*</span></label>
-                                        <TextInput
-                                            type="email"
-                                            value={data.email}
-                                            onChange={e => setData('email', e.target.value)}
-                                            className="w-full"
-                                            placeholder="e.g. student@school.edu"
-                                            required={activeTab === 'personal'}
-                                        />
-                                        {errors.email && <div className="text-red-500 text-[11px] mt-1">{errors.email}</div>}
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Phone Number <span className="text-red-500">*</span></label>
-                                        <TextInput
-                                            type="text"
-                                            value={data.phone}
-                                            onChange={e => setData('phone', e.target.value)}
-                                            className="w-full"
-                                            placeholder="e.g. +1 234 567 890"
-                                            required={activeTab === 'personal'}
-                                        />
-                                        {errors.phone && <div className="text-red-500 text-[11px] mt-1">{errors.phone}</div>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Date of Birth</label>
-                                        <TextInput
-                                            type="date"
-                                            value={data.dob}
-                                            onChange={e => setData('dob', e.target.value)}
-                                            className="w-full"
-                                        />
-                                        {errors.dob && <div className="text-red-500 text-[11px] mt-1">{errors.dob}</div>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Gender <span className="text-red-500">*</span></label>
-                                        <SelectInput
-                                            value={data.gender}
-                                            onChange={e => setData('gender', e.target.value)}
-                                            options={[
-                                                { id: '', name: 'Select Gender' },
-                                                { id: 'male', name: 'Male' },
-                                                { id: 'female', name: 'Female' },
-                                                { id: 'other', name: 'Other' }
-                                            ]}
-                                            className="w-full"
-                                            showSearch={false}
-                                        />
-                                        {errors.gender && <div className="text-red-500 text-[11px] mt-1">{errors.gender}</div>}
-                                    </div>
-                                    
-
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Tab 2: Academic */}
-                        {activeTab === 'academic' && (
-                            <div className="animate-in fade-in duration-300">
-                                <div className="mb-6">
-                                    <h2 className="text-[14px] font-bold text-slate-800 mb-1">Academic Information</h2>
-                                    <p className="text-[#6d7175] text-[12px]">Enroll the student in a specific class and section.</p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Class <span className="text-red-500">*</span></label>
-                                        <SelectInput
-                                            value={data.academic_class_id}
-                                            onChange={e => handleClassChange(e.target.value)}
-                                            options={[{ id: '', name: 'Select Class' }, ...classes.map(c => ({ id: c.id.toString(), name: c.name }))]}
-                                            className="w-full"
-                                            showSearch={true}
-                                        />
-                                        {errors.academic_class_id && <div className="text-red-500 text-[11px] mt-1">{errors.academic_class_id}</div>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Section <span className="text-red-500">*</span></label>
-                                        <SelectInput
-                                            value={data.section_id}
-                                            onChange={e => setData('section_id', e.target.value)}
-                                            options={[{ id: '', name: 'Select Section' }, ...availableSections.map(s => ({ id: s.id.toString(), name: s.name }))]}
-                                            disabled={!data.academic_class_id}
-                                            className="w-full"
-                                            showSearch={false}
-                                        />
-                                        {errors.section_id && <div className="text-red-500 text-[11px] mt-1">{errors.section_id}</div>}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Tab 3: Guardian */}
-                        {activeTab === 'guardian' && (
-                            <div className="animate-in fade-in duration-300">
-                                <div className="mb-6">
-                                    <h2 className="text-[14px] font-bold text-slate-800 mb-1">Guardian Information</h2>
-                                    <p className="text-[#6d7175] text-[12px]">Provide emergency contact and guardian details for the student.</p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Guardian Name <span className="text-red-500">*</span></label>
-                                        <TextInput
-                                            type="text"
-                                            value={data.guardian_name}
-                                            onChange={e => setData('guardian_name', e.target.value)}
-                                            className="w-full"
-                                            placeholder="e.g. Robert Doe"
-                                        />
-                                        {errors.guardian_name && <div className="text-red-500 text-[11px] mt-1">{errors.guardian_name}</div>}
-                                    </div>
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Relation with Student <span className="text-red-500">*</span></label>
-                                        <TextInput
-                                            type="text"
-                                            value={data.guardian_relation}
-                                            onChange={e => setData('guardian_relation', e.target.value)}
-                                            className="w-full"
-                                            placeholder="e.g. Father, Mother, Uncle"
-                                        />
-                                        {errors.guardian_relation && <div className="text-red-500 text-[11px] mt-1">{errors.guardian_relation}</div>}
-                                    </div>
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Guardian Phone <span className="text-red-500">*</span></label>
-                                        <TextInput
-                                            type="text"
-                                            value={data.guardian_phone}
-                                            onChange={e => setData('guardian_phone', e.target.value)}
-                                            className="w-full"
-                                            placeholder="e.g. +1 234 567 890"
-                                        />
-                                        {errors.guardian_phone && <div className="text-red-500 text-[11px] mt-1">{errors.guardian_phone}</div>}
-                                    </div>
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Guardian Email</label>
-                                        <TextInput
-                                            type="email"
-                                            value={data.guardian_email}
-                                            onChange={e => setData('guardian_email', e.target.value)}
-                                            className="w-full"
-                                            placeholder="e.g. robert@example.com"
-                                        />
-                                        {errors.guardian_email && <div className="text-red-500 text-[11px] mt-1">{errors.guardian_email}</div>}
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Full Address</label>
-                                        <textarea
-                                            value={data.address}
-                                            onChange={e => setData('address', e.target.value)}
-                                            className="w-full border border-[#d1d1d1] rounded-[3px] text-[13px] p-3 focus:border-[#008060] focus:ring-1 focus:ring-[#008060] resize-none"
-                                            placeholder="Enter complete residential address"
-                                            rows={3}
-                                        />
-                                        {errors.address && <div className="text-red-500 text-[11px] mt-1">{errors.address}</div>}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Tab 4: Security */}
-                        {activeTab === 'security' && (
-                            <div className="animate-in fade-in duration-300">
-                                <div className="mb-6">
-                                    <h2 className="text-[14px] font-bold text-slate-800 mb-1">Account Security</h2>
-                                    <p className="text-[#6d7175] text-[12px]">Set up the login credentials for the student's dashboard access.</p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                                    <div>
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <label className="block text-[12px] font-bold text-slate-700">New Password <span className="text-red-500">*</span></label>
-                                            <button 
-                                                type="button" 
-                                                onClick={generatePassword}
-                                                className="text-[11px] text-[#008060] font-bold hover:underline"
-                                            >
-                                                Generate Password
-                                            </button>
-                                        </div>
-                                        <div className="relative">
-                                            <TextInput
-                                                type={showPassword ? "text" : "password"}
-                                                value={data.password}
-                                                onChange={e => setData('password', e.target.value)}
-                                                className="w-full pr-8"
-                                                placeholder="Minimum 8 characters"
-                                                required={activeTab === 'security'}
+                            return (
+                                <div
+                                    key={course.id}
+                                    className={`p-3.5 rounded-lg border transition-all ${
+                                        isEnrolled
+                                            ? 'border-emerald-500 bg-emerald-50/20 ring-1 ring-emerald-500/20'
+                                            : 'border-slate-200 bg-slate-50/40 hover:border-slate-300'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between gap-2 mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                id={`edit_course_check_${course.id}`}
+                                                checked={isEnrolled}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        const defaultBatch = courseBatches[0];
+                                                        if (defaultBatch) {
+                                                            handleCourseBatchToggle(course.id, defaultBatch.id);
+                                                        }
+                                                    } else {
+                                                        handleCourseBatchToggle(course.id, '');
+                                                    }
+                                                }}
+                                                className="w-4 h-4 rounded text-[#16a34a] focus:ring-[#16a34a] border-slate-300 cursor-pointer"
                                             />
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-2.5 top-[8px] text-slate-400 hover:text-slate-600 transition-colors"
-                                                tabIndex="-1"
+                                            <label
+                                                htmlFor={`edit_course_check_${course.id}`}
+                                                className="font-bold text-slate-900 text-xs cursor-pointer select-none"
                                             >
-                                                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                                            </button>
+                                                {course.title}
+                                            </label>
                                         </div>
-                                        {errors.password && <div className="text-red-500 text-[11px] mt-1">{errors.password}</div>}
+                                        <span className="text-xs font-bold text-slate-700 tabular-nums">
+                                            ৳{Number(course.fee || 0).toLocaleString()}/mo
+                                        </span>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Confirm Password <span className="text-red-500">*</span></label>
-                                        <div className="relative">
-                                            <TextInput
-                                                type={showPassword ? "text" : "password"}
-                                                value={data.password_confirmation}
-                                                onChange={e => setData('password_confirmation', e.target.value)}
-                                                className="w-full pr-8"
-                                                placeholder="Re-enter password"
-                                                required={activeTab === 'security'}
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-2.5 top-[8px] text-slate-400 hover:text-slate-600 transition-colors"
-                                                tabIndex="-1"
+                                    {isEnrolled && (
+                                        <div className="mt-2 pt-2 border-t border-emerald-100">
+                                            <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                                                Select Batch:
+                                            </label>
+                                            <select
+                                                value={activeBatchForCourse?.id || ''}
+                                                onChange={(e) => handleCourseBatchToggle(course.id, e.target.value)}
+                                                className="w-full text-xs font-semibold rounded border-slate-200 bg-white text-slate-800 py-1 px-2 focus:border-[#16a34a] focus:ring-0 outline-none"
                                             >
-                                                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                                            </button>
+                                                {courseBatches.map((b) => (
+                                                    <option key={b.id} value={b.id}>
+                                                        {b.name} ({b.class_time || 'Schedule'})
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
-                                    </div>
-                                    
-                                    <div className="md:col-span-2 bg-[#f0f9f7] border border-[#008060]/20 rounded-[4px] p-4 flex items-start gap-3 mt-4">
-                                        <Lock className="text-[#008060] shrink-0 mt-0.5" size={16} />
-                                        <div>
-                                            <h4 className="text-[13px] font-bold text-[#008060] mb-1">Secure Login Access</h4>
-                                            <p className="text-[12px] text-[#008060]/80">This password will grant the student access to their dedicated dashboard where they can check routines, attendance, and exam results.</p>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
-                            </div>
-                        )}
-
+                            );
+                        })}
                     </div>
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="address" value="Residential Address" />
+                    <TextArea
+                        id="address"
+                        rows={2}
+                        value={data.address}
+                        onChange={(e) => setData('address', e.target.value)}
+                    />
+                    <InputError message={errors.address} className="mt-1" />
+                </div>
+
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                    <Link
+                        href={route('admin.students.show', student.id)}
+                        className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                    >
+                        Cancel
+                    </Link>
+                    <button
+                        type="submit"
+                        disabled={processing || data.batch_ids.length === 0}
+                        className="inline-flex items-center gap-1.5 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                        <Save size={15} /> Save Changes
+                    </button>
                 </div>
             </form>
         </AdminLayout>

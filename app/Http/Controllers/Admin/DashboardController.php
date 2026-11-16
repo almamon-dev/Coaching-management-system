@@ -43,10 +43,24 @@ class DashboardController extends Controller
         $currentBalance = (FeePayment::sum('paid_amount') + OperationalIncome::sum('amount')) - OperationalExpense::sum('amount');
 
         // Today's classes list
-        $todaysClasses = ClassRoutine::with(['batch', 'subject', 'teacher'])
+        $todaysClasses = ClassRoutine::with(['batch.course', 'batch.teacher', 'subject', 'teacher'])
             ->whereDate('class_date', $today)
             ->orderBy('start_time', 'asc')
             ->get();
+
+        // Subject-wise Summary (for Single Teacher / Multi-Subject view)
+        $subjectSummary = Course::withCount(['batches', 'students'])
+            ->where('status', 'active')
+            ->get()
+            ->map(fn($c) => [
+                'id' => $c->id,
+                'title' => $c->title,
+                'code' => $c->code,
+                'category' => $c->category,
+                'fee' => (float)$c->fee,
+                'batches_count' => $c->batches_count,
+                'students_count' => $c->students_count,
+            ]);
 
         // Chart Data
         $batchDistribution = Batch::withCount('students')
@@ -84,6 +98,7 @@ class DashboardController extends Controller
                 'current_balance' => (float)$currentBalance,
             ],
             'todaysClasses' => $todaysClasses,
+            'subjectSummary' => $subjectSummary,
             'batchDistribution' => $batchDistribution,
             'financialTrend' => $financialTrend,
         ]);

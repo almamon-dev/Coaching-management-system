@@ -44,6 +44,21 @@ class ClassRoutineController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return redirect()->route('admin.class-routines.index');
+    }
+
+    public function show($id)
+    {
+        return redirect()->route('admin.class-routines.index');
+    }
+
+    public function edit($id)
+    {
+        return redirect()->route('admin.class-routines.index');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

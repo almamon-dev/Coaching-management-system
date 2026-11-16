@@ -16,13 +16,13 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->user_type === 'user') {
+        if (Auth::check() && in_array(Auth::user()->user_type, ['student', 'user'])) {
             return $next($request);
         }
- 
+
         Auth::logout();
         return redirect()->route('student.login')->withErrors([
-            'email' => 'Access denied. This area is for registered users only.',
+            'email' => 'Access denied. This area is for registered students only.',
         ]);
     }
 }
