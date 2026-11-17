@@ -59,10 +59,7 @@ const FrontendLayout = ({ children }) => {
     }, []);
 
     return (
-        <div className="min-h-screen flex flex-col relative overflow-x-hidden font-inter selection:bg-[#16a34a] selection:text-white bg-gradient-to-r from-white via-[#f0f9f8] to-[#ccece6] print:bg-none print:bg-white">
-            {/* Grid Overlay */}
-            <div className="fixed inset-0 z-0 pointer-events-none bg-[linear-gradient(to_right,#009ca60d_1px,transparent_1px),linear-gradient(to_bottom,#009ca60d_1px,transparent_1px)] bg-[size:40px_40px] print:hidden"></div>
-            
+        <div className="min-h-screen flex flex-col relative overflow-x-hidden font-inter selection:bg-[#16a34a] selection:text-white bg-white print:bg-none print:bg-white">
             <div className="relative z-10 flex flex-col min-h-screen">
                 {/* Enterprise Navigation Header */}
                 <Header />

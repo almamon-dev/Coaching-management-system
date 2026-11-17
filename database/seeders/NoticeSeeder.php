@@ -26,7 +26,7 @@ class NoticeSeeder extends Seeder
         $noticesData = [
             [
                 'title' => 'Upcoming Final Examinations',
-                'content' => 'Dear students and teachers, the final examinations will commence from next month. Please check the routine attached on the school board.',
+                'content' => 'Dear students and guardians, the upcoming model tests and examinations will commence from next month. Please check the routine attached on the coaching notice board.',
                 'type' => 'notice',
                 'target_audience' => 'all',
                 'status' => 'published',

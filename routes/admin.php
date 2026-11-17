@@ -16,6 +16,9 @@ use App\Http\Controllers\Admin\ExamResultController;
 use App\Http\Controllers\Admin\AssignmentController;
 use App\Http\Controllers\Admin\StudyMaterialController;
 use App\Http\Controllers\Admin\NoticeController;
+use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ActivityLogController;
@@ -72,8 +75,17 @@ Route::get('/study-materials', [StudyMaterialController::class, 'index'])->name(
 Route::post('/study-materials', [StudyMaterialController::class, 'store'])->name('study-materials.store');
 Route::delete('/study-materials/{id}', [StudyMaterialController::class, 'destroy'])->name('study-materials.destroy');
 
-// Notices
+// Notices & CMS
 Route::resource('notices', NoticeController::class);
+Route::resource('events', EventController::class);
+Route::resource('galleries', GalleryController::class);
+Route::resource('testimonials', TestimonialController::class);
+Route::get('/cms/landing', [SettingController::class, 'landingCms'])->name('cms.landing');
+Route::post('/cms/landing', [SettingController::class, 'updateLandingCms'])->name('cms.landing.update');
+Route::get('/cms/admission', [SettingController::class, 'admissionCms'])->name('cms.admission');
+Route::post('/cms/admission', [SettingController::class, 'updateAdmissionCms'])->name('cms.admission.update');
+Route::get('/cms/about', [SettingController::class, 'aboutCms'])->name('cms.about');
+Route::post('/cms/about', [SettingController::class, 'updateAboutCms'])->name('cms.about.update');
 
 // Reports
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

@@ -10,6 +10,7 @@ import TextInput from '@/Components/Form/TextInput';
 import SelectInput from '@/Components/Form/SelectInput';
 import TextArea from '@/Components/Form/TextArea';
 import InputError from '@/Components/Form/InputError';
+import AdmissionSummaryCard from './Partials/AdmissionSummaryCard';
 
 export default function CreateAdmission({ courses = [], batches = [], feeTypes = [] }) {
     // Map initial batch selection if available
@@ -110,7 +111,7 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
                 </div>
                 <Link
                     href={route('admin.students.index')}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-[3px] transition-colors"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-[4px] transition-colors"
                 >
                     <ArrowLeft size={16} /> Back to Students
                 </Link>
@@ -120,9 +121,9 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
                 {/* LEFT & CENTER: STUDENT INFO + MULTI-SUBJECT ENROLLMENT */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* 1. PERSONAL INFORMATION */}
-                    <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm space-y-5">
-                        <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2.5 flex items-center gap-2">
-                            <GraduationCap className="text-emerald-600" size={20} /> Student & Academic Details
+                    <div className="bg-white p-5 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-4">
+                        <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2.5 flex items-center gap-2">
+                            <GraduationCap className="text-emerald-600" size={18} /> Student & Academic Details
                         </h2>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -242,18 +243,18 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
                     </div>
 
                     {/* 2. MULTI-SUBJECT & MULTI-BATCH ASSIGNMENT */}
-                    <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm space-y-5">
+                    <div className="bg-white p-5 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-4">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
                             <div>
-                                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                                    <BookOpen className="text-emerald-600" size={20} />
+                                <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                    <BookOpen className="text-emerald-600" size={17} />
                                     Subject & Batch Selection (Multi-Subject)
                                 </h2>
-                                <p className="text-xs text-slate-500 mt-0.5">
+                                <p className="text-[11px] text-slate-500 mt-0.5">
                                     Select all subjects and batches this student will attend.
                                 </p>
                             </div>
-                            <span className="text-xs font-bold px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-md border border-emerald-200 self-start sm:self-auto">
+                            <span className="text-[10.5px] font-bold px-2.5 py-0.5 bg-emerald-50 text-[#16a34a] rounded-[4px] border border-emerald-200 self-start sm:self-auto">
                                 {data.batch_ids.length} Subject{data.batch_ids.length === 1 ? '' : 's'} Selected
                             </span>
                         </div>
@@ -261,7 +262,7 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
                         <InputError message={errors.batch_ids} className="mt-1" />
 
                         {/* Subject Cards Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {courses.map((course) => {
                                 const courseBatches = batches.filter(
                                     b => String(b.course_id) === String(course.id)
@@ -274,14 +275,14 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
                                 return (
                                     <div
                                         key={course.id}
-                                        className={`p-4 rounded-xl border transition-all ${
+                                        className={`p-3 sm:p-3.5 rounded-[4px] border transition-all ${
                                             isEnrolled
-                                                ? 'border-emerald-500 bg-emerald-50/20 shadow-xs ring-1 ring-emerald-500/20'
-                                                : 'border-slate-200/80 bg-slate-50/30 hover:border-slate-300'
+                                                ? 'border-[#16a34a] bg-emerald-50/25 shadow-2xs'
+                                                : 'border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/40'
                                         }`}
                                     >
-                                        <div className="flex items-start justify-between gap-2 mb-3">
-                                            <div className="flex items-center gap-2.5">
+                                        <div className="flex items-start justify-between gap-2.5">
+                                            <div className="flex items-start gap-2 min-w-0 flex-1">
                                                 <input
                                                     type="checkbox"
                                                     id={`course_check_${course.id}`}
@@ -296,52 +297,56 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
                                                             handleCourseBatchToggle(course.id, '');
                                                         }
                                                     }}
-                                                    className="w-4 h-4 rounded text-[#16a34a] focus:ring-[#16a34a] border-slate-300 cursor-pointer"
+                                                    className="w-3.5 h-3.5 rounded-[3px] text-[#16a34a] focus:ring-0 border-slate-300 cursor-pointer mt-0.5 shrink-0"
                                                 />
-                                                <label
-                                                    htmlFor={`course_check_${course.id}`}
-                                                    className="font-bold text-slate-900 text-sm cursor-pointer select-none"
-                                                >
-                                                    {course.title}
-                                                </label>
+                                                <div className="min-w-0 flex-1">
+                                                    <label
+                                                        htmlFor={`course_check_${course.id}`}
+                                                        className="font-bold text-slate-900 text-xs cursor-pointer select-none leading-snug break-words block"
+                                                    >
+                                                        {course.title}
+                                                    </label>
+                                                    {course.category && (
+                                                        <span className="text-[9.5px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded-[2px] border border-slate-200/60 inline-block mt-1">
+                                                            {course.category}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <span className="text-xs font-bold text-slate-700 tabular-nums shrink-0">
+                                            <span className="text-[11px] font-bold text-slate-700 bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded-[4px] tabular-nums shrink-0">
                                                 ৳{Number(course.fee || 0).toLocaleString()}/mo
                                             </span>
                                         </div>
 
-                                        {course.category && (
-                                            <span className="text-[10px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200 inline-block mb-3">
-                                                {course.category}
-                                            </span>
-                                        )}
-
                                         {isEnrolled && (
-                                            <div className="mt-2 pt-2 border-t border-emerald-100/80">
-                                                <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                                            <div className="mt-2.5 pt-2 border-t border-emerald-100">
+                                                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                                                     Assign Batch:
                                                 </label>
                                                 {courseBatches.length > 0 ? (
-                                                    <select
+                                                    <SelectInput
                                                         value={activeBatchForCourse?.id || ''}
-                                                        onChange={(e) => handleCourseBatchToggle(course.id, e.target.value)}
-                                                        className="w-full text-xs font-semibold rounded-[4px] border-slate-200 bg-white text-slate-800 py-1.5 px-2.5 focus:border-[#16a34a] focus:ring-0 outline-none"
-                                                    >
-                                                        {courseBatches.map((b) => (
-                                                            <option key={b.id} value={b.id}>
-                                                                {b.name} ({b.class_time || 'Schedule'})
-                                                            </option>
-                                                        ))}
-                                                    </select>
+                                                        onChange={(e) => {
+                                                            const val = e?.target ? e.target.value : e;
+                                                            handleCourseBatchToggle(course.id, val);
+                                                        }}
+                                                        options={courseBatches.map((b) => ({
+                                                            id: b.id,
+                                                            name: `${b.name} (${b.class_time || 'Schedule'})`
+                                                        }))}
+                                                        placeholder="Select Batch..."
+                                                        showSearch={false}
+                                                        className="w-full text-[11px]"
+                                                    />
                                                 ) : (
-                                                    <p className="text-[11px] text-amber-600 font-medium">
+                                                    <p className="text-[10.5px] text-amber-600 font-medium">
                                                         No active batch created for this course yet.
                                                     </p>
                                                 )}
                                                 {activeBatchForCourse?.class_days && (
-                                                    <p className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
-                                                        <Calendar size={11} className="text-slate-400" />
-                                                        {activeBatchForCourse.class_days}
+                                                    <p className="text-[10px] text-slate-500 mt-1 flex items-center gap-1 font-medium">
+                                                        <Calendar size={11} className="text-[#16a34a]" />
+                                                        <span>{activeBatchForCourse.class_days}</span>
                                                     </p>
                                                 )}
                                             </div>
@@ -353,146 +358,44 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
 
                         {/* Selected Enrolled Batches Summary */}
                         {selectedBatches.length > 0 && (
-                            <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-200/80">
-                                <h4 className="text-xs font-bold text-emerald-900 uppercase tracking-wider mb-2">
+                            <div className="p-3.5 bg-emerald-50/50 rounded-[4px] border border-emerald-200/80">
+                                <h4 className="text-[10.5px] font-bold text-emerald-900 uppercase tracking-wider mb-2">
                                     Enrolled Subjects Summary ({selectedBatches.length})
                                 </h4>
-                                <div className="space-y-1.5">
+                                <div className="space-y-1">
                                     {selectedBatches.map((b) => {
                                         const c = courses.find(course => String(course.id) === String(b.course_id));
                                         return (
-                                            <div key={b.id} className="flex items-center justify-between text-xs py-1 border-b border-emerald-100/60 last:border-0">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-slate-800">{c?.title || b.name}</span>
-                                                    <span className="text-[11px] text-slate-500">({b.name} • {b.class_time || 'Schedule'})</span>
+                                            <div key={b.id} className="flex items-center justify-between text-[11px] py-1 border-b border-emerald-100/60 last:border-0">
+                                                <div className="flex items-center gap-1.5 min-w-0">
+                                                    <span className="font-bold text-slate-800 break-words">{c?.title || b.name}</span>
+                                                    <span className="text-[10px] text-slate-500">({b.name} • {b.class_time || 'Schedule'})</span>
                                                 </div>
-                                                <span className="font-bold text-emerald-700">৳{Number(c?.fee || 0).toLocaleString()}</span>
+                                                <span className="font-bold text-emerald-700 shrink-0">৳{Number(c?.fee || 0).toLocaleString()}</span>
                                             </div>
                                         );
                                     })}
                                 </div>
-                                <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-emerald-200 text-xs font-bold text-slate-900">
+                                <div className="flex items-center justify-between pt-2 mt-2 border-t border-emerald-200 text-[11.5px] font-bold text-slate-900">
                                     <span>Total Monthly Tuition Fee:</span>
-                                    <span className="text-sm text-[#16a34a]">৳{totalMonthlyFee.toLocaleString()} / month</span>
+                                    <span className="text-xs text-[#16a34a] font-black">৳{totalMonthlyFee.toLocaleString()} / month</span>
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* RIGHT: ADMISSION FEE & PAYMENT RECEIPT GENERATOR */}
-                <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm h-auto self-start space-y-6">
-                    <div>
-                        <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
-                            <Receipt className="text-emerald-600" size={22} />
-                            <h3 className="text-base font-bold text-slate-900">Admission Fee & Receipt</h3>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div>
-                                <InputLabel htmlFor="admission_fee" value="Admission / Registration Fee (৳)" />
-                                <TextInput
-                                    id="admission_fee"
-                                    type="number"
-                                    value={data.admission_fee}
-                                    onChange={(e) => setData('admission_fee', e.target.value)}
-                                />
-                                <InputError message={errors.admission_fee} className="mt-1" />
-                            </div>
-
-                            <div>
-                                <InputLabel htmlFor="discount" value="Waiver / Discount (৳)" />
-                                <TextInput
-                                    id="discount"
-                                    type="number"
-                                    value={data.discount}
-                                    onChange={(e) => setData('discount', e.target.value)}
-                                />
-                                <InputError message={errors.discount} className="mt-1" />
-                            </div>
-
-                            <div>
-                                <InputLabel htmlFor="paid_amount" value="Paid Amount (৳) *" />
-                                <TextInput
-                                    id="paid_amount"
-                                    type="number"
-                                    value={data.paid_amount}
-                                    onChange={(e) => setData('paid_amount', e.target.value)}
-                                    className="border-[#16a34a] text-[#16a34a] font-bold"
-                                />
-                                <InputError message={errors.paid_amount} className="mt-1" />
-                            </div>
-
-                            <div>
-                                <InputLabel htmlFor="payment_method" value="Payment Method *" />
-                                <SelectInput
-                                    value={data.payment_method}
-                                    onChange={(e) => setData('payment_method', e.target ? e.target.value : e)}
-                                    options={paymentMethodOptions}
-                                />
-                                <InputError message={errors.payment_method} className="mt-1" />
-                            </div>
-
-                            {data.payment_method !== 'Cash' && (
-                                <div>
-                                    <InputLabel
-                                        htmlFor="remarks"
-                                        value={
-                                            data.payment_method === 'bKash' ? 'bKash Transaction ID (TrxID) *' :
-                                            data.payment_method === 'Nagad' ? 'Nagad Transaction ID (TrxID) *' :
-                                            data.payment_method === 'Bank' ? 'Bank Deposit / Slip Ref *' :
-                                            `${data.payment_method} Transaction ID / Ref *`
-                                        }
-                                    />
-                                    <TextInput
-                                        id="remarks"
-                                        type="text"
-                                        value={data.remarks}
-                                        onChange={(e) => setData('remarks', e.target.value)}
-                                        placeholder={
-                                            data.payment_method === 'bKash' ? 'e.g. 9X8Y7Z1A (8-10 digit bKash TrxID)' :
-                                            data.payment_method === 'Nagad' ? 'e.g. 7A8B9C2D (Nagad TrxID)' :
-                                            data.payment_method === 'Bank' ? 'e.g. Bank Slip #10492 / Ref' :
-                                            `Enter ${data.payment_method} reference code...`
-                                        }
-                                    />
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200/60 space-y-1.5">
-                            <div className="flex justify-between text-xs text-slate-600 font-medium">
-                                <span>Monthly Tuition Fee:</span>
-                                <span className="font-bold text-slate-900">৳ {totalMonthlyFee.toLocaleString()} / mo</span>
-                            </div>
-                            <div className="flex justify-between text-xs text-slate-600 font-medium">
-                                <span>Net Admission Payable:</span>
-                                <span className="font-bold text-slate-900">
-                                    ৳ {Math.max(0, Number(data.admission_fee || 0) - Number(data.discount || 0)).toLocaleString()}
-                                </span>
-                            </div>
-                            <div className="flex justify-between text-xs text-slate-600 font-medium pt-1.5 border-t border-slate-200">
-                                <span>Remaining Due:</span>
-                                <span className="font-bold text-rose-600">
-                                    ৳ {Math.max(0, (Number(data.admission_fee || 0) - Number(data.discount || 0)) - Number(data.paid_amount || 0)).toLocaleString()}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={processing || data.batch_ids.length === 0}
-                        className="w-full py-2.5 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <CheckCircle size={16} /> Confirm Admission & Generate Receipt
-                    </button>
-                    {data.batch_ids.length === 0 && (
-                        <p className="text-[11px] text-amber-600 font-medium text-center">
-                            Please select at least 1 subject and batch to continue.
-                        </p>
-                    )}
-                </div>
+                {/* RIGHT: ADMISSION FEE & PAYMENT RECEIPT GENERATOR (SUMMARY CARD) */}
+                <AdmissionSummaryCard
+                    data={data}
+                    setData={setData}
+                    errors={errors}
+                    processing={processing}
+                    totalMonthlyFee={totalMonthlyFee}
+                    selectedBatches={selectedBatches}
+                    courses={courses}
+                    paymentMethodOptions={paymentMethodOptions}
+                />
             </form>
         </AdminLayout>
     );

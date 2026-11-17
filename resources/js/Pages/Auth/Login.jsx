@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import TextInput from '@/Components/Form/TextInput';
+import InputLabel from '@/Components/Form/InputLabel';
 import InputError from '@/Components/Form/InputError';
+import Checkbox from '@/Components/Form/Checkbox';
+import PrimaryButton from '@/Components/Button/PrimaryButton';
+import SecondaryButton from '@/Components/Button/SecondaryButton';
 import SchoolLogo from '@/Components/SchoolLogo';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { Eye, EyeOff, Lock, Mail, ArrowLeft } from 'lucide-react';
@@ -69,9 +74,9 @@ export default function Login({ status, canResetPassword, isAdmin, isTeacher, is
                     </div>
 
                     {/* Login Card */}
-                    <div className="bg-white py-8 px-6 sm:px-8 shadow-sm border border-slate-200 rounded-2xl">
+                    <div className="bg-white py-7 px-6 sm:px-8 shadow-xs border border-slate-200 rounded-[4px]">
                         {status && (
-                            <div className="mb-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
+                            <div className="mb-4 p-3 rounded-[3px] bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
                                 {status}
                             </div>
                         )}
@@ -79,54 +84,50 @@ export default function Login({ status, canResetPassword, isAdmin, isTeacher, is
                         <form onSubmit={submit} className="space-y-4">
                             {/* Email Field */}
                             <div>
-                                <label htmlFor="email" className="block text-xs font-bold text-slate-700 mb-1.5">
-                                    Email Address
-                                </label>
+                                <InputLabel htmlFor="email" value="Email Address" />
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                        <Mail size={16} />
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                        <Mail size={15} />
                                     </div>
-                                    <input
+                                    <TextInput
                                         id="email"
                                         type="email"
                                         name="email"
                                         value={data.email}
                                         onChange={(e) => setData('email', e.target.value)}
-                                        className="w-full h-10 pl-10 pr-3.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
+                                        className="pl-9 h-[38px] text-xs sm:text-sm"
                                         placeholder={demoCredentials.email}
                                         required
                                         autoComplete="username"
                                     />
                                 </div>
-                                <InputError message={errors.email} className="mt-1 text-xs" />
+                                <InputError message={errors.email} className="mt-1" />
                             </div>
 
                             {/* Password Field */}
                             <div>
-                                <div className="flex items-center justify-between mb-1.5">
-                                    <label htmlFor="password" className="block text-xs font-bold text-slate-700">
-                                        Password
-                                    </label>
+                                <div className="flex items-center justify-between mb-1">
+                                    <InputLabel htmlFor="password" value="Password" className="mb-0" />
                                     {canResetPassword && (
                                         <Link
                                             href={route('password.request')}
-                                            className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700"
+                                            className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
                                         >
                                             Forgot password?
                                         </Link>
                                     )}
                                 </div>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                        <Lock size={16} />
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                        <Lock size={15} />
                                     </div>
-                                    <input
+                                    <TextInput
                                         id="password"
                                         type={showPassword ? 'text' : 'password'}
                                         name="password"
                                         value={data.password}
                                         onChange={(e) => setData('password', e.target.value)}
-                                        className="w-full h-10 pl-10 pr-10 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
+                                        className="pl-9 pr-9 h-[38px] text-xs sm:text-sm"
                                         placeholder="••••••••"
                                         required
                                         autoComplete="current-password"
@@ -136,31 +137,30 @@ export default function Login({ status, canResetPassword, isAdmin, isTeacher, is
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                                     >
-                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                                     </button>
                                 </div>
-                                <InputError message={errors.password} className="mt-1 text-xs" />
+                                <InputError message={errors.password} className="mt-1" />
                             </div>
 
                             {/* Remember Me */}
                             <div className="flex items-center justify-between pt-0.5">
                                 <label className="flex items-center gap-2 cursor-pointer select-none">
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
+                                        id="remember"
                                         name="remember"
                                         checked={data.remember}
                                         onChange={(e) => setData('remember', e.target.checked)}
-                                        className="w-4 h-4 rounded text-emerald-600 border-slate-300 focus:ring-emerald-500 cursor-pointer"
                                     />
                                     <span className="text-xs font-medium text-slate-600">Remember me</span>
                                 </label>
                             </div>
 
                             {/* Sign In Button */}
-                            <button
+                            <PrimaryButton
                                 type="submit"
                                 disabled={processing}
-                                className="w-full h-10 mt-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs sm:text-sm transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                                className="w-full h-[38px] bg-[#16a34a] hover:bg-[#15803d] text-white font-bold rounded-[3px] text-xs sm:text-sm shadow-none justify-center normal-case tracking-normal gap-2"
                             >
                                 {processing ? (
                                     <>
@@ -173,19 +173,19 @@ export default function Login({ status, canResetPassword, isAdmin, isTeacher, is
                                 ) : (
                                     <span>Sign In</span>
                                 )}
-                            </button>
+                            </PrimaryButton>
                         </form>
 
                         {/* DEMO BUTTON (Easy to remove anytime) */}
                         <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
                             <span className="text-[11px] text-slate-400 font-medium">Testing:</span>
-                            <button
+                            <SecondaryButton
                                 type="button"
                                 onClick={() => handleQuickLogin(demoCredentials.email, 'password')}
-                                className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-semibold rounded-md text-[11px] transition-all cursor-pointer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-semibold rounded-[3px] text-[11px] normal-case tracking-normal shadow-none h-auto"
                             >
                                 <span>{copied ? '✓ Credentials Filled' : `Fill ${demoCredentials.label}`}</span>
-                            </button>
+                            </SecondaryButton>
                         </div>
                     </div>
 

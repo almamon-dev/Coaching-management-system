@@ -14,7 +14,7 @@ export default function FacultyIndex({ faculties = [], departments = [] }) {
 
     return (
         <FrontendLayout>
-            <Head title="Faculty & Staff - Lohadi High School" />
+            <Head title="Faculty & Instructors - Ullash Coaching Center" />
 
             {/* Page Header */}
             <div className="bg-[#15803d] py-12 relative overflow-hidden border-b-4 border-[#16a34a]">

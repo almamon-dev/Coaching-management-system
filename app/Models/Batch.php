@@ -15,6 +15,7 @@ class Batch extends Model
         'subject_id',
         'teacher_id',
         'room',
+        'image',
         'start_date',
         'end_date',
         'class_days',

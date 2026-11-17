@@ -66,13 +66,21 @@
   }
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+.no-scrollbar::-webkit-scrollbar,
+.no-scrollbar:hover::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar,
+.scrollbar-hide:hover::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
-.no-scrollbar {
-  -ms-overflow-style: none;  
-  scrollbar-width: none;  
+.no-scrollbar,
+.no-scrollbar:hover,
+.scrollbar-hide,
+.scrollbar-hide:hover {
+  -ms-overflow-style: none !important;  
+  scrollbar-width: none !important;  
 }
 
 /* Hide scrollbar globally and prevent double scrollbars */
@@ -156,32 +164,59 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none !important;
 }
 
-/* Custom Scrollbar for Data Tables */
-.custom-scrollbar::-webkit-scrollbar {
+/* Custom Scrollbar for Data Tables (Hidden by default, reveals on hover) */
+.custom-scrollbar,
+.overflow-x-auto,
+div:has(> table) {
+    scrollbar-width: none !important; /* Firefox: hidden by default */
+    -ms-overflow-style: none !important;
+}
+
+.custom-scrollbar:hover,
+.overflow-x-auto:hover,
+div:has(> table):hover {
+    scrollbar-width: thin !important;
+    scrollbar-color: #cbd5e1 transparent !important; /* Firefox: reveal on hover */
+}
+
+/* WebKit (Chrome, Edge, Safari, Opera) */
+.custom-scrollbar::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar,
+div:has(> table)::-webkit-scrollbar {
     display: block !important;
-    height: 5px !important;
-    width: 5px !important;
+    height: 6px !important;
+    width: 6px !important;
+    background: transparent !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: #f8fafc !important;
+.custom-scrollbar::-webkit-scrollbar-track,
+.overflow-x-auto::-webkit-scrollbar-track,
+div:has(> table)::-webkit-scrollbar-track {
+    background: transparent !important;
     border-radius: 10px !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #e2e8f0 !important;
+/* Normally hidden: transparent thumb */
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb,
+div:has(> table)::-webkit-scrollbar-thumb {
+    background: transparent !important;
     border-radius: 10px !important;
-    transition: background 0.3s ease !important;
+    transition: background 0.25s ease-in-out !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+/* On hover over the table or container: reveal the thumb */
+.custom-scrollbar:hover::-webkit-scrollbar-thumb,
+.overflow-x-auto:hover::-webkit-scrollbar-thumb,
+div:has(> table):hover::-webkit-scrollbar-thumb {
     background: #cbd5e1 !important;
 }
 
-/* Firefox Support */
-.custom-scrollbar {
-    scrollbar-width: thin !important;
-    scrollbar-color: #e2e8f0 #f8fafc !important;
+/* When directly hovering the scrollbar thumb */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.overflow-x-auto::-webkit-scrollbar-thumb:hover,
+div:has(> table)::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8 !important;
 }
 
 @keyframes progress-shrink {

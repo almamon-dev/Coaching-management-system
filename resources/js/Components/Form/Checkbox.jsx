@@ -1,12 +1,15 @@
+import React from 'react';
+import { cn } from '@/lib/utils';
+
 export default function Checkbox({ className = '', ...props }) {
     return (
         <input
             {...props}
             type="checkbox"
-            className={
-                'rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800 ' +
+            className={cn(
+                "h-4 w-4 rounded-[3px] border-slate-300 text-[#16a34a] shadow-none focus:ring-2 focus:ring-emerald-500/20 focus:ring-offset-0 transition-colors cursor-pointer",
                 className
-            }
+            )}
         />
     );
 }

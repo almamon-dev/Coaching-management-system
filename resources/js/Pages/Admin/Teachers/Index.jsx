@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import { UserCheck, Plus, Search, Eye, Edit, Trash2 } from 'lucide-react';
+import { UserCheck, Plus, Search, Eye, Edit, Trash2, X } from 'lucide-react';
+import TextInput from '@/Components/Form/TextInput';
+import InputLabel from '@/Components/Form/InputLabel';
+import InputError from '@/Components/Form/InputError';
+import PrimaryButton from '@/Components/Button/PrimaryButton';
+import SecondaryButton from '@/Components/Button/SecondaryButton';
 
 export default function TeacherIndex({ teachers, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -41,29 +46,30 @@ export default function TeacherIndex({ teachers, filters }) {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Teacher Management</h1>
-                    <p className="text-sm text-slate-500">Manage coaching instructors, qualifications, specializations & batch assignments.</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Manage coaching instructors, qualifications, specializations & batch assignments.</p>
                 </div>
-                <button
+                <PrimaryButton
                     onClick={() => setShowModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-lg shadow-sm"
+                    className="h-[36px] text-xs gap-2 rounded-[3px]"
                 >
                     <Plus size={16} /> Add Teacher
-                </button>
+                </PrimaryButton>
             </div>
 
             {/* SEARCH */}
             <form onSubmit={handleSearch} className="mb-6 flex gap-3">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-3 text-slate-400" size={16} />
-                    <input
-                        type="text"
+                    <Search className="absolute left-3 top-2.5 text-slate-400" size={15} />
+                    <TextInput
                         placeholder="Search teacher by name, ID, phone, specialization..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white"
+                        className="pl-9 h-[36px]"
                     />
                 </div>
-                <button type="submit" className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg">Search</button>
+                <PrimaryButton type="submit" className="h-[36px] px-5 bg-slate-900 hover:bg-slate-800 text-xs rounded-[3px]">
+                    Search
+                </PrimaryButton>
             </form>
 
             {/* TEACHERS GRID */}
@@ -109,65 +115,88 @@ export default function TeacherIndex({ teachers, filters }) {
             {/* ADD TEACHER MODAL */}
             {showModal && typeof document !== 'undefined' && createPortal(
                 <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-white max-w-lg w-full p-6 rounded-xl shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
-                        <h3 className="text-lg font-bold text-slate-900 border-b pb-2">Add New Teacher</h3>
-                        <form onSubmit={handleSubmit} className="space-y-3">
+                    <div className="bg-white max-w-lg w-full p-6 rounded-[4px] shadow-xl space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                             <div>
-                                <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
-                                <input
+                                <h3 className="text-base font-bold text-slate-900">Add New Teacher</h3>
+                                <p className="text-[11px] text-slate-500">Provide instructor personal details and specialization.</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowModal(false)}
+                                className="p-1 text-slate-400 hover:text-slate-600 rounded-[3px] cursor-pointer"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+                            <div>
+                                <InputLabel value="Full Name *" />
+                                <TextInput
                                     type="text"
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
+                                    placeholder="e.g. Dr. Rafiqul Islam"
                                     required
-                                    className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                                 />
+                                <InputError message={errors.name} />
                             </div>
+
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-700 mb-1">Phone *</label>
-                                    <input
+                                    <InputLabel value="Phone *" />
+                                    <TextInput
                                         type="text"
                                         value={data.phone}
                                         onChange={(e) => setData('phone', e.target.value)}
+                                        placeholder="01711-XXXXXX"
                                         required
-                                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                                     />
+                                    <InputError message={errors.phone} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-700 mb-1">Email</label>
-                                    <input
+                                    <InputLabel value="Email Address" />
+                                    <TextInput
                                         type="email"
                                         value={data.email}
                                         onChange={(e) => setData('email', e.target.value)}
-                                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                        placeholder="teacher@example.com"
                                     />
+                                    <InputError message={errors.email} />
                                 </div>
                             </div>
+
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-700 mb-1">Qualification</label>
-                                    <input
+                                    <InputLabel value="Qualification" />
+                                    <TextInput
                                         type="text"
                                         value={data.qualification}
                                         onChange={(e) => setData('qualification', e.target.value)}
                                         placeholder="e.g. M.Sc in Physics"
-                                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                                     />
+                                    <InputError message={errors.qualification} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-700 mb-1">Specialization</label>
-                                    <input
+                                    <InputLabel value="Specialization" />
+                                    <TextInput
                                         type="text"
                                         value={data.specialization}
                                         onChange={(e) => setData('specialization', e.target.value)}
                                         placeholder="e.g. Physics & Math"
-                                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                                     />
+                                    <InputError message={errors.specialization} />
                                 </div>
                             </div>
-                            <div className="flex justify-end gap-2 pt-3 border-t">
-                                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg">Cancel</button>
-                                <button type="submit" disabled={processing} className="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg">Save Teacher</button>
+
+                            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                                <SecondaryButton type="button" onClick={() => setShowModal(false)} className="h-[36px] text-xs">
+                                    Cancel
+                                </SecondaryButton>
+                                <PrimaryButton type="submit" disabled={processing} className="h-[36px] text-xs">
+                                    Save Teacher
+                                </PrimaryButton>
                             </div>
                         </form>
                     </div>

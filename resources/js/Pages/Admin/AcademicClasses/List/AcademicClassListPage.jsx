@@ -76,7 +76,7 @@ const AcademicClassListPage = ({ auth, classes, filters, stats }) => {
             cell: (row) => (
                 <div className="flex items-center gap-1.5 text-[12.5px] text-slate-600">
                     <Layers size={13} className="text-slate-400" />
-                    <span className="font-medium text-[#008060] bg-[#e4f1ef] px-2 rounded-full border border-[#a3dfd2]/30">{row.sections_count || 0} Sections</span>
+                    <span className="font-semibold text-[#008060] bg-[#e4f1ef] px-2 py-0.5 rounded-[3px] border border-[#a3dfd2]/30 text-[11px]">{row.sections_count || 0} Sections</span>
                 </div>
             )
         },

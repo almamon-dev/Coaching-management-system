@@ -3,20 +3,20 @@ import { Head, Link } from '@inertiajs/react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 
 export default function SchoolOffices() {
-    // School-appropriate office names mirroring the layout
+    // Coaching-appropriate offices and departments
     const offices = [
-        { id: 1, title: "Office of the Headmaster" },
-        { id: 2, title: "Office of the Asst. Headmaster" },
-        { id: 3, title: "Office of the Accounts" },
-        { id: 4, title: "Office of the Admission" },
-        { id: 5, title: "Office of the Exam Controller" },
-        { id: 6, title: "Teachers' Common Room" },
-        { id: 7, title: "Office of the Library" },
-        { id: 8, title: "Coordination Office" },
-        { id: 9, title: "Office of the Logistics" },
-        { id: 10, title: "Office of the Proctor" },
-        { id: 11, title: "Medical Center" },
-        { id: 12, title: "Student Affairs Office" },
+        { id: 1, title: "Office of the Director & Academic Head" },
+        { id: 2, title: "Office of the Academic Coordinator" },
+        { id: 3, title: "Accounts & Tuition Fee Desk" },
+        { id: 4, title: "Admission & Student Counseling Office" },
+        { id: 5, title: "Exam Controller & Model Test Cell" },
+        { id: 6, title: "Faculty & Instructors' Lounge" },
+        { id: 7, title: "Study Room & Academic Library" },
+        { id: 8, title: "Batch Coordination & Routine Desk" },
+        { id: 9, title: "IT, Portal & Technical Support" },
+        { id: 10, title: "Student Discipline & Mentorship Office" },
+        { id: 11, title: "Student Welfare & First Aid Corner" },
+        { id: 12, title: "Guardian Helpdesk & Relations" },
     ];
 
     return (

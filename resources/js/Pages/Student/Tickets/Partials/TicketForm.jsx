@@ -9,6 +9,7 @@ import SelectInput from '@/Components/Form/SelectInput';
 import RichTextEditor from '@/Components/Form/RichTextEditor';
 import InputLabel from '@/Components/Form/InputLabel';
 import InputError from '@/Components/Form/InputError';
+import Checkbox from '@/Components/Form/Checkbox';
 import { cn } from '@/lib/utils';
 
 /**
@@ -429,11 +430,10 @@ export default function TicketForm({
                             {/* Terms Confirmation Checkbox */}
                             <div className="pt-3 border-t border-slate-100">
                                 <label className="flex items-start gap-2.5 cursor-pointer select-none">
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
                                         checked={data.agreeTerms}
                                         onChange={e => setData('agreeTerms', e.target.checked)}
-                                        className="w-3.5 h-3.5 rounded border-slate-300 text-[#008060] focus:ring-[#008060] mt-0.5"
+                                        className="mt-0.5"
                                     />
                                     <div className="text-[11px] font-medium text-slate-600 leading-normal">
                                         I verify that all support information provided is accurate, and I agree to receive notification responses concerning this inquiry.

@@ -61,7 +61,7 @@ export default function CourseIndex({ courses = {}, filters = {} }) {
             header: 'Code',
             accessor: 'code',
             cell: (row) => (
-                <span className="inline-block whitespace-nowrap text-[10.5px] font-bold text-[#16a34a] bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full">
+                <span className="inline-block whitespace-nowrap text-[10.5px] font-bold text-[#16a34a] bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-[3px]">
                     {row.code}
                 </span>
             ),
@@ -99,7 +99,7 @@ export default function CourseIndex({ courses = {}, filters = {} }) {
             header: 'Status',
             accessor: 'status',
             cell: (row) => (
-                <span className={`inline-block whitespace-nowrap px-2.5 py-0.5 text-[10.5px] font-bold rounded-full capitalize ${
+                <span className={`inline-block whitespace-nowrap px-2 py-0.5 text-[10.5px] font-bold rounded-[3px] capitalize ${
                     row.status === 'active' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'
                 }`}>{row.status}</span>
             ),

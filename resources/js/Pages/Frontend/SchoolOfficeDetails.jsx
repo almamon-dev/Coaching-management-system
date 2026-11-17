@@ -6,31 +6,30 @@ import { Phone, Mail, MapPin } from 'lucide-react';
 export default function SchoolOfficeDetails({ id }) {
     // Mock Data based on the provided reference design
     const office = {
-        title: "Office of the Vice Chancellor",
+        title: "Office of the Academic Director",
         category: "Administration",
-        personName: "Prof. Dr. Mohammad Shorif Uddin",
-        personTitle: "Vice Chancellor",
+        personName: "Engr. Mamon Hossain",
+        personTitle: "Founder & Director",
         image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         message: [
-            "It is my great pleasure to welcome you to Green University of Bangladesh (GUB) through our website. As the Vice-Chancellor, I am proud to lead an institution committed to academic excellence, innovation, and holistic development.",
-            "GUB was established in 2003 with the vision of becoming a global center of excellence in higher education. We offer a diverse range of undergraduate and postgraduate programs through our four faculties: Business Studies, Science & Engineering, Arts & Social Sciences, and Law, to meet the socio-economic needs of our country. Our curriculum is designed to provide quality education imbued with high moral and ethical values. Over the years, the university has grown rapidly and currently serves 7,000 students with over 300 dedicated faculty members. Our graduates are gaining admission to renowned foreign universities for further studies with financial aid and securing positions in prestigious industries and institutions.",
-            "We have forged strong partnerships with national and international institutions, facilitating exchange programs, joint research, and shared learning opportunities that enrich our academic community. In an era of rapid global and national changes, universities play a crucial role in shaping the future workforce. At GUB, we recognize that knowledge is a key resource in a world where change is the norm. We are dedicated to preparing our students to excel in their respective fields, equipped not only with comprehensive knowledge but also with ethical empowerment and outcome-based skills.",
-            "Our state-of-the-art facilities, including modern laboratories and an extensive library, provide the necessary infrastructure for a conducive learning environment. GUB is a place where everyone feels valued and supported, fostering an inclusive culture that celebrates diversity and provides equal opportunities for all. Adequate support systems for both teachers and students have been developed to ensure their success and well-being, complemented by various centers and clubs. We have enhanced our outreach programs to ensure our work positively impacts the community. Sustainability has been integrated into our curriculum and campus practices, promoting environmental conservation and social responsibility.",
-            "While teaching is a core aspect of our mission, GUB is deeply invested in research and training activities to expand the boundaries of knowledge."
+            "It is my great pleasure to welcome you to Ullash Coaching Center through our website. As the Director, I am proud to lead an academic institution dedicated to student success, conceptual clarity, and board exam excellence.",
+            "Ullash Coaching Center was established with the vision of providing top-tier academic coaching in Higher Mathematics, Physics, Chemistry, Biology, and ICT for SSC and HSC candidates. Our dedicated instructors focus on bridging foundational gaps, regular chapter-wise model tests, and continuous evaluation to ensure every student reaches their highest potential.",
+            "We believe that real learning happens when students understand the 'why' behind equations and theories. With smart classroom facilities, personalized doubt-clearing sessions, and regular guardian conferences, we ensure a supportive environment for every learner.",
+            "Our alumni consistently achieve GPA 5.00 in SSC & HSC exams and successfully secure admission to BUET, Medical colleges, and prestigious public universities. We look forward to guiding your academic journey."
         ],
         employees: [
             { 
-                name: "Prof. Dr. Mohammad Shorif Uddin", 
-                designation: "Vice Chancellor", 
-                email: "vc@green.edu.bd",
-                phone: "+880 1711 000000",
-                location: "Room 401-4th Floor, Admin Building",
+                name: "Engr. Mamon Hossain", 
+                designation: "Director & Academic Head", 
+                email: "director@ullash.edu.bd",
+                phone: "+880 1711 223344",
+                location: "Room 101, Main Academic Building",
                 image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
             }
         ],
         contacts: {
-            phone: "+880 1711 000000",
-            email: "vc@green.edu.bd",
+            phone: "+880 1711 223344",
+            email: "director@ullash.edu.bd",
         }
     };
 

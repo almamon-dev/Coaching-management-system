@@ -7,7 +7,7 @@ const SLIDES = [
         id: 1,
         image: '/images/hero_bg_1.png',
         title: 'Inspire Learning for Innovation and Transformation',
-        description: 'Lohadi High School provides education that sparks curiosity, critical thinking, and a passion for learning. Our education methodology highlights the role of learning in fostering innovation, driving positive change in various fields, and transforming both individuals and society.',
+        description: 'Ullash Coaching Center provides academic guidance that sparks curiosity, critical thinking, and exam excellence. Our coaching methodology highlights concept mastery, model tests, and intensive preparation.',
         link: '#'
     },
     {

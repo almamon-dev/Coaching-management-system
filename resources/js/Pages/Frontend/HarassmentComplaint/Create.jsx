@@ -8,6 +8,7 @@ import InputError from '@/Components/Form/InputError';
 import Checkbox from '@/Components/Form/Checkbox';
 import RichTextEditor from '@/Components/Form/RichTextEditor';
 import SelectInput from '@/Components/Form/SelectInput';
+import PrimaryButton from '@/Components/Button/PrimaryButton';
 
 export default function Create() {
     const { data, setData, post, processing, errors, reset, recentlySuccessful } = useForm({
@@ -202,14 +203,14 @@ export default function Create() {
                                             </div>
 
                                             <div className="pt-6 border-t border-slate-200">
-                                                <button
+                                                <PrimaryButton
                                                     type="submit"
                                                     disabled={processing}
-                                                    className="w-full md:w-auto px-8 py-3 bg-[#16a34a] text-white text-[14px] font-bold rounded-md hover:bg-[#15803d] transition-colors focus:ring-4 focus:ring-[#16a34a]/30 disabled:opacity-70 flex items-center justify-center gap-2 shadow-sm"
+                                                    className="w-full md:w-auto px-8 py-3 text-[14px] font-bold rounded-[3px] gap-2 shadow-sm"
                                                 >
                                                     <Shield size={18} />
                                                     {processing ? 'Submitting Securely...' : 'Submit Confidential Report'}
-                                                </button>
+                                                </PrimaryButton>
                                                 <p className="mt-4 text-center md:text-left text-[12px] text-slate-500">
                                                     By submitting this form, you affirm that the information provided is true and accurate to the best of your knowledge.
                                                 </p>

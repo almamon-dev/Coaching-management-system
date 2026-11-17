@@ -39,7 +39,7 @@ export default function Portals() {
                         <div className="text-[#00a9cc] mb-2">
                             <Users size={48} strokeWidth={1} />
                         </div>
-                        <span className="text-xs font-semibold text-gray-700">School Offices</span>
+                        <span className="text-xs font-semibold text-gray-700">Coaching Offices</span>
                     </Link>
 
                     <a href="#" className="flex flex-col items-center justify-center w-40 h-32 bg-[#efefef] hover:bg-[#e2e2e2] transition-colors">

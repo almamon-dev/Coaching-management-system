@@ -9,9 +9,7 @@ use App\Http\Controllers\Frontend\HomeController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Guest Frontend Navigation Routes (Required for Header, Footer & Notice board links)
-Route::get('/admissions', function () {
-    return Inertia::render('Frontend/Admissions');
-})->name('admissions');
+Route::get('/admissions', [HomeController::class, 'admissions'])->name('admissions');
 
 Route::get('/staff-faculty-portal', function () {
     return Inertia::render('Frontend/Portals');
@@ -45,23 +43,17 @@ Route::get('/school-offices/{id}', function ($id) {
     return Inertia::render('Frontend/SchoolOfficeDetails', ['id' => $id]);
 })->name('school-offices.show');
 
-Route::get('/events', function () {
-    return Inertia::render('Frontend/Events');
-})->name('events');
-
-Route::get('/gallery', function () {
-    return Inertia::render('Frontend/Gallery');
-})->name('gallery');
-
-Route::get('/notices-board', function () {
-    $notices = \App\Models\Notice::latest()->paginate(10);
-    return Inertia::render('Frontend/Notices/Index', ['notices' => $notices]);
-})->name('notices.index');
-
-Route::get('/notices-board/{id}', function ($id) {
-    $notice = \App\Models\Notice::find($id);
-    return Inertia::render('Frontend/Notices/Show', ['notice' => $notice]);
-})->name('notices.show');
+Route::get('/batches', [HomeController::class, 'batchIndex'])->name('batches.index');
+Route::get('/batches/{id}', [HomeController::class, 'batchShow'])->name('batches.show');
+Route::get('/events', [HomeController::class, 'events'])->name('events');
+Route::get('/gallery', [HomeController::class, 'gallery'])->name('gallery');
+Route::get('/notices-board', [HomeController::class, 'notices'])->name('notices.index');
+Route::get('/notices-board/{id}', [HomeController::class, 'noticeShow'])->name('notices.show');
+Route::get('/success-stories', [HomeController::class, 'successStories'])->name('success-stories');
+Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us');
+Route::get('/about', function () {
+    return redirect()->route('about-us');
+});
 
 Route::get('/complaints/create', function () {
     return Inertia::render('Errors/ComingSoon');
@@ -94,6 +86,13 @@ Route::get('/dashboard', function () {
 
     return redirect()->route('user.dashboard');
 })->middleware(['auth'])->name('dashboard');
+
+// User / Student Profile Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\Student\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [\App\Http\Controllers\Student\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [\App\Http\Controllers\Student\ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 // Guardian Portal Routes
 Route::middleware(['auth'])->prefix('guardian')->name('guardian.')->group(function () {

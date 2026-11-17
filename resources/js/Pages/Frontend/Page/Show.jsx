@@ -6,7 +6,7 @@ import { ChevronRight } from 'lucide-react';
 export default function Show({ page }) {
     return (
         <FrontendLayout>
-            <Head title={`${page.meta_title || page.title} - Lohadi High School`}>
+            <Head title={`${page.meta_title || page.title} - Ullash Coaching Center`}>
                 <meta name="description" content={page.meta_description || ''} />
             </Head>
 

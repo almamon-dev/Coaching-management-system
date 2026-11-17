@@ -1,8 +1,9 @@
 import React from 'react';
 
 export default function SchoolLogo({ variant = 'wide', className = '', theme = 'default' }) {
-    const src = '/images/Logo.png';
-    const filterClass = theme === 'white' ? 'brightness-0 invert' : '';
+    const isLight = theme === 'light' || theme === 'white';
+    const src = isLight ? '/images/Logo_light.png' : '/images/Logo.png';
+    const filterClass = '';
 
     if (variant === 'sidebar-icon' || variant === 'icon') {
         return (

@@ -6,7 +6,7 @@ import SchoolLogo from '@/Components/SchoolLogo';
 export default function ComingSoon() {
     return (
         <div className="relative min-h-screen bg-white flex items-center justify-center overflow-hidden font-sans">
-            <Head title="Coming Soon - Lohadi High School" />
+            <Head title="Coming Soon - Ullash Coaching Center" />
             
             {/* Top Left Gradient Circle */}
             <div 

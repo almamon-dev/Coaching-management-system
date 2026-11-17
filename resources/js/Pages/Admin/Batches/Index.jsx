@@ -135,9 +135,9 @@ export default function BatchIndex({ batches = [], courses = [], teachers = [] }
                     <button
                         type="button"
                         onClick={() => setSelectedSubjectFilter('all')}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-[3px] text-[11px] font-bold transition-all whitespace-nowrap cursor-pointer ${
                             selectedSubjectFilter === 'all'
-                                ? 'bg-[#16a34a] text-white shadow-xs'
+                                ? 'bg-[#16a34a] text-white shadow-2xs'
                                 : 'bg-white text-slate-600 border border-slate-200 hover:border-emerald-300'
                         }`}
                     >
@@ -150,9 +150,9 @@ export default function BatchIndex({ batches = [], courses = [], teachers = [] }
                                 key={c.id}
                                 type="button"
                                 onClick={() => setSelectedSubjectFilter(String(c.id))}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                                className={`px-2.5 py-1 rounded-[3px] text-[11px] font-bold transition-all whitespace-nowrap cursor-pointer ${
                                     String(selectedSubjectFilter) === String(c.id)
-                                        ? 'bg-[#16a34a] text-white shadow-xs'
+                                        ? 'bg-[#16a34a] text-white shadow-2xs'
                                         : 'bg-white text-slate-600 border border-slate-200 hover:border-emerald-300'
                                 }`}
                             >
@@ -163,67 +163,84 @@ export default function BatchIndex({ batches = [], courses = [], teachers = [] }
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredBatches.map((b) => (
-                    <div key={b.id} className="bg-white p-5 rounded-lg border border-slate-200/80 shadow-sm space-y-3.5 flex flex-col justify-between hover:border-emerald-300 transition-all">
+                    <div 
+                        key={b.id} 
+                        className="bg-white p-4 rounded-[4px] border border-slate-200/90 shadow-2xs flex flex-col justify-between hover:border-emerald-400/80 hover:shadow-xs transition-all"
+                    >
                         <div>
-                            <div className="flex items-center justify-between mb-2.5">
-                                <span className="text-[11px] font-bold text-[#16a34a] bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                                    <BookOpen size={12} /> {b.course?.title || 'Subject'}
+                            {/* Top Row: Course Tag and Status Badge (No text limits) */}
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                                <span className="text-[10px] font-bold text-[#16a34a] bg-emerald-50 border border-emerald-200/70 px-2 py-0.5 rounded-[3px] inline-flex items-center gap-1.5 shadow-2xs leading-snug">
+                                    <BookOpen size={11} className="shrink-0 text-[#16a34a]" />
+                                    <span>{b.course?.title || 'Subject'}</span>
                                 </span>
-                                <span className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full capitalize ${b.status === 'active' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
+                                <span className={`px-1.5 py-0.5 text-[9.5px] font-bold rounded-[3px] capitalize shrink-0 shadow-2xs mt-0.5 ${
+                                    b.status === 'active' 
+                                        ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' 
+                                        : 'bg-slate-100 text-slate-600 border border-slate-200'
+                                }`}>
                                     {b.status}
                                 </span>
                             </div>
-                            <h3 className="text-base font-bold text-slate-900 leading-snug">{b.name}</h3>
 
-                            <div className="space-y-2 text-xs text-slate-600 border-t border-slate-100 pt-3.5 mt-3">
+                            {/* Batch Name (Full text, compact professional typography) */}
+                            <h3 className="text-[13px] font-bold text-slate-900 leading-snug break-words">
+                                {b.name}
+                            </h3>
+
+                            {/* Details (Sleek compact rows) */}
+                            <div className="space-y-1.5 text-[11px] text-slate-600 border-t border-slate-100 pt-2.5 mt-2.5">
                                 {isMultiTeacher && (
                                     <div className="flex items-center gap-2">
-                                        <UserCheck size={14} className="text-indigo-600" />
-                                        <span className="text-slate-500">Instructor:</span>
-                                        <span className="font-bold text-indigo-700">{b.teacher?.name || 'Not Assigned'}</span>
+                                        <UserCheck size={13} className="text-indigo-600 shrink-0" />
+                                        <span className="text-slate-500 font-medium">Instructor:</span>
+                                        <span className="font-semibold text-indigo-700">{b.teacher?.name || 'Not Assigned'}</span>
                                     </div>
                                 )}
                                 <div className="flex items-center gap-2">
-                                    <Calendar size={14} className="text-[#16a34a]" />
-                                    <span className="text-slate-500">Class Days:</span>
-                                    <span className="font-bold text-slate-800">{b.class_days || 'N/A'}</span>
+                                    <Calendar size={13} className="text-[#16a34a] shrink-0" />
+                                    <span className="text-slate-500 font-medium">Class Days:</span>
+                                    <span className="font-semibold text-slate-800">{b.class_days || 'N/A'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Clock size={14} className="text-[#16a34a]" />
-                                    <span className="text-slate-500">Class Time:</span>
-                                    <span className="font-bold text-slate-800">{b.class_time || 'N/A'}</span>
+                                    <Clock size={13} className="text-[#16a34a] shrink-0" />
+                                    <span className="text-slate-500 font-medium">Class Time:</span>
+                                    <span className="font-semibold text-slate-800">{b.class_time || 'N/A'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Users size={14} className="text-[#16a34a]" />
-                                    <span className="text-slate-500">Enrolled Students:</span>
-                                    <span className="font-bold text-[#16a34a]">{b.students_count || 0} / {b.max_students} Students</span>
+                                    <Users size={13} className="text-[#16a34a] shrink-0" />
+                                    <span className="text-slate-500 font-medium">Enrolled:</span>
+                                    <span className="font-bold text-[#16a34a]">
+                                        {b.students_count || 0} / {b.max_students} Students
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs">
+                        {/* Bottom Row Actions */}
+                        <div className="pt-2.5 border-t border-slate-100 mt-2.5 flex items-center justify-between text-[11px]">
                             <Link
                                 href={route('admin.students.index', { batch_id: b.id })}
                                 className="font-bold text-[#16a34a] hover:underline"
                             >
                                 Students ({b.students_count || 0}) →
                             </Link>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
                                 <button
                                     type="button"
                                     onClick={() => openEditModal(b)}
-                                    className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-800 font-semibold px-2 py-0.5 rounded hover:bg-slate-100 transition-colors cursor-pointer"
+                                    className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-semibold px-2 py-0.5 rounded-[3px] hover:bg-slate-100 transition-colors cursor-pointer text-[11px]"
                                 >
-                                    <Edit2 size={12} /> Edit
+                                    <Edit2 size={11} /> Edit
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => handleDeleteBatch(b.id, b.name)}
-                                    className="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 font-semibold px-2 py-0.5 rounded hover:bg-rose-50 transition-colors cursor-pointer"
+                                    className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-700 font-semibold px-2 py-0.5 rounded-[3px] hover:bg-rose-50 transition-colors cursor-pointer text-[11px]"
                                 >
-                                    <Trash2 size={12} />
+                                    <Trash2 size={11} />
                                 </button>
                             </div>
                         </div>

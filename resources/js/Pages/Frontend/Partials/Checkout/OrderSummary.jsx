@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Tag, Gift, List } from 'lucide-react';
 import TextInput from '@/Components/Form/TextInput';
+import Checkbox from '@/Components/Form/Checkbox';
 
 const OrderSummary = ({ cart, agreeTerms, onTermsChange, onConfirm, isSubmitting, isValid, paymentMethod }) => {
     const [couponType, setCouponType] = useState('coupon');
@@ -71,13 +72,12 @@ const OrderSummary = ({ cart, agreeTerms, onTermsChange, onConfirm, isSubmitting
 
                 {/* Terms Agreement */}
                 <label className="flex items-start gap-3 cursor-pointer group mb-6">
-                    <input
-                        type="checkbox"
+                    <Checkbox
                         checked={agreeTerms}
                         onChange={(e) => onTermsChange(e.target.checked)}
-                        className="w-[15px] h-[15px] rounded-[2px] border-slate-300 text-[#4f46e5] focus:ring-0 focus:ring-offset-0 cursor-pointer mt-0.5"
+                        className="mt-0.5"
                     />
-                    <span className="text-[12px] text-[#081621] leading-tight group-hover:text-black transition-colors">
+                    <span className="text-[12px] text-[#081621] leading-tight group-hover:text-black transition-colors select-none">
                         I have read and agree to the <a href="#!" onClick={(e) => e.preventDefault()} className="text-[#4f46e5] font-bold">Terms and Conditions</a>, <a href="#!" onClick={(e) => e.preventDefault()} className="text-[#4f46e5] font-bold">Privacy Policy</a> and <a href="#!" onClick={(e) => e.preventDefault()} className="text-[#4f46e5] font-bold">Refund and Return Policy</a>
                     </span>
                 </label>

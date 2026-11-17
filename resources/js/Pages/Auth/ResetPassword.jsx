@@ -25,44 +25,54 @@ export default function ResetPassword({ token, email }) {
         <GuestLayout>
             <Head title="Reset Password" />
 
-            <form onSubmit={submit}>
+            <div className="mb-4">
+                <h2 className="text-lg font-bold text-slate-900 tracking-tight">Set New Password</h2>
+                <p className="mt-1 text-xs text-slate-500">
+                    Please provide your email address and choose a new password.
+                </p>
+            </div>
+
+            <form onSubmit={submit} className="space-y-4">
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                    <InputLabel htmlFor="email" value="Email Address" />
 
                     <TextInput
                         id="email"
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full h-[38px]"
                         autoComplete="username"
                         onChange={(e) => setData('email', e.target.value)}
+                        required
                     />
 
-                    <InputError message={errors.email} className="mt-2" />
+                    <InputError message={errors.email} className="mt-1" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                <div>
+                    <InputLabel htmlFor="password" value="New Password" />
 
                     <TextInput
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full h-[38px]"
                         autoComplete="new-password"
                         isFocused={true}
+                        placeholder="••••••••"
                         onChange={(e) => setData('password', e.target.value)}
+                        required
                     />
 
-                    <InputError message={errors.password} className="mt-2" />
+                    <InputError message={errors.password} className="mt-1" />
                 </div>
 
-                <div className="mt-4">
+                <div>
                     <InputLabel
                         htmlFor="password_confirmation"
-                        value="Confirm Password"
+                        value="Confirm New Password"
                     />
 
                     <TextInput
@@ -70,21 +80,23 @@ export default function ResetPassword({ token, email }) {
                         id="password_confirmation"
                         name="password_confirmation"
                         value={data.password_confirmation}
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full h-[38px]"
                         autoComplete="new-password"
+                        placeholder="••••••••"
                         onChange={(e) =>
                             setData('password_confirmation', e.target.value)
                         }
+                        required
                     />
 
                     <InputError
                         message={errors.password_confirmation}
-                        className="mt-2"
+                        className="mt-1"
                     />
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
+                <div className="pt-2 flex items-center justify-end">
+                    <PrimaryButton className="w-full h-[38px]" disabled={processing}>
                         Reset Password
                     </PrimaryButton>
                 </div>

@@ -10,6 +10,10 @@ import { Link } from '@inertiajs/react';
 import { User, Mail, Lock, Shield, Check, Info, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import SelectInput from '@/Components/Form/SelectInput';
+import TextInput from '@/Components/Form/TextInput';
+import InputLabel from '@/Components/Form/InputLabel';
+import InputError from '@/Components/Form/InputError';
+import Checkbox from '@/Components/Form/Checkbox';
 
 const UserForm = ({
     data,
@@ -91,52 +95,43 @@ const UserForm = ({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         {/* Name */}
                         <div>
-                            <label className="block text-[12px] font-bold text-slate-700 mb-1.5">
-                                Full Name <span className="text-red-500">*</span>
-                            </label>
-                            <input
+                            <InputLabel value="Full Name *" />
+                            <TextInput
                                 type="text"
                                 value={data.name}
                                 onChange={e => setData('name', e.target.value)}
                                 placeholder="e.g. John Doe"
-                                className={`w-full h-[38px] px-3 bg-white border rounded-[4px] text-[13px] text-[#202223] placeholder-slate-400 focus:outline-none focus:border-[#008060] focus:ring-0 transition-all ${
-                                    errors.name ? 'border-red-500' : 'border-[#d1d1d1]'
-                                }`}
+                                className="h-[38px]"
+                                required
                             />
-                            {errors.name && <p className="text-red-500 text-[11px] mt-1 font-semibold">{errors.name}</p>}
+                            <InputError message={errors.name} />
                         </div>
 
                         {/* Email */}
                         <div>
-                            <label className="block text-[12px] font-bold text-slate-700 mb-1.5">
-                                Email Address <span className="text-red-500">*</span>
-                            </label>
-                            <input
+                            <InputLabel value="Email Address *" />
+                            <TextInput
                                 type="email"
                                 value={data.email}
                                 onChange={e => setData('email', e.target.value)}
                                 placeholder="e.g. john.doe@company.com"
-                                className={`w-full h-[38px] px-3 bg-white border rounded-[4px] text-[13px] text-[#202223] placeholder-slate-400 focus:outline-none focus:border-[#008060] focus:ring-0 transition-all ${
-                                    errors.email ? 'border-red-500' : 'border-[#d1d1d1]'
-                                }`}
+                                className="h-[38px]"
+                                required
                             />
-                            {errors.email && <p className="text-red-500 text-[11px] mt-1 font-semibold">{errors.email}</p>}
+                            <InputError message={errors.email} />
                         </div>
 
                         {/* Password */}
                         <div>
-                            <label className="block text-[12px] font-bold text-slate-700 mb-1.5">
-                                Password {isEdit ? <span className="text-[#6d7175] font-normal">(Leave blank to keep current)</span> : <span className="text-red-500">*</span>}
-                            </label>
+                            <InputLabel value={isEdit ? "Password (Leave blank to keep current)" : "Password *"} />
                             <div className="relative">
-                                <input
+                                <TextInput
                                     type={showPassword ? "text" : "password"}
                                     value={data.password}
                                     onChange={e => setData('password', e.target.value)}
                                     placeholder={isEdit ? "••••••••" : "Enter secure password"}
-                                    className={`w-full h-[38px] pl-3 pr-10 bg-white border rounded-[4px] text-[13px] text-[#202223] placeholder-slate-400 focus:outline-none focus:border-[#008060] focus:ring-0 transition-all ${
-                                        errors.password ? 'border-red-500' : 'border-[#d1d1d1]'
-                                    }`}
+                                    className="h-[38px] pr-10"
+                                    required={!isEdit}
                                 />
                                 <button
                                     type="button"
@@ -146,23 +141,20 @@ const UserForm = ({
                                     {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
-                            {errors.password && <p className="text-red-500 text-[11px] mt-1 font-semibold">{errors.password}</p>}
+                            <InputError message={errors.password} />
                         </div>
 
                         {/* Confirm Password */}
                         <div>
-                            <label className="block text-[12px] font-bold text-slate-700 mb-1.5">
-                                Confirm Password {!isEdit && <span className="text-red-500">*</span>}
-                            </label>
+                            <InputLabel value={!isEdit ? "Confirm Password *" : "Confirm Password"} />
                             <div className="relative">
-                                <input
+                                <TextInput
                                     type={showConfirmPassword ? "text" : "password"}
                                     value={data.password_confirmation}
                                     onChange={e => setData('password_confirmation', e.target.value)}
                                     placeholder={isEdit ? "••••••••" : "Confirm secure password"}
-                                    className={`w-full h-[38px] pl-3 pr-10 bg-white border rounded-[4px] text-[13px] text-[#202223] placeholder-slate-400 focus:outline-none focus:border-[#008060] focus:ring-0 transition-all ${
-                                        errors.password_confirmation ? 'border-red-500' : 'border-[#d1d1d1]'
-                                    }`}
+                                    className="h-[38px] pr-10"
+                                    required={!isEdit}
                                 />
                                 <button
                                     type="button"

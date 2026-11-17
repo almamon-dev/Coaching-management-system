@@ -6,7 +6,7 @@ import { Mail, Phone, ArrowLeft, GraduationCap, Award, BookOpen } from 'lucide-r
 export default function FacultyShow({ faculty }) {
     return (
         <FrontendLayout>
-            <Head title={`${faculty.name} - Lohadi High School`} />
+            <Head title={`${faculty.name} - Ullash Coaching Center`} />
 
             {/* Profile Header Banner */}
             <div className="bg-[#15803d] pt-12 pb-24 relative overflow-hidden">

@@ -1,12 +1,16 @@
-import ApplicationLogo from '@/Components/Common/ApplicationLogo';
+import SchoolLogo from '@/Components/SchoolLogo';
 import { Link } from '@inertiajs/react';
 
 export default function GuestLayout({ children }) {
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-[#f4f5f9] dark:bg-gray-900 p-4">
-            
+        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4 font-sans">
+            <div className="mb-6 text-center">
+                <Link href="/" className="inline-block">
+                    <SchoolLogo variant="wide" className="h-10 sm:h-12 w-auto mx-auto" />
+                </Link>
+            </div>
 
-            <div className="w-full sm:max-w-[450px] bg-white dark:bg-gray-800 px-8 py-10 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] rounded-xl border border-gray-100 dark:border-gray-700">
+            <div className="w-full sm:max-w-[450px] bg-white px-7 py-8 shadow-xs rounded-[4px] border border-slate-200">
                 {children}
             </div>
         </div>

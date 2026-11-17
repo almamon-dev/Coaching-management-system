@@ -17,6 +17,10 @@ import {
     FileCode,
     Shield,
     DollarSign,
+    Globe,
+    Calendar,
+    Award,
+    Image as ImageIcon,
 } from "lucide-react";
 
 export default function Sidebar({ isCollapsed }) {
@@ -35,14 +39,31 @@ export default function Sidebar({ isCollapsed }) {
     };
 
     const checkActiveItem = (item) => {
+        // Tab-specific check (e.g. settings?tab=cms vs settings?tab=general)
+        if (item.tab) {
+            if (currentPath === '/admin/settings') {
+                const currentSearch = typeof window !== 'undefined' ? window.location.search : '';
+                const activeTab = new URLSearchParams(currentSearch).get('tab') || 'general';
+                return activeTab === item.tab;
+            }
+            return false;
+        }
+
         if (item.route && typeof route !== "undefined") {
             try {
                 if (route().current(item.route)) return true;
+                const baseRoute = item.route.replace(/\.(index|create|edit|show)$/, '');
+                if (baseRoute && baseRoute !== item.route && route().current(baseRoute + '.*')) {
+                    return true;
+                }
             } catch (e) { }
         }
         if (item.path) {
             const clean = getCleanPath(item.path);
-            if (currentPath === clean || currentPath.startsWith(clean + '/')) return true;
+            if (clean === '/admin' || clean === '/admin/dashboard') {
+                return currentPath === '/admin' || currentPath === '/admin/dashboard';
+            }
+            if (currentPath === clean || (clean !== '/' && currentPath.startsWith(clean + '/'))) return true;
         }
         if (item.children) {
             return item.children.some(child => checkActiveItem(child));
@@ -60,6 +81,9 @@ export default function Sidebar({ isCollapsed }) {
         }
         if (currentPath.includes('/admin/permissions') || currentPath.includes('/admin/activity-logs')) {
             initial.security_logs = true;
+        }
+        if (currentPath.includes('/admin/cms') || currentPath.includes('/admin/events') || currentPath.includes('/admin/galleries') || currentPath.includes('/admin/testimonials') || currentPath.includes('/admin/notices')) {
+            initial.website_cms = true;
         }
         if (currentPath.includes('/admin/settings') || currentPath.includes('/admin/backup')) {
             initial.system_config = true;
@@ -138,16 +162,29 @@ export default function Sidebar({ isCollapsed }) {
                     route: "admin.operational-accounts.index"
                 },
                 {
-                    label: "Notice Board",
-                    path: route('admin.notices.index'),
-                    icon: <Bell />,
-                    route: "admin.notices.index"
-                },
-                {
                     label: "Reports & Analytics",
                     path: route('admin.reports.index'),
                     icon: <FileText />,
                     route: "admin.reports.index"
+                },
+            ]
+        },
+        {
+            title: "WEBSITE CMS",
+            items: [
+                {
+                    label: "Website Content",
+                    icon: <Globe />,
+                    key: "website_cms",
+                    children: [
+                        { label: "Landing Page CMS", path: route('admin.cms.landing'), route: "admin.cms.landing" },
+                        { label: "About Page CMS", path: route('admin.cms.about'), route: "admin.cms.about" },
+                        { label: "Admission Instructions", path: route('admin.cms.admission'), route: "admin.cms.admission" },
+                        { label: "Notice Board", path: route('admin.notices.index'), route: "admin.notices.index" },
+                        { label: "Upcoming Events", path: route('admin.events.index'), route: "admin.events.index" },
+                        { label: "Photo Gallery", path: route('admin.galleries.index'), route: "admin.galleries.index" },
+                        { label: "Success Stories", path: route('admin.testimonials.index'), route: "admin.testimonials.index" },
+                    ]
                 },
             ]
         },
@@ -192,15 +229,17 @@ export default function Sidebar({ isCollapsed }) {
 
         const content = (
             <>
-                <div className={`flex-shrink-0 ${isCollapsed ? 'mb-1' : 'mr-3'} transition-transform duration-200 group-hover:scale-105 ${active || isOpen ? 'text-[#16a34a]' : 'text-slate-400 group-hover:text-[#16a34a]'}`}>
+                <div className={`flex-shrink-0 ${isCollapsed ? 'mb-1' : 'mr-3'} transition-transform duration-200 group-hover:scale-105 ${active ? 'text-[#16a34a]' : isOpen ? 'text-slate-700' : 'text-slate-400 group-hover:text-[#16a34a]'}`}>
                     {React.cloneElement(item.icon, {
                         size: isCollapsed ? 22 : 18,
-                        strokeWidth: active || isOpen ? 2 : 1.5
+                        strokeWidth: active ? 2 : 1.5
                     })}
                 </div>
 
                 {!isCollapsed && (
-                    <span className={`font-semibold leading-tight transition-all duration-200 text-[13px] flex-1 text-left whitespace-nowrap truncate ${active || isOpen ? 'text-[#16a34a]' : 'text-slate-600'}`}>
+                    <span className={`font-semibold leading-tight transition-all duration-200 text-[13px] flex-1 text-left whitespace-nowrap truncate ${
+                        active ? 'text-[#16a34a] font-bold' : isOpen ? 'text-slate-900' : 'text-slate-600'
+                    }`}>
                         {item.label}
                     </span>
                 )}
@@ -208,7 +247,9 @@ export default function Sidebar({ isCollapsed }) {
                 {!isCollapsed && item.children && (
                     <ChevronRight
                         size={14}
-                        className={`flex-shrink-0 transition-all duration-200 text-slate-300 group-hover:text-slate-500 ${isOpen ? 'rotate-90 text-[#16a34a]' : ''}`}
+                        className={`flex-shrink-0 transition-all duration-200 text-slate-300 group-hover:text-slate-500 ${
+                            isOpen ? 'rotate-90' : ''
+                        } ${active ? 'text-[#16a34a]' : ''}`}
                     />
                 )}
 
@@ -230,9 +271,11 @@ export default function Sidebar({ isCollapsed }) {
                             ${isCollapsed
                                 ? 'flex-col items-center justify-center py-2.5 px-1'
                                 : 'flex-row items-center py-2 px-3'}
-                            ${active || isOpen
+                            ${active
                                 ? 'bg-[#16a34a]/10 text-[#16a34a]'
-                                : 'text-[#475467] hover:bg-[#16a34a]/5 hover:text-[#16a34a]'}`}
+                                : isOpen
+                                    ? 'text-slate-900 bg-slate-50'
+                                    : 'text-[#475467] hover:bg-[#16a34a]/5 hover:text-[#16a34a]'}`}
                     >
                         {content}
                     </button>

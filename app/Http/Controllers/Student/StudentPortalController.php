@@ -18,7 +18,7 @@ use App\Models\Notice;
 
 class StudentPortalController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $user = auth()->user();
         $student = StudentProfile::with(['course', 'batch', 'guardian'])
@@ -99,6 +99,7 @@ class StudentPortalController extends Controller
 
         return Inertia::render('Student/Dashboard', [
             'student' => $student,
+            'currentTab' => $request->query('tab', 'overview'),
             'enrolledBatches' => $enrolledBatches,
             'routines' => $routines,
             'attendances' => $attendances,

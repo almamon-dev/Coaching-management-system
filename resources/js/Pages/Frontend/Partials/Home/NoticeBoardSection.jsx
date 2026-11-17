@@ -31,14 +31,16 @@ export default function NoticeBoardSection({ notices = [] }) {
                                                 href={route('notices.show', notice.id)}
                                                 className="flex gap-3.5 items-center p-3 hover:bg-white/90 transition-colors group cursor-pointer"
                                             >
-                                                {/* Date Box */}
-                                                <div className="flex flex-col items-center justify-center bg-white border border-[#009ca6]/20 text-[#009ca6] rounded-sm w-12 h-12 shadow-sm shrink-0">
-                                                    <span className="font-black text-[17px] leading-none">
-                                                        {new Date(notice.date).getDate()}
-                                                    </span>
-                                                    <span className="font-bold text-[9px] uppercase tracking-widest mt-0.5">
-                                                        {new Date(notice.date).toLocaleString('default', { month: 'short' })}
-                                                    </span>
+                                                {/* Calendar Date Card */}
+                                                <div className="flex flex-col items-center rounded-[4px] overflow-hidden border border-slate-200/90 bg-white shadow-2xs shrink-0 w-15 sm:w-16 group-hover:border-[#009ca6] group-hover:shadow-xs transition-all">
+                                                    <div className="w-full bg-[#009ca6] text-white text-[10.5px] font-black uppercase tracking-wider text-center py-1 leading-none">
+                                                        {new Date(notice.date).toLocaleString('default', { month: 'short' }).toUpperCase()}
+                                                    </div>
+                                                    <div className="w-full py-2 flex items-center justify-center bg-white group-hover:bg-teal-50/20 transition-colors">
+                                                        <span className="font-black text-xl text-slate-800 leading-none group-hover:text-[#009ca6] transition-colors">
+                                                            {new Date(notice.date).getDate()}
+                                                        </span>
+                                                    </div>
                                                 </div>
 
                                                 {/* Content */}
@@ -72,20 +74,23 @@ export default function NoticeBoardSection({ notices = [] }) {
                                 </div>
                                 <div className="flex flex-col py-1.5 min-h-[220px]">
                                     {[
-                                        { title: 'News', url: route('coming.soon') },
-                                        { title: 'Notice', url: route('notices.index') },
-                                        { title: 'FAQ', url: route('coming.soon') },
-                                        { title: 'Campus Events', url: route('events') },
-                                        { title: 'Research Events', url: route('coming.soon') },
-                                        { title: 'Upcoming Events', url: route('events') },
-                                        { title: 'Sexual Harassment Prevention', url: route('complaints.create') }
+                                        { title: 'Notice Board', url: route('notices.index') },
+                                        { title: 'Academic Courses & Programs', url: '/#courses' },
+                                        { title: 'Admission Instructions', url: route('admissions') },
+                                        { title: 'Campus Events & Seminars', url: route('events') },
+                                        { title: 'Student Success Stories', url: route('success-stories') },
+                                        { title: 'Photo Gallery', url: route('gallery') },
+                                        { title: 'About Our Coaching', url: route('about-us') },
+                                        { title: 'Student & Guardian Portal', url: route('student.login') },
+                                        { title: 'Sexual Harassment & Safety Help', url: route('complaints.create') }
                                     ].map((link, idx) => (
                                         <Link
                                             key={idx}
                                             href={link.url}
-                                            className="py-2 px-4 text-[#333333] hover:text-[#009ca6] hover:bg-white/60 transition-colors text-[13px] font-medium"
+                                            className="py-2.5 px-4 text-[#333333] hover:text-[#009ca6] hover:bg-white/80 transition-colors text-[13px] font-medium flex items-center justify-between group"
                                         >
-                                            {link.title}
+                                            <span>{link.title}</span>
+                                            <span className="text-slate-300 group-hover:text-[#009ca6] group-hover:translate-x-0.5 transition-all">›</span>
                                         </Link>
                                     ))}
                                 </div>

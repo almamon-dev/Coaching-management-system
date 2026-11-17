@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import InputError from '@/Components/Form/InputError';
 import InputLabel from '@/Components/Form/InputLabel';
 import TextInput from '@/Components/Form/TextInput';
+import Checkbox from '@/Components/Form/Checkbox';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
@@ -252,16 +253,14 @@ export default function Register() {
                                     </div>
 
                                     <div className="flex items-center gap-2 py-2">
-                                        <input
-                                            type="checkbox"
+                                        <Checkbox
                                             id="agree"
                                             checked={data.agree}
                                             onChange={(e) => setData('agree', e.target.checked)}
-                                            className="rounded border-gray-300 text-[#3749bb] focus:ring-[#3749bb] w-4 h-4"
                                             required
                                         />
-                                        <label htmlFor="agree" className="text-[13px] text-gray-700 font-medium">
-                                            I have read and agree to the <Link href={route('frontend.pages.show', 'privacy-policy')} className="text-[#ef4a23] hover:underline">Privacy Policy</Link>
+                                        <label htmlFor="agree" className="text-[13px] text-gray-700 font-medium cursor-pointer select-none">
+                                            I have read and agree to the <Link href={route('frontend.pages.show', 'privacy-policy')} className="text-emerald-600 hover:underline">Privacy Policy</Link>
                                         </label>
                                     </div>
                                 </div>

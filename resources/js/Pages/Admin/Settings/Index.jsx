@@ -1,10 +1,19 @@
 import React from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, useForm } from '@inertiajs/react';
-import { Save, Building, UserCheck, Users } from 'lucide-react';
+import { 
+    Save, Building, UserCheck, Phone, Mail, MapPin, 
+    Coins, Calendar, FileText, CheckCircle2 
+} from 'lucide-react';
+import TextInput from '@/Components/Form/TextInput';
+import TextArea from '@/Components/Form/TextArea';
+import InputLabel from '@/Components/Form/InputLabel';
+import InputError from '@/Components/Form/InputError';
+import SelectInput from '@/Components/Form/SelectInput';
+import PrimaryButton from '@/Components/Button/PrimaryButton';
 
-export default function SettingsIndex({ settings }) {
-    const { data, setData, post, processing } = useForm({
+export default function SettingsIndex({ settings = {} }) {
+    const { data, setData, post, processing, errors } = useForm({
         coaching_mode: settings.coaching_mode || 'single',
         center_name: settings.center_name || 'Ullash Coaching Center',
         center_tagline: settings.center_tagline || 'Excellence in Coaching & Learning',
@@ -23,161 +32,238 @@ export default function SettingsIndex({ settings }) {
 
     return (
         <AdminLayout>
-            <Head title="Center Branding & System Settings" />
+            <Head title="General Settings & Operations" />
 
-            <div className="flex items-center justify-between gap-4 mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Coaching Center Branding & Settings</h1>
-                    <p className="text-sm text-slate-500">Configure operation mode (Single vs Multi-Teacher), center branding & receipt notes.</p>
-                </div>
-            </div>
+            <div className="w-full space-y-6">
+                {/* Header Title Banner */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="px-2.5 py-0.5 rounded-[3px] bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200">
+                                System Configuration
+                            </span>
+                        </div>
+                        <h1 className="text-2xl font-black text-slate-900 tracking-tight mt-1">
+                            General Settings & Configuration
+                        </h1>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                            Configure coaching operation mode, institution branding, and official communication details.
+                        </p>
+                    </div>
 
-            <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm max-w-3xl space-y-6 text-xs">
-                {/* COACHING MODE SWITCH SECTION */}
-                <div>
-                    <h3 className="text-sm font-bold text-slate-900 border-b pb-2 mb-3 flex items-center gap-2">
-                        <UserCheck className="text-emerald-600" size={18} /> Coaching Operation Mode
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <button
-                            type="button"
-                            onClick={() => setData('coaching_mode', 'single')}
-                            className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
-                                data.coaching_mode === 'single'
-                                    ? 'border-emerald-600 bg-emerald-50/50 ring-2 ring-emerald-500/20'
-                                    : 'border-slate-200 hover:border-slate-300 bg-white'
-                            }`}
+                    <div className="flex items-center gap-2">
+                        <PrimaryButton 
+                            onClick={handleSubmit} 
+                            disabled={processing}
+                            className="bg-[#16a34a] hover:bg-[#15803d] text-xs h-[36px] px-4 flex items-center gap-2 rounded-[3px]"
                         >
-                            <div className="flex items-center gap-2.5 mb-1.5">
-                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                    data.coaching_mode === 'single' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'
+                            <Save size={15} />
+                            <span>Save Configuration</span>
+                        </PrimaryButton>
+                    </div>
+                </div>
+
+                <form onSubmit={handleSubmit} className="w-full space-y-6">
+                    {/* COACHING OPERATION MODE CARD */}
+                    <div className="bg-white p-5 sm:p-6 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-4">
+                        <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-[4px] bg-emerald-100 text-[#16a34a] flex items-center justify-center">
+                                    <UserCheck size={18} />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-slate-900">Coaching Operation Mode</h3>
+                                    <p className="text-[11px] text-slate-500">Switch between Single Teacher coaching and Multi-Teacher institute workflows.</p>
+                                </div>
+                            </div>
+                            <div className="w-48">
+                                <SelectInput
+                                    value={data.coaching_mode}
+                                    onChange={(value) => setData('coaching_mode', value)}
+                                    options={[
+                                        { id: 'single', name: 'Single Teacher Mode' },
+                                        { id: 'multi', name: 'Multi-Teacher Institute' },
+                                    ]}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                            <div
+                                onClick={() => setData('coaching_mode', 'single')}
+                                className={`p-4 rounded-[4px] border text-left transition-all cursor-pointer flex items-start gap-3 ${
+                                    data.coaching_mode === 'single'
+                                        ? 'border-emerald-500 bg-emerald-50/40 shadow-xs'
+                                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                                }`}
+                            >
+                                <div className={`w-8 h-8 rounded-[4px] flex items-center justify-center shrink-0 ${
+                                    data.coaching_mode === 'single' ? 'bg-[#16a34a] text-white' : 'bg-slate-100 text-slate-400'
                                 }`}>
                                     <UserCheck size={16} />
                                 </div>
-                                <span className="text-sm font-bold text-slate-900">Single Teacher Mode</span>
-                            </div>
-                            <p className="text-xs text-slate-500 leading-relaxed">
-                                Ideal when one teacher teaches multiple subjects & batches. Hides multi-teacher assignment clutter and focuses on Subjects & Batches.
-                            </p>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => setData('coaching_mode', 'multi')}
-                            className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
-                                data.coaching_mode === 'multi'
-                                    ? 'border-indigo-600 bg-indigo-50/50 ring-2 ring-indigo-500/20'
-                                    : 'border-slate-200 hover:border-slate-300 bg-white'
-                            }`}
-                        >
-                            <div className="flex items-center gap-2.5 mb-1.5">
-                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                    data.coaching_mode === 'multi' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'
-                                }`}>
-                                    <Users size={16} />
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-bold text-slate-900 text-xs">Single Teacher Mode</p>
+                                        {data.coaching_mode === 'single' && (
+                                            <span className="text-[10px] bg-[#16a34a] text-white px-1.5 py-0.2 rounded font-bold">Active</span>
+                                        )}
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                        Single teacher operates all classes and batches. Teacher management is streamlined, and focus is kept on batches, routines, and admissions.
+                                    </p>
                                 </div>
-                                <span className="text-sm font-bold text-slate-900">Multi-Teacher Mode</span>
                             </div>
-                            <p className="text-xs text-slate-500 leading-relaxed">
-                                Full coaching institute mode with Teacher Management, instructor assignment per batch/routine, and role permissions.
-                            </p>
-                        </button>
-                    </div>
-                </div>
 
-                <div>
-                    <h3 className="text-sm font-bold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">
-                        <Building className="text-emerald-600" size={18} /> General Branding
-                    </h3>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-1">Center Name *</label>
-                            <input
-                                type="text"
-                                value={data.center_name}
-                                onChange={(e) => setData('center_name', e.target.value)}
-                                required
-                                className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                            />
-                        </div>
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-1">Center Tagline</label>
-                            <input
-                                type="text"
-                                value={data.center_tagline}
-                                onChange={(e) => setData('center_tagline', e.target.value)}
-                                className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                            />
-                        </div>
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-1">Contact Phone *</label>
-                            <input
-                                type="text"
-                                value={data.phone}
-                                onChange={(e) => setData('phone', e.target.value)}
-                                required
-                                className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                            />
-                        </div>
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-1">Official Email *</label>
-                            <input
-                                type="email"
-                                value={data.email}
-                                onChange={(e) => setData('email', e.target.value)}
-                                required
-                                className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                            />
-                        </div>
-                        <div className="sm:col-span-2">
-                            <label className="block font-semibold text-slate-700 mb-1">Center Address *</label>
-                            <input
-                                type="text"
-                                value={data.address}
-                                onChange={(e) => setData('address', e.target.value)}
-                                required
-                                className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                            />
-                        </div>
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-1">Currency Symbol *</label>
-                            <input
-                                type="text"
-                                value={data.currency_symbol}
-                                onChange={(e) => setData('currency_symbol', e.target.value)}
-                                required
-                                className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 font-bold"
-                            />
-                        </div>
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-1">Academic Year *</label>
-                            <input
-                                type="text"
-                                value={data.academic_year}
-                                onChange={(e) => setData('academic_year', e.target.value)}
-                                required
-                                className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                            />
-                        </div>
-                        <div className="sm:col-span-2">
-                            <label className="block font-semibold text-slate-700 mb-1">Print Receipt Footer Note</label>
-                            <textarea
-                                value={data.receipt_footer_note}
-                                onChange={(e) => setData('receipt_footer_note', e.target.value)}
-                                rows={2}
-                                className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                            />
+                            <div
+                                onClick={() => setData('coaching_mode', 'multi')}
+                                className={`p-4 rounded-[4px] border text-left transition-all cursor-pointer flex items-start gap-3 ${
+                                    data.coaching_mode === 'multi'
+                                        ? 'border-emerald-500 bg-emerald-50/40 shadow-xs'
+                                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                                }`}
+                            >
+                                <div className={`w-8 h-8 rounded-[4px] flex items-center justify-center shrink-0 ${
+                                    data.coaching_mode === 'multi' ? 'bg-[#16a34a] text-white' : 'bg-slate-100 text-slate-400'
+                                }`}>
+                                    <Building size={16} />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-bold text-slate-900 text-xs">Multi-Teacher Institute Mode</p>
+                                        {data.coaching_mode === 'multi' && (
+                                            <span className="text-[10px] bg-[#16a34a] text-white px-1.5 py-0.2 rounded font-bold">Active</span>
+                                        )}
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                        Enables full Teacher Management, role-based staff assignments, individual teacher attendance, and multi-instructor batch allocation.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="pt-4 border-t flex justify-end">
-                    <button type="submit" disabled={processing} className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm flex items-center gap-2 cursor-pointer">
-                        <Save size={16} /> Save Branding & Settings
-                    </button>
-                </div>
-            </form>
+                    {/* INSTITUTION BRANDING & INFORMATION CARD */}
+                    <div className="bg-white p-5 sm:p-6 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-5">
+                        <div className="border-b border-slate-100 pb-3 flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-[4px] bg-emerald-100 text-[#16a34a] flex items-center justify-center">
+                                <Building size={18} />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold text-slate-900">Institution Branding & Information</h3>
+                                <p className="text-[11px] text-slate-500">Contact details and identity presented on receipts, invoices, and footers.</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <InputLabel value="Center Name *" />
+                                <TextInput
+                                    value={data.center_name}
+                                    onChange={(e) => setData('center_name', e.target.value)}
+                                    placeholder="Ullash Coaching Center"
+                                    required
+                                />
+                                <InputError message={errors.center_name} />
+                            </div>
+
+                            <div>
+                                <InputLabel value="Center Tagline / Slogan" />
+                                <TextInput
+                                    value={data.center_tagline}
+                                    onChange={(e) => setData('center_tagline', e.target.value)}
+                                    placeholder="Excellence in Coaching & Learning"
+                                />
+                                <InputError message={errors.center_tagline} />
+                            </div>
+
+                            <div>
+                                <InputLabel value="Contact Hotline Phone *" />
+                                <TextInput
+                                    value={data.phone}
+                                    onChange={(e) => setData('phone', e.target.value)}
+                                    placeholder="+880 1711-000000"
+                                    required
+                                />
+                                <InputError message={errors.phone} />
+                            </div>
+
+                            <div>
+                                <InputLabel value="Official Email *" />
+                                <TextInput
+                                    type="email"
+                                    value={data.email}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                    placeholder="info@ullashcoaching.com"
+                                    required
+                                />
+                                <InputError message={errors.email} />
+                            </div>
+
+                            <div>
+                                <InputLabel value="Currency Symbol *" />
+                                <TextInput
+                                    value={data.currency_symbol}
+                                    onChange={(e) => setData('currency_symbol', e.target.value)}
+                                    placeholder="৳"
+                                    required
+                                />
+                                <InputError message={errors.currency_symbol} />
+                            </div>
+
+                            <div>
+                                <InputLabel value="Academic Session / Year *" />
+                                <TextInput
+                                    value={data.academic_year}
+                                    onChange={(e) => setData('academic_year', e.target.value)}
+                                    placeholder="2026"
+                                    required
+                                />
+                                <InputError message={errors.academic_year} />
+                            </div>
+
+                            <div className="md:col-span-2 lg:col-span-3">
+                                <InputLabel value="Campus Physical Address *" />
+                                <TextInput
+                                    value={data.address}
+                                    onChange={(e) => setData('address', e.target.value)}
+                                    placeholder="House 42, Road 11, Block E, Banani, Dhaka"
+                                    required
+                                />
+                                <InputError message={errors.address} />
+                            </div>
+
+                            <div className="md:col-span-2 lg:col-span-3">
+                                <InputLabel value="Receipt & Invoice Footer Note" />
+                                <TextArea
+                                    value={data.receipt_footer_note}
+                                    onChange={(e) => setData('receipt_footer_note', e.target.value)}
+                                    rows={2}
+                                    placeholder="Thank you for choosing Ullash Coaching Center."
+                                />
+                                <InputError message={errors.receipt_footer_note} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Sticky Action Bar */}
+                    <div className="w-full py-4 bg-white border border-slate-200/90 rounded-[4px] p-5 shadow-2xs flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-slate-500 text-xs">
+                            <CheckCircle2 size={16} className="text-[#16a34a]" />
+                            <span>Changes apply instantly across the administration portal and student receipts.</span>
+                        </div>
+
+                        <PrimaryButton
+                            type="submit"
+                            disabled={processing}
+                            className="bg-[#16a34a] hover:bg-[#15803d] text-xs h-[38px] px-6 flex items-center gap-2 rounded-[3px] shadow-sm"
+                        >
+                            <Save size={16} />
+                            <span>Save Configuration</span>
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
         </AdminLayout>
     );
 }

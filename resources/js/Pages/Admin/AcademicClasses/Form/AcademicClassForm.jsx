@@ -4,6 +4,11 @@ import { Save, ArrowLeft, Plus, Trash2, Layers } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import Notify from '@/Utils/Notify';
 import { cn } from '@/lib/utils';
+import TextInput from '@/Components/Form/TextInput';
+import InputLabel from '@/Components/Form/InputLabel';
+import InputError from '@/Components/Form/InputError';
+import PrimaryButton from '@/Components/Button/PrimaryButton';
+import SecondaryButton from '@/Components/Button/SecondaryButton';
 
 export default function AcademicClassForm({ academic_class = null }) {
     const isEdit = !!academic_class;
@@ -59,35 +64,31 @@ export default function AcademicClassForm({ academic_class = null }) {
                         </div>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Class Name <span className="text-red-500">*</span></label>
-                                <input
+                                <InputLabel value="Class Name *" />
+                                <TextInput
                                     type="text"
                                     value={data.name}
                                     onChange={e => setData('name', e.target.value)}
                                     placeholder="e.g., Class One, Standard 10"
-                                    className={cn(
-                                        "w-full h-[40px] px-3 bg-white border rounded-[4px] text-[14px] text-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-[#008060]/20",
-                                        errors.name ? "border-red-400 focus:border-red-400" : "border-slate-300 focus:border-[#008060]"
-                                    )}
+                                    className="h-[38px]"
+                                    required
                                 />
-                                {errors.name && <p className="text-[12px] text-red-500 mt-1 font-medium">{errors.name}</p>}
+                                <InputError message={errors.name} />
                                 <p className="text-[11px] text-slate-500 mt-1">The display name of the class (e.g. Class Six).</p>
                             </div>
 
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Numeric Value <span className="text-red-500">*</span></label>
-                                <input
+                                <InputLabel value="Numeric Value *" />
+                                <TextInput
                                     type="number"
                                     value={data.numeric_value}
                                     onChange={e => setData('numeric_value', e.target.value)}
                                     placeholder="e.g., 1, 6, 10"
                                     min="1"
-                                    className={cn(
-                                        "w-full h-[40px] px-3 bg-white border rounded-[4px] text-[14px] text-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-[#008060]/20",
-                                        errors.numeric_value ? "border-red-400 focus:border-red-400" : "border-slate-300 focus:border-[#008060]"
-                                    )}
+                                    className="h-[38px]"
+                                    required
                                 />
-                                {errors.numeric_value && <p className="text-[12px] text-red-500 mt-1 font-medium">{errors.numeric_value}</p>}
+                                <InputError message={errors.numeric_value} />
                                 <p className="text-[11px] text-slate-500 mt-1">Used for sorting classes in ascending order.</p>
                             </div>
                         </div>
@@ -104,13 +105,13 @@ export default function AcademicClassForm({ academic_class = null }) {
                                     {data.sections.length} Sections
                                 </span>
                             </div>
-                            <button
+                            <SecondaryButton
                                 type="button"
                                 onClick={handleAddSection}
-                                className="h-[28px] px-3 bg-white border border-slate-300 text-slate-700 rounded-[3px] text-[12px] font-bold hover:bg-slate-50 hover:border-slate-400 transition-all flex items-center gap-1.5 shadow-sm"
+                                className="h-[30px] px-3 text-[12px] gap-1.5"
                             >
                                 <Plus size={14} /> Add Section
-                            </button>
+                            </SecondaryButton>
                         </div>
 
                         <div className="space-y-3 mt-4">
@@ -118,29 +119,26 @@ export default function AcademicClassForm({ academic_class = null }) {
                                 <div key={index} className="flex items-start gap-3 p-3 border border-slate-200 rounded-[4px] bg-slate-50/50 hover:bg-slate-50 transition-colors relative group">
                                     <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1">Section Name <span className="text-red-500">*</span></label>
-                                            <input
+                                            <InputLabel value="Section Name *" />
+                                            <TextInput
                                                 type="text"
                                                 value={section.name}
                                                 onChange={e => handleSectionChange(index, 'name', e.target.value)}
                                                 placeholder="e.g. A, Rose, Morning"
-                                                className={cn(
-                                                    "w-full h-[36px] px-3 bg-white border rounded-[3px] text-[13px] text-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-[#008060]/20",
-                                                    errors[`sections.${index}.name`] ? "border-red-400 focus:border-red-400" : "border-slate-300 focus:border-[#008060]"
-                                                )}
+                                                className="h-[36px]"
                                                 required
                                             />
-                                            {errors[`sections.${index}.name`] && <p className="text-[11px] text-red-500 mt-1">{errors[`sections.${index}.name`]}</p>}
+                                            <InputError message={errors[`sections.${index}.name`]} />
                                         </div>
                                         <div>
-                                            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1">Capacity</label>
-                                            <input
+                                            <InputLabel value="Capacity" />
+                                            <TextInput
                                                 type="number"
                                                 value={section.capacity}
                                                 onChange={e => handleSectionChange(index, 'capacity', e.target.value)}
                                                 placeholder="e.g. 40"
                                                 min="1"
-                                                className="w-full h-[36px] px-3 bg-white border border-slate-300 rounded-[3px] text-[13px] text-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-[#008060]/20 focus:border-[#008060]"
+                                                className="h-[36px]"
                                             />
                                         </div>
                                     </div>
@@ -175,14 +173,14 @@ export default function AcademicClassForm({ academic_class = null }) {
             </div>
 
             <div className="flex justify-end pt-2">
-                <button
+                <PrimaryButton
                     type="submit"
                     disabled={processing}
-                    className="h-[44px] px-8 bg-[#008060] text-white rounded-[4px] text-[14px] font-bold shadow hover:bg-[#006e52] transition-all flex items-center gap-2 disabled:opacity-70"
+                    className="h-[40px] px-8 text-[14px] font-bold gap-2 rounded-[3px]"
                 >
-                    <Save size={18} />
+                    <Save size={16} />
                     {isEdit ? 'Update Class & Sections' : 'Save Class & Sections'}
-                </button>
+                </PrimaryButton>
             </div>
         </form>
     );

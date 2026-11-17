@@ -1,62 +1,158 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { ChevronRight, Image as ImageIcon, X, ZoomIn } from 'lucide-react';
 
-export default function Gallery() {
-    const images = [
-        { src: '/images/campus_sports.png', title: 'Annual Sports Meet', category: 'Sports' },
-        { src: '/images/campus_culture.png', title: 'Cultural Festival', category: 'Events' },
-        { src: '/images/campus_academics.png', title: 'Outdoor Learning', category: 'Academics' },
-        { src: '/images/campus_facilities.png', title: 'Campus View', category: 'Facilities' },
+export default function Gallery({ dbGalleries = [], settings = {} }) {
+    const { settings: globalSettings } = usePage().props;
+    const centerName = settings?.center_name || globalSettings?.center_name || "Ullash Coaching Center";
+
+    const [selectedCategory, setSelectedCategory] = useState('All');
+    const [previewImage, setPreviewImage] = useState(null);
+
+    const defaultImages = [
+        { id: 'g1', src: '/images/campus_sports.png', title: 'Annual Athletics Meet 2026', category: 'Sports' },
+        { id: 'g2', src: '/images/campus_culture.png', title: 'Spring Cultural Festival', category: 'Culture' },
+        { id: 'g3', src: '/images/campus_academics.png', title: 'Outdoor Collaborative Learning', category: 'Academics' },
+        { id: 'g4', src: '/images/campus_facilities.png', title: 'Main Campus & Smart Facilities', category: 'Facilities' },
+        { id: 'g5', src: '/images/hero_bg_1.png', title: 'Special Model Test Examination Session', category: 'Academics' },
+        { id: 'g6', src: '/images/hero_bg_2.png', title: 'Mentorship & Award Ceremony', category: 'Events' },
     ];
+
+    const galleryList = (dbGalleries && dbGalleries.length > 0)
+        ? [...dbGalleries, ...defaultImages.filter(d => !dbGalleries.some(g => g.title.toLowerCase() === d.title.toLowerCase()))]
+        : defaultImages;
+
+    const categories = ['All', 'Sports', 'Culture', 'Academics', 'Facilities', 'Events'];
+
+    const filteredImages = galleryList.filter(item => {
+        if (selectedCategory === 'All') return true;
+        return item.category?.toLowerCase() === selectedCategory.toLowerCase();
+    });
 
     return (
         <FrontendLayout>
-            <Head title="Photo Gallery - Lohadi High School" />
+            <Head title={`Photo Gallery - ${centerName}`} />
 
-            {/* Header */}
-            <div className="bg-[#16a34a] text-white py-16">
-                <div className="container mx-auto px-4 md:px-8 text-center">
-                    <h1 className="text-4xl md:text-5xl font-black mb-4">Photo Gallery</h1>
-                    <p className="text-white/80 max-w-2xl mx-auto">
-                        Explore the vibrant campus life, events, and activities of Lohadi High School through our photo gallery.
+            {/* Header Banner - Same Style Like Events */}
+            <div className="bg-[#009ca6] text-white py-14 md:py-16 relative overflow-hidden">
+                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
+                <div className="container mx-auto px-4 md:px-8 text-center relative z-10">
+                    <div className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white/15 backdrop-blur-xs rounded-full text-xs font-bold text-white uppercase tracking-wider mb-3.5 shadow-xs">
+                        <Link href="/" className="hover:text-emerald-200 transition-colors">Home</Link>
+                        <ChevronRight size={12} />
+                        <span>Gallery</span>
+                    </div>
+                    <h1 className="text-3xl md:text-5xl font-black mb-3 tracking-tight">
+                        Photo Gallery
+                    </h1>
+                    <p className="text-white/90 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+                        Explore the vibrant campus life, academic milestones, and student activities of {centerName} through our photo collection.
                     </p>
                 </div>
             </div>
 
             {/* Gallery Grid */}
-            <div className="container mx-auto px-4 md:px-8 py-16 max-w-8xl">
-                <div className="flex flex-wrap justify-center gap-4 mb-12">
-                    <button className="px-6 py-2 bg-[#16a34a] text-white font-bold rounded-full text-sm">All Photos</button>
-                    <button className="px-6 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-full text-sm transition-colors">Sports</button>
-                    <button className="px-6 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-full text-sm transition-colors">Events</button>
-                    <button className="px-6 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-full text-sm transition-colors">Academics</button>
+            <div className="container mx-auto px-4 md:px-8 py-12 max-w-7xl font-inter">
+                {/* Filter Pills */}
+                <div className="flex flex-wrap justify-center gap-2 mb-10">
+                    {categories.map((cat) => (
+                        <button
+                            key={cat}
+                            type="button"
+                            onClick={() => setSelectedCategory(cat)}
+                            className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                                selectedCategory === cat
+                                    ? 'bg-[#009ca6] text-white shadow-xs'
+                                    : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                            }`}
+                        >
+                            {cat} {cat === 'All' ? 'Photos' : ''}
+                        </button>
+                    ))}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {images.map((img, index) => (
-                        <div key={index} className="group relative rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
-                            <div className="aspect-[4/3] w-full bg-slate-100">
-                                <img src={img.src} alt={img.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                {/* Photos Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredImages.map((img, index) => (
+                        <div 
+                            key={img.id || index} 
+                            onClick={() => setPreviewImage(img)}
+                            className="group relative rounded-[4px] overflow-hidden shadow-2xs border border-slate-200/90 bg-white cursor-pointer hover:shadow-md transition-all duration-300"
+                        >
+                            <div className="aspect-[4/3] w-full bg-slate-100 overflow-hidden">
+                                <img 
+                                    src={img.image || img.src || '/images/campus_facilities.png'} 
+                                    alt={img.title} 
+                                    loading="lazy" 
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                                />
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <div className="absolute bottom-6 left-6 right-6">
-                                    <span className="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full mb-2 inline-block">
-                                        {img.category}
-                                    </span>
-                                    <h3 className="text-xl font-bold text-white">{img.title}</h3>
-                                </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                                <span className="px-2.5 py-0.5 bg-[#009ca6] text-white text-[9.5px] font-bold uppercase tracking-wider rounded-[2px] mb-1.5 inline-block self-start">
+                                    {img.category || 'CAMPUS'}
+                                </span>
+                                <h3 className="text-sm md:text-base font-bold text-white leading-snug flex items-center justify-between">
+                                    <span>{img.title}</span>
+                                    <ZoomIn size={16} className="text-emerald-300 shrink-0 ml-2" />
+                                </h3>
                             </div>
                         </div>
                     ))}
                 </div>
 
+                {filteredImages.length === 0 && (
+                    <div className="p-12 text-center text-slate-400 bg-white rounded-[4px] border border-slate-200">
+                        <ImageIcon size={36} className="mx-auto mb-3 opacity-40" />
+                        <p className="text-sm font-semibold">No photos found in this category.</p>
+                    </div>
+                )}
+
                 <div className="text-center mt-12">
-                    <Link href="/" className="inline-block px-8 py-3 bg-slate-900 text-white font-bold rounded hover:bg-slate-800 transition-colors">
-                        ← Back to Home
+                    <Link 
+                        href="/" 
+                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[4px] bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold transition-colors shadow-xs"
+                    >
+                        <span>← Back to Home</span>
                     </Link>
                 </div>
             </div>
+
+            {/* Lightbox Modal */}
+            {previewImage && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xs animate-in fade-in duration-200"
+                    onClick={() => setPreviewImage(null)}
+                >
+                    <div 
+                        className="relative max-w-4xl w-full bg-slate-900 rounded-[4px] overflow-hidden shadow-2xl"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setPreviewImage(null)}
+                            className="absolute top-4 right-4 z-10 p-2 text-white/80 hover:text-white bg-black/50 hover:bg-black/70 rounded-full transition-colors cursor-pointer"
+                        >
+                            <X size={20} />
+                        </button>
+                        <img 
+                            src={previewImage.image || previewImage.src} 
+                            alt={previewImage.title} 
+                            className="w-full max-h-[80vh] object-contain bg-black"
+                        />
+                        <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
+                            <div>
+                                <span className="text-xs text-emerald-400 font-bold uppercase tracking-wider">
+                                    {previewImage.category}
+                                </span>
+                                <h3 className="text-base font-bold text-white mt-0.5">
+                                    {previewImage.title}
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </FrontendLayout>
     );
 }

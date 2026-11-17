@@ -14,7 +14,7 @@ export default function FoundersSection({ founders = [] }) {
                             <div className="inline-block px-3 py-1 bg-amber-100 text-amber-700 font-bold text-[10px] uppercase tracking-wider rounded-full mb-3">Our Heritage</div>
                             <h2 className="text-2xl md:text-[26px] font-black text-slate-900 mb-3 leading-tight">Founders & Land Donors</h2>
                             <p className="text-slate-600 mb-5 text-[13px] leading-relaxed">
-                                The foundation of Lohadi High School was made possible by the visionary leaders and generous land donors who believed in the power of education for our village.
+                                The foundation of Ullash Coaching Center was made possible by the visionary educationists and dedicated mentors who believed in student excellence and academic progress.
                             </p>
                             <button className="text-[#16a34a] font-bold text-[13px] hover:text-[#15803d] flex items-center justify-center md:justify-start gap-1.5 transition-colors">
                                 View Full History <span>→</span>
