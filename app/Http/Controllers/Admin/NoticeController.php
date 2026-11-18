@@ -15,12 +15,12 @@ class NoticeController extends Controller
     public function index()
     {
         $notices = Notice::with(['course', 'batch', 'creator'])->latest()->get();
-        $courses = Course::where('status', 'active')->get();
+        $batches = Course::where('status', 'active')->get();
         $batches = Batch::where('status', 'active')->get();
 
         return Inertia::render('Admin/Notices/Index', [
             'notices' => $notices,
-            'courses' => $courses,
+            'batches' => $batches,
             'batches' => $batches,
         ]);
     }
@@ -31,7 +31,7 @@ class NoticeController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'target_role' => 'required|string', // all, course, batch, teachers, guardians, students
-            'course_id' => 'nullable|exists:courses,id',
+            'course_id' => 'nullable|exists:batches,id',
             'batch_id' => 'nullable|exists:batches,id',
             'category' => 'required|string', // Exam, Holiday, Cancellation, Routine change, Fee reminder, Announcement
             'priority' => 'required|in:high,normal,low',

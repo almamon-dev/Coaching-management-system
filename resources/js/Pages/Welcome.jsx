@@ -5,7 +5,7 @@ import {
     Bell, CheckCircle2, ArrowRight, Phone, Mail, MapPin, Shield, LogIn, Sparkles
 } from 'lucide-react';
 
-export default function Welcome({ courses, notices, stats }) {
+export default function Welcome({ batches, notices, stats }) {
     const { auth, settings } = usePage().props;
 
     const centerName = settings?.center_name || 'Ullash Coaching Center';
@@ -92,10 +92,10 @@ export default function Welcome({ courses, notices, stats }) {
 
                     <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
                         <a
-                            href="#courses"
+                            href="#batches"
                             className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-xl shadow-xl shadow-emerald-500/25 transition-all flex items-center gap-2"
                         >
-                            Explore Courses & Programs <ArrowRight size={16} />
+                            Explore batches & Programs <ArrowRight size={16} />
                         </a>
                         <Link
                             href={route('student.login')}
@@ -112,8 +112,8 @@ export default function Welcome({ courses, notices, stats }) {
                             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1 block">Active Students</span>
                         </div>
                         <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 backdrop-blur-sm">
-                            <div className="text-3xl font-black text-emerald-400">{stats?.courses || '12'}+</div>
-                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1 block">Courses & Programs</span>
+                            <div className="text-3xl font-black text-emerald-400">{stats?.batches || '12'}+</div>
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1 block">batches & Programs</span>
                         </div>
                         <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 backdrop-blur-sm">
                             <div className="text-3xl font-black text-emerald-400">{stats?.teachers || '15'}+</div>
@@ -141,7 +141,7 @@ export default function Welcome({ courses, notices, stats }) {
                                 <GraduationCap size={24} />
                             </div>
                             <h3 className="text-lg font-bold text-white">Automated Admission Workflow</h3>
-                            <p className="text-xs text-slate-400 leading-relaxed">Instant student ID generation (`CSM-2026-XXXX`), course & batch assignment, and payment receipt issuing in Bangladeshi Taka (৳).</p>
+                            <p className="text-xs text-slate-400 leading-relaxed">Instant student ID generation (`UCCA-BATCH-XXXX`), course & batch assignment, and payment receipt issuing in Bangladeshi Taka (৳).</p>
                         </div>
 
                         <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-3">
@@ -163,13 +163,13 @@ export default function Welcome({ courses, notices, stats }) {
                 </div>
             </section>
 
-            {/* COURSES & PROGRAMS */}
-            <section id="courses" className="py-16 bg-slate-950">
+            {/* batches & PROGRAMS */}
+            <section id="batches" className="py-16 bg-slate-950">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
                         <div>
                             <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">Academic Offerings</span>
-                            <h2 className="text-3xl font-black text-white">Active Courses & Programs</h2>
+                            <h2 className="text-3xl font-black text-white">Active batches & Programs</h2>
                         </div>
                         <Link href={route('student.login')} className="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1">
                             Access Student Portal &rarr;
@@ -177,8 +177,8 @@ export default function Welcome({ courses, notices, stats }) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {courses && courses.length > 0 ? (
-                            courses.map((course) => (
+                        {batches && batches.length > 0 ? (
+                            batches.map((course) => (
                                 <div key={course.id} className="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 hover:border-emerald-500/50 transition-all">
                                     <div>
                                         <div className="flex justify-between items-center mb-3">

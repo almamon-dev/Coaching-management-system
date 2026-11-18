@@ -6,13 +6,13 @@ import {
     Wallet, GraduationCap, FileText, UserCheck
 } from 'lucide-react';
 
-export default function CourseShow({ course }) {
+export default function CourseShow({ course = {} }) {
     const { settings } = usePage().props;
     const isMultiTeacher = (settings?.coaching_mode || 'single') === 'multi';
 
     return (
         <AdminLayout>
-            <Head title={`${course.title} - Subject Details`} />
+            <Head title={`${course.title || 'Subject'} - Subject Details`} />
 
             {/* HEADER */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -22,11 +22,10 @@ export default function CourseShow({ course }) {
                         <span className="text-xs font-bold text-[#16a34a] bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
                             {course.code}
                         </span>
-                        <span className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full capitalize ${
-                            course.status === 'active'
+                        <span className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full capitalize ${course.status === 'active'
                                 ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200'
                                 : 'bg-slate-100 text-slate-500 border border-slate-200'
-                        }`}>
+                            }`}>
                             {course.status}
                         </span>
                     </div>
@@ -123,9 +122,16 @@ export default function CourseShow({ course }) {
                     <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2.5 flex items-center gap-2">
                         <GraduationCap size={16} className="text-[#16a34a]" /> Syllabus & Lecture Breakdown
                     </h2>
-                    <div className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">
-                        {course.syllabus_details || 'No syllabus breakdown added yet.'}
-                    </div>
+                    {course.syllabus_details && course.syllabus_details.includes('<') ? (
+                        <div
+                            className="text-xs text-slate-600 leading-relaxed prose prose-sm max-w-none prose-emerald"
+                            dangerouslySetInnerHTML={{ __html: course.syllabus_details }}
+                        />
+                    ) : (
+                        <div className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">
+                            {course.syllabus_details || 'No syllabus breakdown added yet.'}
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -150,7 +156,12 @@ export default function CourseShow({ course }) {
                             <div key={b.id} className="px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/60">
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <span className="font-bold text-slate-900 text-xs">{b.name}</span>
+                                        <Link
+                                            href={route('admin.batches.show', b.id)}
+                                            className="font-bold text-slate-900 hover:text-[#16a34a] hover:underline text-xs"
+                                        >
+                                            {b.name}
+                                        </Link>
                                         <span className="px-2 py-0.5 text-[10.5px] font-bold rounded-full capitalize bg-emerald-50 text-[#16a34a] border border-emerald-200">
                                             {b.status}
                                         </span>

@@ -50,12 +50,12 @@ class StudentController extends Controller
         }
 
         $students = $query->latest()->paginate(15)->withQueryString();
-        $courses = Course::where('status', 'active')->get(['id', 'title']);
+        $batches = Course::where('status', 'active')->get(['id', 'title']);
         $batches = Batch::where('status', 'active')->get(['id', 'name']);
 
         return Inertia::render('Admin/Students/Index', [
             'students' => $students,
-            'courses' => $courses,
+            'batches' => $batches,
             'batches' => $batches,
             'filters' => $request->only(['search', 'course_id', 'batch_id', 'status']),
         ]);
@@ -91,12 +91,12 @@ class StudentController extends Controller
     public function edit($id)
     {
         $student = StudentProfile::with(['course', 'batch', 'batches.course', 'guardian'])->findOrFail($id);
-        $courses = Course::with(['batches' => fn($q) => $q->where('status', 'active')])->where('status', 'active')->get(['id', 'title', 'fee']);
+        $batches = Course::with(['batches' => fn($q) => $q->where('status', 'active')])->where('status', 'active')->get(['id', 'title', 'fee']);
         $batches = Batch::with('course')->where('status', 'active')->get(['id', 'name', 'course_id', 'class_time']);
 
         return Inertia::render('Admin/Students/Edit', [
             'student' => $student,
-            'courses' => $courses,
+            'batches' => $batches,
             'batches' => $batches,
         ]);
     }
@@ -118,8 +118,8 @@ class StudentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $studentCount = StudentProfile::count() + 1;
-        $studentIdStr = 'CSM-' . date('Y') . '-' . str_pad($studentCount, 4, '0', STR_PAD_LEFT);
+        $selectedBatch = Batch::with('course')->find($validated['batch_id'] ?? null);
+        $studentIdStr = StudentProfile::generateStudentId($selectedBatch, $selectedBatch?->course);
 
         // Create User account for student
         $user = User::create([

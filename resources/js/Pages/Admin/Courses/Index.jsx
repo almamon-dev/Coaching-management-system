@@ -5,13 +5,14 @@ import { Plus, Edit, Layers, Trash2, Eye } from 'lucide-react';
 import SelectInput from '@/Components/Form/SelectInput';
 import DataTable from '@/Components/Table/DataTable';
 
-export default function CourseIndex({ courses = {}, filters = {} }) {
+export default function CourseIndex({ courses, batches = {}, filters = {} }) {
     // Filters State
     const [search, setSearch] = useState(filters?.search || '');
     const [selectedCategory, setSelectedCategory] = useState(filters?.category || '');
     const [selectedStatus, setSelectedStatus] = useState(filters?.status || '');
 
-    const courseList = courses.data || (Array.isArray(courses) ? courses : []);
+    const rawData = courses || batches;
+    const courseList = rawData.data || (Array.isArray(rawData) ? rawData : []);
 
     const handleDeleteCourse = (id, name) => {
         if (confirm(`Are you sure you want to delete subject "${name}"?`)) {
@@ -50,8 +51,8 @@ export default function CourseIndex({ courses = {}, filters = {} }) {
             cell: (row) => (
                 <Link
                     href={route('admin.courses.show', row.id)}
-                    className="font-bold text-slate-900 hover:text-[#16a34a] text-xs transition-colors block max-w-[220px] truncate"
-                    title={row.title}
+                    className="font-bold text-slate-900 hover:text-[#16a34a] hover:underline text-xs transition-colors block max-w-[280px] truncate"
+                    title={`Click to view ${row.title} details`}
                 >
                     {row.title}
                 </Link>
@@ -90,18 +91,21 @@ export default function CourseIndex({ courses = {}, filters = {} }) {
             accessor: 'batches_count',
             className: 'text-center',
             cell: (row) => (
-                <span className="inline-flex items-center gap-1 whitespace-nowrap text-[11px] font-bold text-slate-700">
+                <Link
+                    href={route('admin.batches.index')}
+                    className="inline-flex items-center gap-1 whitespace-nowrap text-[11px] font-bold text-slate-700 hover:text-[#16a34a] hover:underline px-2 py-0.5 rounded hover:bg-emerald-50 transition-colors"
+                    title="View batches"
+                >
                     <Layers size={12} className="text-emerald-500" /> {row.batches_count || 0}
-                </span>
+                </Link>
             ),
         },
         {
             header: 'Status',
             accessor: 'status',
             cell: (row) => (
-                <span className={`inline-block whitespace-nowrap px-2 py-0.5 text-[10.5px] font-bold rounded-[3px] capitalize ${
-                    row.status === 'active' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'
-                }`}>{row.status}</span>
+                <span className={`inline-block whitespace-nowrap px-2 py-0.5 text-[10.5px] font-bold rounded-[3px] capitalize ${row.status === 'active' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'
+                    }`}>{row.status}</span>
             ),
         },
         {
@@ -192,7 +196,7 @@ export default function CourseIndex({ courses = {}, filters = {} }) {
             <DataTable
                 columns={subjectColumns}
                 data={courseList}
-                pagination={courses.links ? courses : null}
+                pagination={rawData.links ? rawData : null}
                 selectable={true}
                 itemNoun="subjects"
                 searchQuery={search}
@@ -202,6 +206,7 @@ export default function CourseIndex({ courses = {}, filters = {} }) {
                 }}
                 searchPlaceholder="Search subject name, code..."
                 advancedFilters={subjectFilters}
+                onRowClick={(row) => router.visit(route('admin.courses.show', row.id))}
             />
         </AdminLayout>
     );

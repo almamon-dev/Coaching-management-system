@@ -69,9 +69,9 @@ export default function BatchShow({ batch = {}, otherBatches = [], settings = {}
                         <div className="shrink-0">
                             <Link
                                 href={safeRoute('admissions', undefined, '/admissions')}
-                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f97316] hover:bg-[#ea580c] text-white text-xs sm:text-sm font-bold rounded-[4px] shadow-md transition-all cursor-pointer"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs sm:text-sm font-bold rounded-[4px] shadow-md transition-all cursor-pointer"
                             >
-                                <span>Enroll In This Batch</span>
+                                <span>Join This Batch</span>
                                 <ArrowRight size={15} />
                             </Link>
                         </div>

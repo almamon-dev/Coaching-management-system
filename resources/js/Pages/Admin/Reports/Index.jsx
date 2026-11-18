@@ -3,7 +3,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, router } from '@inertiajs/react';
 import { Printer } from 'lucide-react';
 
-export default function ReportIndex({ type, courses, batches, data, filters }) {
+export default function ReportIndex({ type, batches, data, filters }) {
     const [reportType, setReportType] = useState(type || 'students');
 
     const handleTypeChange = (newType) => {
@@ -44,9 +44,8 @@ export default function ReportIndex({ type, courses, batches, data, filters }) {
                     <button
                         key={t.id}
                         onClick={() => handleTypeChange(t.id)}
-                        className={`px-4 py-2 text-xs font-bold rounded-[3px] transition-all cursor-pointer ${
-                            reportType === t.id ? 'bg-[#16a34a] text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                        }`}
+                        className={`px-4 py-2 text-xs font-bold rounded-[3px] transition-all cursor-pointer ${reportType === t.id ? 'bg-[#16a34a] text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                            }`}
                     >
                         {t.label}
                     </button>

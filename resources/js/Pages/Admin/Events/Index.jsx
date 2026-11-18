@@ -135,10 +135,10 @@ export default function EventsIndex({ events }) {
                                 <div>
                                     <div className="relative h-44 bg-slate-100 overflow-hidden">
                                         <img
-                                            src={evt.image || '/images/event_harvest.png'}
+                                            src={evt.image || '/images/coaching/coaching_12.jpg'}
                                             alt={evt.title}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                            onError={(e) => { e.currentTarget.src = '/images/event_harvest.png'; }}
+                                            onError={(e) => { e.currentTarget.src = '/images/coaching/coaching_12.jpg'; }}
                                         />
                                         <span className={`absolute top-2.5 left-2.5 px-2 py-0.5 text-[10px] font-bold rounded-[2px] uppercase tracking-wider text-white shadow-xs ${
                                             evt.status === 'published' ? 'bg-[#16a34a]' : 'bg-slate-600'

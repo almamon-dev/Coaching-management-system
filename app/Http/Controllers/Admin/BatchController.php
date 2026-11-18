@@ -17,10 +17,10 @@ class BatchController extends Controller
     {
         $batches = Batch::with(['course', 'subject', 'teacher'])
             ->withCount('students')
-            ->latest()
+            ->orderBy('id', 'asc')
             ->get();
 
-        $courses = Course::with('subjects')->where('status', 'active')->get();
+        $courses = Course::with('subjects')->where('status', 'active')->orderBy('id', 'asc')->get();
         $subjects = Subject::all();
         $teachers = TeacherProfile::where('status', 'active')->get();
 
@@ -39,7 +39,13 @@ class BatchController extends Controller
 
     public function show($id)
     {
-        return redirect()->route('admin.batches.index');
+        $batch = Batch::with(['course', 'subject', 'teacher', 'students', 'classRoutines' => fn($q) => $q->latest('class_date')->take(10)])
+            ->withCount('students')
+            ->findOrFail($id);
+
+        return Inertia::render('Admin/Batches/Show', [
+            'batch' => $batch,
+        ]);
     }
 
     public function edit($id)
@@ -55,6 +61,7 @@ class BatchController extends Controller
             'subject_id' => 'nullable|exists:subjects,id',
             'teacher_id' => 'nullable|exists:teacher_profiles,id',
             'room' => 'nullable|string|max:100',
+            'image' => 'nullable',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
             'class_days' => 'nullable|string', // e.g. "Sun, Tue, Thu"
@@ -63,12 +70,19 @@ class BatchController extends Controller
             'status' => 'required|in:active,completed,upcoming,inactive',
         ]);
 
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('batches', 'public');
+            $validated['image'] = '/storage/' . $path;
+        } elseif (is_string($request->input('image'))) {
+            $validated['image'] = $request->input('image');
+        }
+
         $batch = Batch::create($validated);
 
         ActivityLog::create([
             'user_id' => auth()->id(),
-            'user_name' => auth()->user()->name,
-            'user_role' => auth()->user()->user_type,
+            'user_name' => auth()->user()?->name ?? 'System',
+            'user_role' => auth()->user()?->user_type ?? 'admin',
             'action' => 'Batch Created',
             'module' => 'Batches',
             'description' => "Created batch {$batch->name}",
@@ -88,6 +102,7 @@ class BatchController extends Controller
             'subject_id' => 'nullable|exists:subjects,id',
             'teacher_id' => 'nullable|exists:teacher_profiles,id',
             'room' => 'nullable|string|max:100',
+            'image' => 'nullable',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
             'class_days' => 'nullable|string',
@@ -96,7 +111,24 @@ class BatchController extends Controller
             'status' => 'required|in:active,completed,upcoming,inactive',
         ]);
 
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('batches', 'public');
+            $validated['image'] = '/storage/' . $path;
+        } elseif (is_string($request->input('image'))) {
+            $validated['image'] = $request->input('image');
+        }
+
         $batch->update($validated);
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'user_name' => auth()->user()?->name ?? 'System',
+            'user_role' => auth()->user()?->user_type ?? 'admin',
+            'action' => 'Batch Updated',
+            'module' => 'Batches',
+            'description' => "Updated batch {$batch->name}",
+            'ip_address' => request()->ip(),
+        ]);
 
         return redirect()->back()->with('success', 'Batch updated successfully.');
     }

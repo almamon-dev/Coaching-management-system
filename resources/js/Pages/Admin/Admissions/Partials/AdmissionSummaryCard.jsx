@@ -13,9 +13,11 @@ export default function AdmissionSummaryCard({
     processing,
     totalMonthlyFee,
     selectedBatches = [],
+    batches = [],
     courses = [],
     paymentMethodOptions = []
 }) {
+    const courseList = courses && courses.length > 0 ? courses : batches;
     const admissionFee = Number(data.admission_fee || 0);
     const discount = Number(data.discount || 0);
     const paidAmount = Number(data.paid_amount || 0);
@@ -43,7 +45,7 @@ export default function AdmissionSummaryCard({
                     </div>
                     <div className="space-y-1">
                         {selectedBatches.map((b) => {
-                            const c = courses.find(course => String(course.id) === String(b.course_id));
+                            const c = b.course || courseList.find(course => String(course.id) === String(b.course_id));
                             return (
                                 <div key={b.id} className="flex items-center justify-between text-[11px] text-slate-600">
                                     <span className="truncate pr-2 font-medium">{c?.title || b.name}</span>
@@ -111,9 +113,9 @@ export default function AdmissionSummaryCard({
                             htmlFor="remarks"
                             value={
                                 data.payment_method === 'bKash' ? 'bKash Transaction ID (TrxID) *' :
-                                data.payment_method === 'Nagad' ? 'Nagad Transaction ID (TrxID) *' :
-                                data.payment_method === 'Bank' ? 'Bank Deposit / Slip Ref *' :
-                                `${data.payment_method} Transaction ID / Ref *`
+                                    data.payment_method === 'Nagad' ? 'Nagad Transaction ID (TrxID) *' :
+                                        data.payment_method === 'Bank' ? 'Bank Deposit / Slip Ref *' :
+                                            `${data.payment_method} Transaction ID / Ref *`
                             }
                         />
                         <TextInput
@@ -123,9 +125,9 @@ export default function AdmissionSummaryCard({
                             onChange={(e) => setData('remarks', e.target.value)}
                             placeholder={
                                 data.payment_method === 'bKash' ? 'e.g. 9X8Y7Z1A (8-10 digit bKash TrxID)' :
-                                data.payment_method === 'Nagad' ? 'e.g. 7A8B9C2D (Nagad TrxID)' :
-                                data.payment_method === 'Bank' ? 'e.g. Bank Slip #10492 / Ref' :
-                                `Enter ${data.payment_method} reference code...`
+                                    data.payment_method === 'Nagad' ? 'e.g. 7A8B9C2D (Nagad TrxID)' :
+                                        data.payment_method === 'Bank' ? 'e.g. Bank Slip #10492 / Ref' :
+                                            `Enter ${data.payment_method} reference code...`
                             }
                             className="rounded-[4px] text-xs"
                         />

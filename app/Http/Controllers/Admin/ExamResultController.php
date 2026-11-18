@@ -19,12 +19,12 @@ class ExamResultController extends Controller
     public function index()
     {
         $exams = Exam::with(['course', 'batch', 'results'])->latest()->get();
-        $courses = Course::where('status', 'active')->get();
+        $batches = Course::where('status', 'active')->get();
         $batches = Batch::where('status', 'active')->get();
 
         return Inertia::render('Admin/Exams/Index', [
             'exams' => $exams,
-            'courses' => $courses,
+            'batches' => $batches,
             'batches' => $batches,
         ]);
     }
@@ -33,7 +33,7 @@ class ExamResultController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'course_id' => 'nullable|exists:courses,id',
+            'course_id' => 'nullable|exists:batches,id',
             'batch_id' => 'required|exists:batches,id',
             'exam_date' => 'required|date',
             'total_marks' => 'required|numeric|min:1',

@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import StudentLayout from '@/Layouts/StudentLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import {
     Calendar, ClipboardCheck, Wallet, Award,
     BookMarked, FileCode, Bell, CheckCircle2, XCircle,
     User, Layers, Clock, MapPin, Printer, Eye, X, 
-    FileText, Check, ArrowRight, TrendingUp, AlertCircle
+    FileText, Check, ArrowRight, TrendingUp, AlertCircle,
+    BookOpen, Filter, CheckCheck, BarChart2
 } from 'lucide-react';
-import { createPortal } from 'react-dom';
+import MarksheetSlipModal from '@/Components/Marksheet/MarksheetSlipModal';
 
 export default function StudentDashboard({ 
     student, 
@@ -25,8 +26,14 @@ export default function StudentDashboard({
     studyMaterials = [], 
     notices = [] 
 }) {
+    const { settings } = usePage().props;
+    const centerName = settings?.center_name || 'Ullash Coaching Center';
     const [activeTab, setActiveTab] = useState(currentTab || 'overview');
     const [selectedMarksheet, setSelectedMarksheet] = useState(null);
+
+    // BATCH & MONTH FILTERS
+    const [selectedBatchId, setSelectedBatchId] = useState('all');
+    const [selectedMonth, setSelectedMonth] = useState('all'); // 'YYYY-MM' or 'all'
 
     // Sync tab when prop changes or on initial mount
     useEffect(() => {
@@ -49,6 +56,107 @@ export default function StudentDashboard({
         ? enrolledBatches
         : (student?.batch ? [student.batch] : []);
 
+    const activeBatchName = selectedBatchId === 'all'
+        ? 'All Batches'
+        : batchesList.find(b => String(b.id) === String(selectedBatchId))?.name || 'Selected Batch';
+
+    // Extract available distinct months from attendances ('YYYY-MM')
+    const availableMonths = useMemo(() => {
+        const monthSet = new Set();
+        attendances.forEach(att => {
+            if (att.date && att.date.length >= 7) {
+                monthSet.add(att.date.slice(0, 7));
+            }
+        });
+        return Array.from(monthSet).sort().reverse();
+    }, [attendances]);
+
+    const formatMonthName = (monthStr) => {
+        if (!monthStr || monthStr === 'all') return 'All Months';
+        const [year, month] = monthStr.split('-');
+        const date = new Date(Number(year), Number(month) - 1, 1);
+        return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    };
+
+    const getBatchImage = (batch) => {
+        if (batch?.image) return batch.image;
+        if (batch?.display_image) return batch.display_image;
+        const title = ((batch?.course?.title || batch?.name || '')).toLowerCase();
+        if (title.includes('physics')) return '/images/batches/batch_physics.jpg';
+        if (title.includes('higher math') || title.includes('math')) return '/images/batches/batch_higher_math.jpg';
+        if (title.includes('chemistry')) return '/images/batches/batch_chemistry.jpg';
+        if (title.includes('ict')) return '/images/batches/batch_ict.jpg';
+        if (title.includes('class 9') || title.includes('cls9')) return '/images/batches/batch_class9.jpg';
+        if (title.includes('class 10') || title.includes('ssc')) return '/images/batches/batch_class10.jpg';
+        return '/images/batches/batch_revision.jpg';
+    };
+
+    // Filtered Attendances based on Batch & Month
+    const filteredAttendances = useMemo(() => {
+        return attendances.filter(att => {
+            const matchesBatch = selectedBatchId === 'all' || String(att.batch_id) === String(selectedBatchId);
+            const matchesMonth = selectedMonth === 'all' || (att.date && att.date.startsWith(selectedMonth));
+            return matchesBatch && matchesMonth;
+        });
+    }, [attendances, selectedBatchId, selectedMonth]);
+
+    // Dynamic Attendance Stats for selected Batch & Month
+    const attendanceStats = useMemo(() => {
+        const total = filteredAttendances.length;
+        const present = filteredAttendances.filter(a => a.status === 'present').length;
+        const late = filteredAttendances.filter(a => a.status === 'late').length;
+        const absent = filteredAttendances.filter(a => a.status === 'absent').length;
+        const leave = filteredAttendances.filter(a => a.status === 'leave' || a.status === 'on_leave').length;
+        const rate = total > 0 ? Math.round(((present + late) / total) * 100) : 100;
+        return { total, present, late, absent, leave, rate };
+    }, [filteredAttendances]);
+
+    // Batch-wise Attendance rates (for each batch)
+    const batchAttendanceRates = useMemo(() => {
+        const map = {};
+        batchesList.forEach(b => {
+            const batchAtts = attendances.filter(a => String(a.batch_id) === String(b.id));
+            const total = batchAtts.length;
+            const attended = batchAtts.filter(a => a.status === 'present' || a.status === 'late').length;
+            map[b.id] = total > 0 ? Math.round((attended / total) * 100) : 100;
+        });
+        return map;
+    }, [batchesList, attendances]);
+
+    // Filtered Results based on Batch
+    const filteredResults = useMemo(() => {
+        return results.filter(res => {
+            if (selectedBatchId === 'all') return true;
+            return String(res.exam?.batch_id) === String(selectedBatchId);
+        });
+    }, [results, selectedBatchId]);
+
+    // Dynamic Results Stats for selected Batch
+    const resultsStats = useMemo(() => {
+        const total = filteredResults.length;
+        const passed = filteredResults.filter(r => r.pass_status === 'pass').length;
+        const avgMarks = total > 0
+            ? (filteredResults.reduce((sum, r) => sum + Number(r.obtained_marks || 0), 0) / total).toFixed(1)
+            : '0.0';
+        const avgGpa = total > 0
+            ? (filteredResults.reduce((sum, r) => sum + Number(r.gpa || 0), 0) / total).toFixed(2)
+            : '0.00';
+        const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+        return { total, passed, avgMarks, avgGpa, passRate };
+    }, [filteredResults]);
+
+    // Filtered Routines based on Batch
+    const filteredRoutines = useMemo(() => {
+        return routines.filter(r => {
+            if (selectedBatchId === 'all') return true;
+            return String(r.batch_id) === String(selectedBatchId);
+        });
+    }, [routines, selectedBatchId]);
+
+    const todayDateStr = new Date().toISOString().slice(0, 10);
+    const todaysRoutines = filteredRoutines.filter(r => r.class_date === todayDateStr);
+    const activeLatestResult = filteredResults.length > 0 ? filteredResults[0] : (results[0] || null);
+
     const getGradeBadge = (grade) => {
         switch (grade) {
             case 'A+':
@@ -65,14 +173,6 @@ export default function StudentDashboard({
         }
     };
 
-    const handlePrintMarksheet = () => {
-        window.print();
-    };
-
-    const todayDateStr = new Date().toISOString().slice(0, 10);
-    const todaysRoutines = routines.filter(r => r.class_date === todayDateStr);
-    const latestResult = results.length > 0 ? results[0] : null;
-
     return (
         <StudentLayout activeTab={activeTab} onTabChange={handleTabChange}>
             <Head title={`Student Portal - ${student?.name || 'Dashboard'}`} />
@@ -88,14 +188,14 @@ export default function StudentDashboard({
                                     Student Portal
                                 </span>
                                 <span className="text-xs text-slate-400 font-mono">
-                                    ID: {student?.student_id || 'CSM-2026-0001'}
+                                    ID: {student?.student_id || 'UCCA-STUDENT'}
                                 </span>
                             </div>
                             <h2 className="text-lg sm:text-xl font-bold tracking-tight">
                                 Welcome back, {student?.name}!
                             </h2>
                             <p className="text-xs text-slate-300 max-w-xl">
-                                Enrolled in <b className="text-white">{batchesList.length} active coaching {batchesList.length === 1 ? 'batch' : 'batches'}</b>. Here is your daily academic routine and performance summary.
+                                Enrolled in <b className="text-white">{batchesList.length} active coaching {batchesList.length === 1 ? 'batch' : 'batches'}</b>. Currently viewing: <b className="text-emerald-400">{activeBatchName}</b>.
                             </p>
                         </div>
 
@@ -106,7 +206,7 @@ export default function StudentDashboard({
                                 className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-[3px] transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
                             >
                                 <Calendar size={13} />
-                                <span>Today's routine</span>
+                                <span>Class routine</span>
                             </button>
                             <button
                                 type="button"
@@ -122,18 +222,24 @@ export default function StudentDashboard({
                     {/* 4 SUMMARY STATS CARDS */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="bg-white p-3.5 rounded-[4px] border border-slate-200/80 shadow-2xs">
-                            <span className="text-[11px] text-slate-400 font-medium block">Attendance rate</span>
-                            <div className="text-xl font-black text-[#16a34a] mt-0.5">{attendancePercentage}%</div>
-                            <span className="text-[10.5px] text-slate-400">Verified class records</span>
+                            <span className="text-[11px] text-slate-400 font-medium block">
+                                {selectedBatchId === 'all' ? 'Overall Attendance' : 'Batch Attendance'}
+                            </span>
+                            <div className="text-xl font-black text-[#16a34a] mt-0.5">
+                                {selectedBatchId === 'all' ? attendancePercentage : (batchAttendanceRates[selectedBatchId] ?? 100)}%
+                            </div>
+                            <span className="text-[10.5px] text-slate-500 font-medium truncate block">
+                                {selectedBatchId === 'all' ? 'Across all batches' : activeBatchName}
+                            </span>
                         </div>
 
                         <div className="bg-white p-3.5 rounded-[4px] border border-slate-200/80 shadow-2xs">
                             <span className="text-[11px] text-slate-400 font-medium block">Enrolled batches</span>
                             <div className="text-base font-bold text-slate-900 mt-0.5">
-                                {batchesList.length} {batchesList.length === 1 ? 'batch' : 'batches'}
+                                {batchesList.length} Active {batchesList.length === 1 ? 'Batch' : 'Batches'}
                             </div>
                             <span className="text-[10.5px] text-[#16a34a] font-medium">
-                                {batchesList[0]?.name ? `${batchesList[0].name.slice(0, 22)}...` : 'Active'}
+                                {batchesList.map(b => b.name).join(' • ').slice(0, 32)}...
                             </span>
                         </div>
 
@@ -190,8 +296,8 @@ export default function StudentDashboard({
                                                 </div>
                                             </div>
                                         ))
-                                    ) : routines.length > 0 ? (
-                                        routines.slice(0, 2).map(r => (
+                                    ) : filteredRoutines.length > 0 ? (
+                                        filteredRoutines.slice(0, 2).map(r => (
                                             <div key={r.id} className="p-3 bg-slate-50/70 hover:bg-slate-50 rounded-[3px] border border-slate-200 flex justify-between items-center transition-colors">
                                                 <div>
                                                     <span className="text-xs font-bold text-slate-900 block">{r.subject?.name || 'Class Lecture'}</span>
@@ -213,43 +319,136 @@ export default function StudentDashboard({
                                 </div>
                             </div>
 
-                            {/* Enrolled Batches Preview */}
-                            <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs p-4 space-y-3">
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                            {/* Enrolled Batches Section (No card-in-card) */}
+                            <div className="space-y-2.5">
+                                <div className="flex items-center justify-between pb-0.5">
                                     <div className="flex items-center gap-2">
                                         <Layers size={15} className="text-[#16a34a]" />
-                                        <h3 className="text-xs font-bold text-slate-900">My enrolled batches</h3>
+                                        <h3 className="text-xs font-bold text-slate-900">My enrolled batches ({batchesList.length})</h3>
                                     </div>
                                     <button
                                         type="button"
                                         onClick={() => handleTabChange('batches')}
                                         className="text-[11px] font-bold text-[#16a34a] hover:underline flex items-center gap-1 cursor-pointer"
                                     >
-                                        <span>View all batches</span>
+                                        <span>Manage batches</span>
                                         <ArrowRight size={11} />
                                     </button>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {batchesList.slice(0, 4).map(batch => (
-                                        <div key={batch.id} className="p-3 bg-slate-50/70 rounded-[3px] border border-slate-200 space-y-2">
-                                            <div className="flex justify-between items-start gap-1">
-                                                <div>
-                                                    <span className="text-[10px] font-bold text-[#16a34a] bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-[2px] inline-block mb-1">
-                                                        {batch.course?.title || 'Academic Course'}
-                                                    </span>
-                                                    <h4 className="text-xs font-bold text-slate-900 leading-snug">{batch.name}</h4>
+                                <div className="space-y-3">
+                                    {batchesList.map(batch => {
+                                        const batchRate = batchAttendanceRates[batch.id] ?? 100;
+                                        return (
+                                            <div 
+                                                key={batch.id} 
+                                                className="bg-white rounded-[4px] overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-xs flex flex-col sm:flex-row group transition-all"
+                                            >
+                                                {/* Left Image with Badges */}
+                                                <div className="sm:w-44 md:w-48 relative h-36 sm:h-auto overflow-hidden shrink-0 bg-slate-100">
+                                                    <img 
+                                                        src={getBatchImage(batch)} 
+                                                        alt={batch.name} 
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        onError={(e) => { e.currentTarget.src = '/images/batches/batch_revision.jpg'; }}
+                                                    />
+                                                    <div className="absolute top-2.5 left-2.5 bg-white/95 backdrop-blur-xs rounded-[3px] px-2 py-0.5 text-center shadow-xs border border-slate-200/90">
+                                                        <span className="block text-[9px] font-bold text-[#047857] uppercase tracking-wider leading-none">
+                                                            {batch.category || batch.course?.category || 'Academic'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="absolute bottom-2.5 left-2.5 bg-[#047857]/90 backdrop-blur-xs rounded-[3px] px-1.5 py-0.5 text-center">
+                                                        <span className="block font-mono text-[9px] text-white tracking-wider font-semibold">
+                                                            {batch.code || batch.course?.code || `BATCH-${batch.id}`}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-[#16a34a] border border-emerald-200">
-                                                    Active
-                                                </span>
+
+                                                {/* Right Content */}
+                                                <div className="p-3.5 sm:p-4 flex flex-col justify-between flex-1 gap-2.5">
+                                                    <div>
+                                                        {/* Routine Row */}
+                                                        <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold text-slate-500 mb-1.5">
+                                                            <span className="flex items-center gap-1.5 text-slate-600">
+                                                                <Calendar size={13} className="text-[#16a34a]" />
+                                                                <span>{batch.class_days || 'Regular Days'}</span>
+                                                            </span>
+                                                            {batch.class_time && (
+                                                                <span className="flex items-center gap-1.5 text-slate-600">
+                                                                    <Clock size={13} className="text-[#16a34a]" />
+                                                                    <span>{batch.class_time}</span>
+                                                                </span>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Batch Title */}
+                                                        <h4 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-[#16a34a] transition-colors">
+                                                            {batch.name}
+                                                        </h4>
+
+                                                        {/* Course & Instructor */}
+                                                        <div className="text-[11px] font-medium text-[#16a34a] mt-0.5">
+                                                            {batch.course?.title || 'Academic Course'}
+                                                            {batch.teacher?.name && (
+                                                                <span className="text-slate-500 font-normal ml-2">
+                                                                    • Instructor: <span className="text-slate-700 font-medium">{batch.teacher.name}</span>
+                                                                </span>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Description */}
+                                                        <p className="text-slate-600 text-xs leading-relaxed line-clamp-2 mt-1.5">
+                                                            {batch.description || batch.course?.description || 'Expert-guided coaching program with comprehensive syllabus coverage and exam-focused revision.'}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Stats & Quick Actions */}
+                                                    <div className="pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                                                        <div className="flex items-center gap-3 text-xs text-slate-500">
+                                                            <span>Duration: <strong className="text-slate-700 font-semibold">{batch.duration || batch.course?.duration || '12 Months'}</strong></span>
+                                                            <span className="text-slate-300">•</span>
+                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-[3px] bg-emerald-50 text-[#16a34a] border border-emerald-200">
+                                                                {batchRate}% Attendance
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-1.5">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setSelectedBatchId(String(batch.id));
+                                                                    handleTabChange('routine');
+                                                                }}
+                                                                className="px-2.5 py-1 text-xs font-bold text-slate-700 hover:text-[#16a34a] bg-slate-100 hover:bg-emerald-50 rounded-[3px] transition-colors cursor-pointer"
+                                                            >
+                                                                Schedule
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setSelectedBatchId(String(batch.id));
+                                                                    handleTabChange('attendance');
+                                                                }}
+                                                                className="px-2.5 py-1 text-xs font-bold text-[#16a34a] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-[3px] transition-colors cursor-pointer"
+                                                            >
+                                                                Attendance
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setSelectedBatchId(String(batch.id));
+                                                                    handleTabChange('results');
+                                                                }}
+                                                                className="px-2.5 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-[3px] transition-colors cursor-pointer"
+                                                            >
+                                                                Results
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200/60">
-                                                <div>Teacher: <b className="text-slate-700">{batch.teacher?.name || 'Instructor'}</b></div>
-                                                <div>Schedule: <span className="text-slate-700 font-medium">{batch.class_days || 'Regular'} • {batch.class_time || '1 Hour'}</span></div>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -273,38 +472,40 @@ export default function StudentDashboard({
                                     </button>
                                 </div>
 
-                                {latestResult ? (
+                                {activeLatestResult ? (
                                     <div className="space-y-3">
                                         <div>
-                                            <span className="text-xs font-bold text-slate-900 block">{latestResult.exam?.title}</span>
-                                            <span className="text-[11px] text-slate-400">{latestResult.exam?.batch?.name || 'Batch'} • {latestResult.exam?.exam_date}</span>
+                                            <span className="text-xs font-bold text-slate-900 block">{activeLatestResult.exam?.title}</span>
+                                            <span className="text-[11px] text-slate-400">
+                                                {activeLatestResult.exam?.batch?.name || 'Batch'} • {activeLatestResult.exam?.exam_date}
+                                            </span>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-2 text-center">
                                             <div className="p-2.5 bg-emerald-50/60 border border-emerald-100 rounded-[3px]">
                                                 <span className="text-[10px] text-emerald-800 font-semibold block">Obtained score</span>
                                                 <div className="text-lg font-black text-[#16a34a] mt-0.5">
-                                                    {latestResult.obtained_marks}
-                                                    <span className="text-[11px] font-normal text-slate-400"> / {latestResult.total_marks}</span>
+                                                    {activeLatestResult.obtained_marks}
+                                                    <span className="text-[11px] font-normal text-slate-400"> / {activeLatestResult.total_marks}</span>
                                                 </div>
-                                                <span className="text-[10px] text-slate-500">{latestResult.percentage}%</span>
+                                                <span className="text-[10px] text-slate-500">{activeLatestResult.percentage}%</span>
                                             </div>
 
                                             <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-[3px]">
                                                 <span className="text-[10px] text-slate-600 font-semibold block">Grade & GPA</span>
                                                 <div className="text-lg font-black text-slate-900 mt-0.5">
-                                                    {latestResult.grade}
-                                                    <span className="text-[11px] font-normal text-slate-500"> ({Number(latestResult.gpa).toFixed(2)})</span>
+                                                    {activeLatestResult.grade}
+                                                    <span className="text-[11px] font-normal text-slate-500"> ({Number(activeLatestResult.gpa).toFixed(2)})</span>
                                                 </div>
-                                                <span className={`text-[10px] font-bold ${latestResult.pass_status === 'pass' ? 'text-emerald-700' : 'text-rose-600'}`}>
-                                                    {latestResult.pass_status === 'pass' ? 'PASSED' : 'FAILED'}
+                                                <span className={`text-[10px] font-bold ${activeLatestResult.pass_status === 'pass' ? 'text-emerald-700' : 'text-rose-600'}`}>
+                                                    {activeLatestResult.pass_status === 'pass' ? 'PASSED' : 'FAILED'}
                                                 </span>
                                             </div>
                                         </div>
 
                                         <button
                                             type="button"
-                                            onClick={() => setSelectedMarksheet(latestResult)}
+                                            onClick={() => setSelectedMarksheet(activeLatestResult)}
                                             className="w-full py-1.5 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-bold rounded-[3px] transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                                         >
                                             <FileText size={12} />
@@ -317,40 +518,6 @@ export default function StudentDashboard({
                                     </div>
                                 )}
                             </div>
-
-                            {/* Recent Notices Card */}
-                            <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs p-4 space-y-3">
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                                    <div className="flex items-center gap-2">
-                                        <Bell size={15} className="text-[#16a34a]" />
-                                        <h3 className="text-xs font-bold text-slate-900">Recent notices</h3>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleTabChange('notices')}
-                                        className="text-[11px] font-bold text-[#16a34a] hover:underline flex items-center gap-1 cursor-pointer"
-                                    >
-                                        <span>View all</span>
-                                        <ArrowRight size={11} />
-                                    </button>
-                                </div>
-
-                                <div className="space-y-2 text-xs">
-                                    {notices.length > 0 ? (
-                                        notices.slice(0, 3).map(n => (
-                                            <div key={n.id} className="p-2.5 bg-slate-50 rounded-[3px] border border-slate-200/70 space-y-1">
-                                                <div className="flex justify-between items-start gap-1">
-                                                    <h5 className="font-bold text-slate-900 leading-snug">{n.title}</h5>
-                                                    <span className="text-[10px] text-slate-400 whitespace-nowrap">{n.published_at || n.created_at?.slice(0, 10)}</span>
-                                                </div>
-                                                <p className="text-slate-500 text-[11px] line-clamp-2">{n.content}</p>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className="text-center text-slate-400 text-xs py-4">No recent notices.</div>
-                                    )}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -358,8 +525,8 @@ export default function StudentDashboard({
 
             {/* TAB 2: MY BATCHES */}
             {activeTab === 'batches' && (
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between bg-white p-4 rounded-[4px] border border-slate-200/80 shadow-2xs">
+                <div className="space-y-3.5">
+                    <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs p-3.5 flex items-center justify-between">
                         <div>
                             <h3 className="text-sm font-bold text-slate-900">My enrolled batches</h3>
                             <p className="text-xs text-slate-500">All coaching batches you are currently active in.</p>
@@ -370,56 +537,122 @@ export default function StudentDashboard({
                     </div>
 
                     {batchesList.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {batchesList.map(batch => (
-                                <div key={batch.id} className="bg-white rounded-[4px] border border-slate-200/80 p-4 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between space-y-3">
-                                    <div>
-                                        <div className="flex items-start justify-between gap-2">
-                                            <div>
-                                                <span className="text-[10.5px] font-bold text-[#16a34a] bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-[2px] block w-fit mb-1">
-                                                    {batch.course?.title || student?.course?.title || 'Academic Course'}
+                        <div className="grid grid-cols-1 gap-3.5">
+                            {batchesList.map(batch => {
+                                const rate = batchAttendanceRates[batch.id] ?? 100;
+                                return (
+                                    <div 
+                                        key={batch.id} 
+                                        className="bg-white rounded-[4px] overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-xs flex flex-col sm:flex-row group transition-all"
+                                    >
+                                        {/* Left Image with Badges */}
+                                        <div className="sm:w-48 md:w-56 relative h-40 sm:h-auto overflow-hidden shrink-0 bg-slate-100">
+                                            <img 
+                                                src={getBatchImage(batch)} 
+                                                alt={batch.name} 
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                onError={(e) => { e.currentTarget.src = '/images/batches/batch_revision.jpg'; }}
+                                            />
+                                            <div className="absolute top-2.5 left-2.5 bg-white/95 backdrop-blur-xs rounded-[3px] px-2 py-0.5 text-center shadow-xs border border-slate-200/90">
+                                                <span className="block text-[9.5px] font-bold text-[#047857] uppercase tracking-wider leading-none">
+                                                    {batch.category || batch.course?.category || 'Academic'}
                                                 </span>
-                                                <h4 className="text-sm font-bold text-slate-900">{batch.name}</h4>
                                             </div>
-                                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-[#16a34a] border border-emerald-200 capitalize shrink-0">
-                                                {batch.status || 'Active'}
-                                            </span>
+                                            <div className="absolute bottom-2.5 left-2.5 bg-[#047857]/90 backdrop-blur-xs rounded-[3px] px-1.5 py-0.5 text-center">
+                                                <span className="block font-mono text-[9.5px] text-white tracking-wider font-semibold">
+                                                    {batch.code || batch.course?.code || `BATCH-${batch.id}`}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="space-y-1.5 pt-2 border-t border-slate-100 text-xs text-slate-600">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-slate-400 flex items-center gap-1.5">
-                                                <User size={12} className="text-slate-400" /> Instructor
-                                            </span>
-                                            <span className="font-semibold text-slate-800">{batch.teacher?.name || 'Assigned Instructor'}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-slate-400 flex items-center gap-1.5">
-                                                <Clock size={12} className="text-slate-400" /> Schedule
-                                            </span>
-                                            <span className="font-semibold text-slate-800">
-                                                {batch.class_days || 'Regular'} {batch.class_time ? `• ${batch.class_time}` : ''}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-slate-400 flex items-center gap-1.5">
-                                                <MapPin size={12} className="text-slate-400" /> Classroom
-                                            </span>
-                                            <span className="font-semibold text-slate-800">{batch.room || 'Room 101'}</span>
-                                        </div>
-                                        {batch.pivot?.monthly_fee && (
-                                            <div className="flex items-center justify-between pt-1 border-t border-dashed border-slate-200">
-                                                <span className="text-slate-400">Monthly tuition fee</span>
-                                                <span className="font-bold text-[#16a34a]">৳ {batch.pivot.monthly_fee} / month</span>
+                                        {/* Right Content */}
+                                        <div className="p-4 flex flex-col justify-between flex-1 gap-3">
+                                            <div>
+                                                {/* Routine Row */}
+                                                <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-500 mb-1.5">
+                                                    <span className="flex items-center gap-1.5 text-slate-600">
+                                                        <Calendar size={13} className="text-[#16a34a]" />
+                                                        <span>{batch.class_days || 'Regular Days'}</span>
+                                                    </span>
+                                                    {batch.class_time && (
+                                                        <span className="flex items-center gap-1.5 text-slate-600">
+                                                            <Clock size={13} className="text-[#16a34a]" />
+                                                            <span>{batch.class_time}</span>
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* Title */}
+                                                <h4 className="text-base font-bold text-slate-900 leading-snug group-hover:text-[#16a34a] transition-colors">
+                                                    {batch.name}
+                                                </h4>
+
+                                                {/* Course & Instructor */}
+                                                <div className="text-xs font-medium text-[#16a34a] mt-0.5">
+                                                    {batch.course?.title || 'Academic Course'}
+                                                    {batch.teacher?.name && (
+                                                        <span className="text-slate-500 font-normal ml-2">
+                                                            • Instructor: <span className="text-slate-700 font-medium">{batch.teacher.name}</span>
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* Description */}
+                                                <p className="text-slate-600 text-xs leading-relaxed line-clamp-2 mt-2">
+                                                    {batch.description || batch.course?.description || 'Expert-guided coaching program with comprehensive syllabus coverage and exam-focused revision.'}
+                                                </p>
                                             </div>
-                                        )}
+
+                                            {/* Stats & Action buttons */}
+                                            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2.5">
+                                                <div className="flex items-center gap-3 text-xs text-slate-500">
+                                                    <span>Duration: <strong className="text-slate-700 font-semibold">{batch.duration || batch.course?.duration || '12 Months'}</strong></span>
+                                                    <span className="text-slate-300">•</span>
+                                                    <span className="text-xs font-bold px-2 py-0.5 rounded-[3px] bg-emerald-50 text-[#16a34a] border border-emerald-200">
+                                                        {rate}% Verified Attendance
+                                                    </span>
+                                                </div>
+
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedBatchId(String(batch.id));
+                                                            handleTabChange('routine');
+                                                        }}
+                                                        className="px-3 py-1.5 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-[3px] transition-colors cursor-pointer"
+                                                    >
+                                                        Schedule
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedBatchId(String(batch.id));
+                                                            handleTabChange('attendance');
+                                                        }}
+                                                        className="px-3 py-1.5 text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-[#16a34a] border border-emerald-200 rounded-[3px] transition-colors cursor-pointer"
+                                                    >
+                                                        Attendance
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedBatchId(String(batch.id));
+                                                            handleTabChange('results');
+                                                        }}
+                                                        className="px-3 py-1.5 text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-[3px] transition-colors cursor-pointer"
+                                                    >
+                                                        Results
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
-                        <div className="bg-white p-8 rounded-[4px] border border-slate-200 text-center text-xs text-slate-400">
+                        <div className="bg-white rounded-[4px] border border-slate-200/80 p-8 text-center text-xs text-slate-400">
                             No active batch enrollments found.
                         </div>
                     )}
@@ -428,94 +661,157 @@ export default function StudentDashboard({
 
             {/* TAB 3: EXAMS & RESULTS */}
             {activeTab === 'results' && (
-                <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs overflow-hidden">
-                    <div className="p-3.5 border-b border-slate-200/80 bg-slate-50/50 flex items-center justify-between">
-                        <div>
-                            <h3 className="text-sm font-bold text-slate-900">Exam performance & results</h3>
-                            <p className="text-xs text-slate-500">Official published test scores, GPAs, and marksheets.</p>
-                        </div>
-                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#16a34a] border border-emerald-200">
-                            {results.length} Published {results.length === 1 ? 'result' : 'results'}
-                        </span>
-                    </div>
+                <div className="space-y-4">
+                    <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs overflow-hidden">
+                        {/* Header with Integrated Batch Dropdown Filter */}
+                        <div className="p-3.5 border-b border-slate-200/80 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="text-sm font-bold text-slate-900">Exam performance & marksheets</h3>
+                                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#16a34a] border border-emerald-200">
+                                        {filteredResults.length} Published {filteredResults.length === 1 ? 'Result' : 'Results'}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-0.5">Official published test scores, GPAs, and marksheets.</p>
+                            </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
-                            <thead className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-semibold text-slate-600">
-                                <tr>
-                                    <th className="px-3.5 py-2.5">Exam title</th>
-                                    <th className="px-3.5 py-2.5">Batch / Course</th>
-                                    <th className="px-3.5 py-2.5 text-center">Exam date</th>
-                                    <th className="px-3.5 py-2.5 text-center">Obtained marks</th>
-                                    <th className="px-3.5 py-2.5 text-center">Percentage</th>
-                                    <th className="px-3.5 py-2.5 text-center">Grade</th>
-                                    <th className="px-3.5 py-2.5 text-center">GPA</th>
-                                    <th className="px-3.5 py-2.5 text-center">Status</th>
-                                    <th className="px-3.5 py-2.5 text-right">Marksheet</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-200/80 bg-white">
-                                {results.length > 0 ? (
-                                    results.map(res => {
-                                        const isPassed = res.pass_status === 'pass';
-                                        return (
-                                            <tr key={res.id} className="hover:bg-slate-50/60 transition-colors">
-                                                <td className="px-3.5 py-2.5 whitespace-nowrap">
-                                                    <span className="font-bold text-slate-900 block">{res.exam?.title}</span>
-                                                </td>
-                                                <td className="px-3.5 py-2.5 whitespace-nowrap text-slate-500 text-[11px]">
-                                                    {res.exam?.batch?.name || res.exam?.course?.title || 'Coaching Batch'}
-                                                </td>
-                                                <td className="px-3.5 py-2.5 text-center whitespace-nowrap text-slate-600 text-[11px]">
-                                                    {res.exam?.exam_date || '—'}
-                                                </td>
-                                                <td className="px-3.5 py-2.5 text-center whitespace-nowrap">
-                                                    <span className="font-bold text-slate-900 tabular-nums">{res.obtained_marks}</span>
-                                                    <span className="text-[11px] text-slate-400"> / {res.total_marks}</span>
-                                                </td>
-                                                <td className="px-3.5 py-2.5 text-center whitespace-nowrap font-medium text-slate-700 tabular-nums">
-                                                    {res.percentage}%
-                                                </td>
-                                                <td className="px-3.5 py-2.5 text-center whitespace-nowrap">
-                                                    <span className={`inline-block px-2 py-0.5 rounded-[3px] font-bold text-[11px] border ${getGradeBadge(res.grade)}`}>
-                                                        {res.grade}
-                                                    </span>
-                                                </td>
-                                                <td className="px-3.5 py-2.5 text-center whitespace-nowrap font-bold text-slate-800 tabular-nums">
-                                                    {Number(res.gpa).toFixed(2)}
-                                                </td>
-                                                <td className="px-3.5 py-2.5 text-center whitespace-nowrap">
-                                                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold capitalize border ${
-                                                        isPassed
-                                                            ? 'bg-emerald-50 text-[#16a34a] border-emerald-200'
-                                                            : 'bg-rose-50 text-rose-600 border-rose-200'
-                                                    }`}>
-                                                        {isPassed ? <CheckCircle2 size={11} /> : <XCircle size={11} />}
-                                                        {isPassed ? 'Passed' : 'Failed'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-3.5 py-2.5 text-right whitespace-nowrap">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setSelectedMarksheet(res)}
-                                                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#16a34a] hover:bg-[#15803d] text-white text-[11px] font-semibold rounded-[3px] transition-colors cursor-pointer shadow-2xs"
-                                                    >
-                                                        <FileText size={12} />
-                                                        <span>View marksheet</span>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                ) : (
+                            {batchesList.length > 1 && (
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <label htmlFor="results-batch-filter" className="text-xs font-bold text-slate-600 flex items-center gap-1.5 shrink-0">
+                                        <Layers size={13} className="text-[#16a34a]" />
+                                        <span>Batch:</span>
+                                    </label>
+                                    <select
+                                        id="results-batch-filter"
+                                        value={selectedBatchId}
+                                        onChange={(e) => setSelectedBatchId(e.target.value)}
+                                        className="h-8 pl-2.5 pr-8 bg-white border border-slate-200 rounded-[3px] text-xs font-bold text-slate-800 focus:border-[#16a34a] focus:ring-0 cursor-pointer shadow-2xs"
+                                    >
+                                        <option value="all">All Batches</option>
+                                        {batchesList.map(b => (
+                                            <option key={b.id} value={String(b.id)}>
+                                                {b.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {selectedBatchId !== 'all' && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedBatchId('all')}
+                                            className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                                        >
+                                            Reset
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 4 Dynamic Metric Cards */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-white border-b border-slate-200">
+                            <div className="p-3 bg-slate-50 rounded-[3px] border border-slate-200/80">
+                                <span className="text-[11px] font-medium text-slate-500 block">Tests Taken</span>
+                                <div className="text-xl font-black text-slate-900 mt-0.5">{resultsStats.total}</div>
+                                <span className="text-[10px] text-slate-400">Published evaluations</span>
+                            </div>
+                            <div className="p-3 bg-emerald-50/60 rounded-[3px] border border-emerald-100">
+                                <span className="text-[11px] font-semibold text-emerald-800 block">Average Score</span>
+                                <div className="text-xl font-black text-[#16a34a] mt-0.5">{resultsStats.avgMarks}</div>
+                                <span className="text-[10px] text-emerald-700">Out of 100 max</span>
+                            </div>
+                            <div className="p-3 bg-indigo-50/60 rounded-[3px] border border-indigo-100">
+                                <span className="text-[11px] font-semibold text-indigo-800 block">Average GPA</span>
+                                <div className="text-xl font-black text-indigo-700 mt-0.5">{resultsStats.avgGpa}</div>
+                                <span className="text-[10px] text-indigo-600">5.00 Scale</span>
+                            </div>
+                            <div className="p-3 bg-emerald-50/60 rounded-[3px] border border-emerald-100">
+                                <span className="text-[11px] font-semibold text-emerald-800 block">Pass Rate</span>
+                                <div className="text-xl font-black text-[#16a34a] mt-0.5">{resultsStats.passRate}%</div>
+                                <span className="text-[10px] text-emerald-700">{resultsStats.passed} Passed tests</span>
+                            </div>
+                        </div>
+
+                        {/* Results Table */}
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-xs">
+                                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-semibold text-slate-600">
                                     <tr>
-                                        <td colSpan={9} className="px-4 py-8 text-center text-slate-400 text-xs">
-                                            No published exam results found yet.
-                                        </td>
+                                        <th className="px-3.5 py-2.5">Exam title</th>
+                                        <th className="px-3.5 py-2.5">Batch / Course</th>
+                                        <th className="px-3.5 py-2.5 text-center">Exam date</th>
+                                        <th className="px-3.5 py-2.5 text-center">Obtained marks</th>
+                                        <th className="px-3.5 py-2.5 text-center">Percentage</th>
+                                        <th className="px-3.5 py-2.5 text-center">Grade</th>
+                                        <th className="px-3.5 py-2.5 text-center">GPA</th>
+                                        <th className="px-3.5 py-2.5 text-center">Status</th>
+                                        <th className="px-3.5 py-2.5 text-right">Marksheet</th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-slate-200/80 bg-white">
+                                    {filteredResults.length > 0 ? (
+                                        filteredResults.map(res => {
+                                            const isPassed = res.pass_status === 'pass';
+                                            return (
+                                                <tr key={res.id} className="hover:bg-slate-50/60 transition-colors">
+                                                    <td className="px-3.5 py-2.5 whitespace-nowrap">
+                                                        <span className="font-bold text-slate-900 block">{res.exam?.title}</span>
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 whitespace-nowrap text-slate-600 text-[11px]">
+                                                        <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-slate-100 text-slate-700 font-medium">
+                                                            {res.exam?.batch?.name || res.exam?.course?.title || 'Coaching Batch'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 text-center whitespace-nowrap text-slate-600 text-[11px] font-mono">
+                                                        {res.exam?.exam_date || '—'}
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 text-center whitespace-nowrap">
+                                                        <span className="font-bold text-slate-900 tabular-nums">{res.obtained_marks}</span>
+                                                        <span className="text-[11px] text-slate-400"> / {res.total_marks}</span>
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 text-center whitespace-nowrap font-medium text-slate-700 tabular-nums">
+                                                        {res.percentage}%
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 text-center whitespace-nowrap">
+                                                        <span className={`inline-block px-2 py-0.5 rounded-[3px] font-bold text-[11px] border ${getGradeBadge(res.grade)}`}>
+                                                            {res.grade}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 text-center whitespace-nowrap font-bold text-slate-800 tabular-nums">
+                                                        {Number(res.gpa).toFixed(2)}
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 text-center whitespace-nowrap">
+                                                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold capitalize border ${
+                                                            isPassed
+                                                                ? 'bg-emerald-50 text-[#16a34a] border-emerald-200'
+                                                                : 'bg-rose-50 text-rose-600 border-rose-200'
+                                                        }`}>
+                                                            {isPassed ? <CheckCircle2 size={11} /> : <XCircle size={11} />}
+                                                            {isPassed ? 'Passed' : 'Failed'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 text-right whitespace-nowrap">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setSelectedMarksheet(res)}
+                                                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#16a34a] hover:bg-[#15803d] text-white text-[11px] font-semibold rounded-[3px] transition-colors cursor-pointer shadow-2xs"
+                                                        >
+                                                            <FileText size={12} />
+                                                            <span>View marksheet</span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={9} className="px-4 py-8 text-center text-slate-400 text-xs">
+                                                No published exam results found for {activeBatchName}.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}
@@ -523,79 +819,234 @@ export default function StudentDashboard({
             {/* TAB 4: CLASS ROUTINE */}
             {activeTab === 'routine' && (
                 <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs p-4 space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-3 gap-3">
                         <div>
-                            <h3 className="text-sm font-bold text-slate-900">Upcoming class schedule</h3>
-                            <p className="text-xs text-slate-500">Live routine for all your enrolled coaching batches.</p>
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-sm font-bold text-slate-900">Upcoming class schedule</h3>
+                                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#16a34a] border border-emerald-200 shrink-0">
+                                    {filteredRoutines.length} Scheduled {filteredRoutines.length === 1 ? 'class' : 'classes'}
+                                </span>
+                            </div>
+                            <p className="text-xs text-slate-500 mt-0.5">Live routine for all your enrolled coaching batches.</p>
                         </div>
+
+                        {batchesList.length > 1 && (
+                            <div className="flex items-center gap-2 shrink-0">
+                                <label htmlFor="routine-batch-filter" className="text-xs font-bold text-slate-600 flex items-center gap-1.5 shrink-0">
+                                    <Layers size={13} className="text-[#16a34a]" />
+                                    <span>Batch:</span>
+                                </label>
+                                <select
+                                    id="routine-batch-filter"
+                                    value={selectedBatchId}
+                                    onChange={(e) => setSelectedBatchId(e.target.value)}
+                                    className="h-8 pl-2.5 pr-8 bg-white border border-slate-200 rounded-[3px] text-xs font-bold text-slate-800 focus:border-[#16a34a] focus:ring-0 cursor-pointer shadow-2xs"
+                                >
+                                    <option value="all">All Batches</option>
+                                    {batchesList.map(b => (
+                                        <option key={b.id} value={String(b.id)}>
+                                            {b.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {selectedBatchId !== 'all' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedBatchId('all')}
+                                        className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                                    >
+                                        Reset
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </div>
 
-                    <div className="space-y-2 text-xs">
-                        {routines.length > 0 ? (
-                            routines.map(r => (
+                    <div className="space-y-2 text-xs pt-1">
+                        {filteredRoutines.length > 0 ? (
+                            filteredRoutines.map(r => (
                                 <div key={r.id} className="p-3 bg-slate-50/70 hover:bg-slate-50 rounded-[3px] border border-slate-200 flex justify-between items-center transition-colors">
                                     <div>
                                         <div className="font-bold text-slate-900">{r.subject?.name || 'Class Lecture'}</div>
-                                        <div className="text-[11px] text-slate-500">Teacher: {r.teacher?.name || 'Instructor'} • Classroom: {r.room || 'Room 101'}</div>
+                                        <div className="text-[11px] text-slate-500">
+                                            Teacher: {r.teacher?.name || 'Instructor'} • Classroom: <b className="text-slate-700">{r.room || 'Room 101'}</b>
+                                        </div>
                                     </div>
                                     <div className="text-right font-semibold text-[#16a34a]">
-                                        {r.class_date}
-                                        <div className="text-[10.5px] text-slate-400 font-normal">{r.start_time} - {r.end_time}</div>
+                                        <div className="font-mono text-xs">{r.class_date}</div>
+                                        <div className="text-[10.5px] text-slate-500 font-normal">{r.start_time} - {r.end_time}</div>
                                     </div>
                                 </div>
                             ))
-                        ) : <div className="text-center text-slate-400 py-6">No routines scheduled at this time.</div>}
+                        ) : (
+                            <div className="text-center text-slate-400 py-6">No routines scheduled for {activeBatchName}.</div>
+                        )}
                     </div>
                 </div>
             )}
 
-            {/* TAB 5: ATTENDANCE */}
+            {/* TAB 5: ATTENDANCE (BATCH-WISE & MONTH FILTER) */}
             {activeTab === 'attendance' && (
-                <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs overflow-hidden">
-                    <div className="p-3.5 border-b border-slate-200/80 bg-slate-50/50 flex items-center justify-between">
+                <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs overflow-hidden space-y-0">
+                    {/* Header */}
+                    <div className="p-3.5 border-b border-slate-200/80 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
-                            <h3 className="text-sm font-bold text-slate-900">Attendance history</h3>
-                            <p className="text-xs text-slate-500">Record of present, late, and absent days.</p>
+                            <h3 className="text-sm font-bold text-slate-900">Attendance history & records</h3>
+                            <p className="text-xs text-slate-500">Batch-wise attendance tracking and monthly evaluation.</p>
                         </div>
-                        <span className="text-xs font-bold text-[#16a34a] bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                            {attendancePercentage}% Overall
+                        <span className="text-xs font-bold text-[#16a34a] bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full shrink-0">
+                            {attendanceStats.rate}% Attendance ({attendanceStats.present + attendanceStats.late}/{attendanceStats.total} Classes)
                         </span>
                     </div>
 
+                    {/* Filter Bar: Batch & Month Dropdowns */}
+                    <div className="p-3 bg-slate-50/70 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                            {/* Batch Filter Dropdown */}
+                            {batchesList.length > 1 ? (
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <label htmlFor="att-batch-filter" className="text-xs font-bold text-slate-600 flex items-center gap-1.5 shrink-0">
+                                        <Layers size={13} className="text-[#16a34a]" />
+                                        <span>Batch:</span>
+                                    </label>
+                                    <select
+                                        id="att-batch-filter"
+                                        value={selectedBatchId}
+                                        onChange={(e) => setSelectedBatchId(e.target.value)}
+                                        className="h-8 pl-2.5 pr-8 bg-white border border-slate-200 rounded-[3px] text-xs font-bold text-slate-800 focus:border-[#16a34a] focus:ring-0 cursor-pointer shadow-2xs"
+                                    >
+                                        <option value="all">All Batches</option>
+                                        {batchesList.map(b => (
+                                            <option key={b.id} value={String(b.id)}>
+                                                {b.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            ) : (
+                                <div className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                    <Layers size={13} className="text-[#16a34a]" />
+                                    <span>Batch:</span>
+                                    <b className="text-slate-900">{batchesList[0]?.name || activeBatchName}</b>
+                                </div>
+                            )}
+
+                            {/* Month Filter Selector */}
+                            <div className="flex items-center gap-2 shrink-0">
+                                <label htmlFor="att-month-filter" className="text-xs font-bold text-slate-600 flex items-center gap-1.5 shrink-0">
+                                    <Calendar size={13} className="text-slate-400" />
+                                    <span>Month:</span>
+                                </label>
+                                <select
+                                    id="att-month-filter"
+                                    value={selectedMonth}
+                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                    className="h-8 pl-2.5 pr-8 bg-white border border-slate-200 rounded-[3px] text-xs font-bold text-slate-800 focus:border-[#16a34a] focus:ring-0 cursor-pointer shadow-2xs"
+                                >
+                                    <option value="all">All Months</option>
+                                    {availableMonths.map(m => (
+                                        <option key={m} value={m}>
+                                            {formatMonthName(m)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {(selectedBatchId !== 'all' || selectedMonth !== 'all') && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setSelectedBatchId('all');
+                                        setSelectedMonth('all');
+                                    }}
+                                    className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                                >
+                                    Reset Filters
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* 4 Dynamic Attendance Summary Cards */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-white border-b border-slate-200">
+                        <div className="p-3 bg-slate-50 rounded-[3px] border border-slate-200/80">
+                            <span className="text-[11px] font-medium text-slate-500 block">Total Classes</span>
+                            <div className="text-xl font-black text-slate-900 mt-0.5">{attendanceStats.total}</div>
+                            <span className="text-[10px] text-slate-400">Scheduled sessions</span>
+                        </div>
+                        <div className="p-3 bg-emerald-50/60 rounded-[3px] border border-emerald-100">
+                            <span className="text-[11px] font-semibold text-emerald-800 block">Present Count</span>
+                            <div className="text-xl font-black text-[#16a34a] mt-0.5">{attendanceStats.present}</div>
+                            <span className="text-[10px] text-emerald-700 font-bold">{attendanceStats.rate}% attendance rate</span>
+                        </div>
+                        <div className="p-3 bg-amber-50/60 rounded-[3px] border border-amber-100">
+                            <span className="text-[11px] font-semibold text-amber-800 block">Late Arrivals</span>
+                            <div className="text-xl font-black text-amber-700 mt-0.5">{attendanceStats.late}</div>
+                            <span className="text-[10px] text-amber-600">Recorded late entries</span>
+                        </div>
+                        <div className="p-3 bg-rose-50/60 rounded-[3px] border border-rose-100">
+                            <span className="text-[11px] font-semibold text-rose-800 block">Absent Days</span>
+                            <div className="text-xl font-black text-rose-700 mt-0.5">{attendanceStats.absent}</div>
+                            <span className="text-[10px] text-rose-600">Missed classes</span>
+                        </div>
+                    </div>
+
+                    {/* Attendance Table */}
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs">
                             <thead className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-semibold text-slate-600">
                                 <tr>
                                     <th className="px-3.5 py-2.5">Date</th>
+                                    <th className="px-3.5 py-2.5">Day</th>
                                     <th className="px-3.5 py-2.5">Batch</th>
-                                    <th className="px-3.5 py-2.5">Status</th>
-                                    <th className="px-3.5 py-2.5">Remarks</th>
+                                    <th className="px-3.5 py-2.5">Attendance Status</th>
+                                    <th className="px-3.5 py-2.5">Class Notes & Remarks</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-200/80 bg-white">
-                                {attendances.length > 0 ? (
-                                    attendances.map(att => (
-                                        <tr key={att.id} className="hover:bg-slate-50/60 transition-colors">
-                                            <td className="px-3.5 py-2 font-medium text-slate-800">{att.date}</td>
-                                            <td className="px-3.5 py-2 text-slate-600">{att.batch?.name || student?.batch?.name || '—'}</td>
-                                            <td className="px-3.5 py-2">
-                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold capitalize border ${
-                                                    att.status === 'present'
-                                                        ? 'bg-emerald-50 text-[#16a34a] border-emerald-200'
-                                                        : att.status === 'late'
-                                                        ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                                        : 'bg-rose-50 text-rose-600 border-rose-200'
-                                                }`}>
-                                                    {att.status}
-                                                </span>
-                                            </td>
-                                            <td className="px-3.5 py-2 text-slate-400 text-[11px]">{att.remarks || '—'}</td>
-                                        </tr>
-                                    ))
+                            <tbody className="divide-y divide-slate-100 bg-white">
+                                {filteredAttendances.length > 0 ? (
+                                    filteredAttendances.map(att => {
+                                        const dayName = att.date ? new Date(att.date).toLocaleDateString('en-US', { weekday: 'short' }) : '—';
+                                        return (
+                                            <tr key={att.id} className="hover:bg-slate-50/60 transition-colors">
+                                                <td className="px-3.5 py-2.5 font-bold text-slate-900 whitespace-nowrap font-mono">
+                                                    {att.date}
+                                                </td>
+                                                <td className="px-3.5 py-2.5 text-slate-500 font-medium whitespace-nowrap">
+                                                    {dayName}
+                                                </td>
+                                                <td className="px-3.5 py-2.5 whitespace-nowrap">
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[2px] bg-slate-100 text-slate-800 border border-slate-200 font-semibold text-[11px]">
+                                                        <BookOpen size={10} className="text-[#16a34a]" />
+                                                        <span>{att.batch?.name || student?.batch?.name || 'Academic Batch'}</span>
+                                                    </span>
+                                                </td>
+                                                <td className="px-3.5 py-2.5 whitespace-nowrap">
+                                                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold capitalize border ${
+                                                        att.status === 'present'
+                                                            ? 'bg-emerald-50 text-[#16a34a] border-emerald-200'
+                                                            : att.status === 'late'
+                                                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                                            : att.status === 'absent'
+                                                            ? 'bg-rose-50 text-rose-600 border-rose-200'
+                                                            : 'bg-purple-50 text-purple-700 border-purple-200'
+                                                    }`}>
+                                                        {att.status === 'present' && <CheckCircle2 size={11} className="text-[#16a34a]" />}
+                                                        {att.status === 'late' && <Clock size={11} className="text-amber-600" />}
+                                                        {att.status === 'absent' && <XCircle size={11} className="text-rose-600" />}
+                                                        <span>{att.status}</span>
+                                                    </span>
+                                                </td>
+                                                <td className="px-3.5 py-2.5 text-slate-600 text-[11.5px]">
+                                                    {att.remark || att.remarks || '—'}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
                                 ) : (
                                     <tr>
-                                        <td colSpan={4} className="px-4 py-8 text-center text-slate-400 text-xs">
-                                            No attendance logs recorded yet.
+                                        <td colSpan={5} className="px-4 py-10 text-center text-slate-400 text-xs">
+                                            No attendance logs found for {activeBatchName} in {formatMonthName(selectedMonth)}.
                                         </td>
                                     </tr>
                                 )}
@@ -631,27 +1082,25 @@ export default function StudentDashboard({
                                 {invoices.length > 0 ? (
                                     invoices.map(inv => (
                                         <tr key={inv.id} className="hover:bg-slate-50/60 transition-colors">
-                                            <td className="px-3.5 py-2 font-mono font-bold text-[#16a34a]">{inv.invoice_no}</td>
-                                            <td className="px-3.5 py-2 font-medium text-slate-800">{inv.title}</td>
-                                            <td className="px-3.5 py-2 text-right font-bold text-slate-900 tabular-nums">৳ {inv.net_amount}</td>
-                                            <td className="px-3.5 py-2 text-right font-bold text-[#16a34a] tabular-nums">৳ {inv.paid_amount}</td>
-                                            <td className="px-3.5 py-2 text-right font-bold text-rose-600 tabular-nums">৳ {inv.due_amount}</td>
-                                            <td className="px-3.5 py-2 text-center">
-                                                <span className={`inline-block px-2 py-0.5 rounded-full text-[10.5px] font-bold capitalize border ${
-                                                    Number(inv.due_amount) === 0
-                                                        ? 'bg-emerald-50 text-[#16a34a] border-emerald-200'
-                                                        : 'bg-rose-50 text-rose-600 border-rose-200'
+                                            <td className="px-3.5 py-2.5 font-mono font-bold text-slate-800">{inv.invoice_number}</td>
+                                            <td className="px-3.5 py-2.5 text-slate-900">{inv.fee_type?.name || 'Monthly Tuition'}</td>
+                                            <td className="px-3.5 py-2.5 text-right font-medium">৳ {Number(inv.net_amount).toLocaleString()}</td>
+                                            <td className="px-3.5 py-2.5 text-right text-[#16a34a] font-bold">৳ {Number(inv.paid_amount).toLocaleString()}</td>
+                                            <td className={`px-3.5 py-2.5 text-right font-bold ${Number(inv.due_amount) > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+                                                ৳ {Number(inv.due_amount).toLocaleString()}
+                                            </td>
+                                            <td className="px-3.5 py-2.5 text-center">
+                                                <span className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-bold capitalize border ${
+                                                    inv.status === 'paid' ? 'bg-emerald-50 text-[#16a34a] border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'
                                                 }`}>
-                                                    {Number(inv.due_amount) === 0 ? 'Paid' : 'Unpaid'}
+                                                    {inv.status}
                                                 </span>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={6} className="px-4 py-8 text-center text-slate-400 text-xs">
-                                            No fee invoices found.
-                                        </td>
+                                        <td colSpan={6} className="px-4 py-8 text-center text-slate-400 text-xs">No fee invoices generated yet.</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -724,9 +1173,9 @@ export default function StudentDashboard({
                                         <span className="text-[10px] bg-emerald-100 text-[#16a34a] px-2 py-0.5 rounded-[2px]">{m.file_type || 'PDF'}</span>
                                     </div>
                                     <p className="text-slate-500 text-[11px]">{m.description || 'Downloadable study resource.'}</p>
-                                    {m.link_url && (
-                                        <a href={m.link_url} target="_blank" rel="noreferrer" className="text-[#16a34a] font-bold block pt-1 hover:underline">
-                                            Open material &rarr;
+                                    {(m.file_path || m.link_url) && (
+                                        <a href={m.file_path || m.link_url} target="_blank" rel="noreferrer" className="text-[#16a34a] font-bold block pt-1 hover:underline">
+                                            Download material &rarr;
                                         </a>
                                     )}
                                 </div>
@@ -767,113 +1216,14 @@ export default function StudentDashboard({
             )}
 
             {/* MODAL: OFFICIAL STUDENT MARKSHEET SLIP VIEW (PRINTABLE) */}
-            {selectedMarksheet && typeof document !== 'undefined' && createPortal(
-                <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto print:p-0 print:bg-white print:fixed print:inset-0">
-                    <div className="bg-white max-w-lg w-full rounded-[4px] shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col print:shadow-none print:border-none">
-                        {/* Action Header */}
-                        <div className="px-5 py-3 bg-slate-900 text-white flex items-center justify-between shrink-0 print:hidden">
-                            <div className="flex items-center gap-2">
-                                <Award size={16} className="text-emerald-400" />
-                                <span className="text-xs font-bold">Official student marksheet</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    onClick={handlePrintMarksheet}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-bold rounded-[3px] transition-colors cursor-pointer shadow-sm"
-                                >
-                                    <Printer size={13} /> Print marksheet
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedMarksheet(null)}
-                                    className="p-1 text-slate-400 hover:text-white rounded-[3px] transition-colors cursor-pointer"
-                                >
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Slip Printable Card */}
-                        <div className="p-6 space-y-5 print:p-6">
-                            <div className="text-center border-b border-slate-200 pb-3">
-                                <div className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-emerald-600 text-white font-black text-lg mb-1 shadow-sm">
-                                    A
-                                </div>
-                                <h3 className="text-lg font-black text-slate-900 tracking-tight">Apex Coaching Center</h3>
-                                <p className="text-[11px] text-slate-500 font-medium">Academic Evaluation Marksheet Slip</p>
-                            </div>
-
-                            {/* Student Metadata Card */}
-                            <div className="bg-slate-50 p-3.5 rounded-[4px] border border-slate-200 text-xs space-y-1.5">
-                                <div className="flex justify-between">
-                                    <span className="text-slate-500">Student name:</span>
-                                    <b className="text-slate-900">{student?.name}</b>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-500">Student ID:</span>
-                                    <b className="text-[#16a34a] font-mono">{student?.student_id || 'N/A'}</b>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-500">Batch:</span>
-                                    <b className="text-slate-800">{selectedMarksheet.exam?.batch?.name || student?.batch?.name || 'All Batches'}</b>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-500">Examination:</span>
-                                    <b className="text-slate-800">{selectedMarksheet.exam?.title}</b>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-500">Exam date:</span>
-                                    <span className="text-slate-700">{selectedMarksheet.exam?.exam_date || '—'}</span>
-                                </div>
-                            </div>
-
-                            {/* Marks & Performance Grid */}
-                            <div className="grid grid-cols-2 gap-3 text-center">
-                                <div className="p-3 bg-emerald-50/60 border border-emerald-100 rounded-[3px]">
-                                    <span className="text-[10.5px] text-emerald-800 font-semibold block">Obtained marks</span>
-                                    <div className="text-xl font-black text-[#16a34a] mt-0.5">
-                                        {selectedMarksheet.obtained_marks}
-                                        <span className="text-xs font-normal text-slate-400"> / {selectedMarksheet.total_marks}</span>
-                                    </div>
-                                    <span className="text-[10.5px] text-slate-500">{selectedMarksheet.percentage}%</span>
-                                </div>
-
-                                <div className="p-3 bg-slate-50 border border-slate-200 rounded-[3px]">
-                                    <span className="text-[10.5px] text-slate-600 font-semibold block">Grade & GPA</span>
-                                    <div className="text-xl font-black text-slate-900 mt-0.5">
-                                        {selectedMarksheet.grade}
-                                        <span className="text-xs font-normal text-slate-500"> ({Number(selectedMarksheet.gpa).toFixed(2)})</span>
-                                    </div>
-                                    <span className={`text-[10.5px] font-bold ${selectedMarksheet.pass_status === 'pass' ? 'text-emerald-700' : 'text-rose-600'}`}>
-                                        {selectedMarksheet.pass_status === 'pass' ? 'PASSED' : 'FAILED'}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Academic Note */}
-                            <div className="p-2.5 bg-slate-50 border border-slate-200/80 rounded-[3px] text-[11px] text-slate-600">
-                                <b>Instructor remark: </b>
-                                {selectedMarksheet.grade === 'A+' ? 'Outstanding academic performance! Keep maintaining this high standard.' :
-                                 selectedMarksheet.grade === 'A' ? 'Very good mastery of concepts. Continue practice.' :
-                                 selectedMarksheet.grade === 'B' ? 'Good effort. Additional revision recommended.' :
-                                 'Needs dedicated attention and practice on core problem sets.'}
-                            </div>
-
-                            {/* Signatures */}
-                            <div className="flex justify-between pt-8 text-center text-xs text-slate-600">
-                                <div className="border-t border-slate-400 pt-1 w-32">
-                                    <p className="text-[10.5px] font-bold">Evaluator Signature</p>
-                                </div>
-                                <div className="border-t border-slate-400 pt-1 w-32">
-                                    <p className="text-[10.5px] font-bold">Controller / Seal</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
+            <MarksheetSlipModal
+                isOpen={!!selectedMarksheet}
+                onClose={() => setSelectedMarksheet(null)}
+                student={student}
+                result={selectedMarksheet}
+                exam={selectedMarksheet?.exam}
+                settings={settings}
+            />
         </StudentLayout>
     );
 }

@@ -6,54 +6,69 @@ import AttendanceTable from '@/Components/Attendance/AttendanceTable';
 import SelectInput from '@/Components/Form/SelectInput';
 import InputLabel from '@/Components/Form/InputLabel';
 
-export default function AttendanceIndex({ batches, students, existingAttendances, selectedBatchId, selectedDate, auth }) {
+export default function AttendanceIndex({ 
+    batches = [], 
+    students = [], 
+    existingAttendances = {}, 
+    existingRemarks = {}, 
+    selectedBatchId, 
+    selectedDate, 
+    isAttendanceTaken = false, 
+    auth 
+}) {
     const [batchId, setBatchId] = useState(selectedBatchId || (batches[0]?.id || ''));
     const [selectedIds, setSelectedIds] = useState([]);
     const [bulkDropdownOpen, setBulkDropdownOpen] = useState(false);
 
-    // Initial state setup for attendances list array format
-    const initialAttendances = (students || []).map(st => ({
-        id: st.id,
-        status: existingAttendances?.[st.id] || 'present',
-        remarks: ''
-    }));
+    const buildAttendancesList = (studentList, existAtt, existRem) => {
+        return (studentList || []).map(st => {
+            const rawStatus = existAtt?.[st.id];
+            let status = 'present';
+            if (rawStatus) {
+                status = (rawStatus === 'leave' || rawStatus === 'on_leave') ? 'on_leave' : rawStatus;
+            }
+            const remarks = existRem?.[st.id] || '';
+            return {
+                id: st.id,
+                status,
+                remarks
+            };
+        });
+    };
 
     const { data, setData, post, processing } = useForm({
-        batch_id: batchId,
+        batch_id: selectedBatchId || (batches[0]?.id || ''),
         date: selectedDate || new Date().toISOString().split('T')[0],
-        attendances: initialAttendances,
+        attendances: buildAttendancesList(students, existingAttendances, existingRemarks),
     });
 
     useEffect(() => {
         setBatchId(selectedBatchId || (batches[0]?.id || ''));
-        const freshAttendances = (students || []).map(st => ({
-            id: st.id,
-            status: existingAttendances?.[st.id] || 'present',
-            remarks: ''
-        }));
-        setData(prev => ({
-            ...prev,
+        const freshAttendances = buildAttendancesList(students, existingAttendances, existingRemarks);
+        setData({
             batch_id: selectedBatchId || (batches[0]?.id || ''),
-            date: selectedDate || prev.date,
+            date: selectedDate || new Date().toISOString().split('T')[0],
             attendances: freshAttendances,
-        }));
-    }, [students, existingAttendances, selectedBatchId, selectedDate]);
+        });
+        setSelectedIds([]);
+    }, [students, existingAttendances, existingRemarks, selectedBatchId, selectedDate]);
 
     const handleBatchChange = (newBatchId) => {
         setBatchId(newBatchId);
         router.get(route('admin.attendance.index'), {
             batch_id: newBatchId,
             date: data.date,
-        }, { preserveState: true, replace: true });
+        }, { preserveState: true, replace: true, preserveScroll: true });
     };
 
     const handleDateChange = (e) => {
         const newDate = e.target.value;
+        if (!newDate) return;
         setData('date', newDate);
         router.get(route('admin.attendance.index'), {
             batch_id: batchId,
             date: newDate,
-        }, { preserveState: true, replace: true });
+        }, { preserveState: true, replace: true, preserveScroll: true });
     };
 
     const handleStatusChange = (studentId, status) => {
@@ -96,16 +111,22 @@ export default function AttendanceIndex({ batches, students, existingAttendances
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Format attendances array to key-value map object for controller backend
         const attendanceMap = {};
+        const remarksMap = {};
         data.attendances.forEach(a => {
             attendanceMap[a.id] = a.status;
+            if (a.remarks) {
+                remarksMap[a.id] = a.remarks;
+            }
         });
 
         router.post(route('admin.attendance.store'), {
             batch_id: batchId,
             date: data.date,
-            attendances: attendanceMap
+            attendances: attendanceMap,
+            remarks: remarksMap,
+        }, {
+            preserveScroll: true,
         });
     };
 
@@ -165,6 +186,7 @@ export default function AttendanceIndex({ batches, students, existingAttendances
                     handleSelectedBulkAction={handleSelectedBulkAction}
                     handleQuickAction={handleQuickAction}
                     processing={processing}
+                    isAttendanceTaken={isAttendanceTaken}
                 />
 
                 <AttendanceTable

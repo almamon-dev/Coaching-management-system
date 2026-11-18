@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import SchoolLogo from "@/Components/SchoolLogo";
 import {
@@ -49,6 +49,21 @@ export default function Sidebar({ isCollapsed }) {
             return false;
         }
 
+        // Dedicated exact match for Subject Management (/admin/courses & /admin/subjects)
+        if (item.route === 'admin.courses.index') {
+            if (currentPath === '/admin/courses' || currentPath.startsWith('/admin/courses/') ||
+                currentPath === '/admin/subjects' || currentPath.startsWith('/admin/subjects/')) {
+                return true;
+            }
+        }
+
+        // Dedicated exact match for Batch Management
+        if (item.route === 'admin.batches.index') {
+            if (currentPath === '/admin/batches' || currentPath.startsWith('/admin/batches/')) {
+                return true;
+            }
+        }
+
         if (item.route && typeof route !== "undefined") {
             try {
                 if (route().current(item.route)) return true;
@@ -71,25 +86,34 @@ export default function Sidebar({ isCollapsed }) {
         return false;
     };
 
-    const [openMenus, setOpenMenus] = useState(() => {
+    const getInitialOpenMenus = (path) => {
         const initial = {};
-        if (currentPath.includes('/admin/courses') || currentPath.includes('/admin/batches') || currentPath.includes('/admin/class-routines')) {
+        if (path.includes('/admin/courses') || path.includes('/admin/subjects') || path.includes('/admin/batches') || path.includes('/admin/class-routines')) {
             initial.course_routine = true;
         }
-        if (currentPath.includes('/admin/exams') || currentPath.includes('/admin/assignments') || currentPath.includes('/admin/study-materials')) {
+        if (path.includes('/admin/exams') || path.includes('/admin/assignments') || path.includes('/admin/study-materials')) {
             initial.academic_content = true;
         }
-        if (currentPath.includes('/admin/permissions') || currentPath.includes('/admin/activity-logs')) {
+        if (path.includes('/admin/permissions') || path.includes('/admin/activity-logs')) {
             initial.security_logs = true;
         }
-        if (currentPath.includes('/admin/cms') || currentPath.includes('/admin/events') || currentPath.includes('/admin/galleries') || currentPath.includes('/admin/testimonials') || currentPath.includes('/admin/notices')) {
+        if (path.includes('/admin/cms') || path.includes('/admin/events') || path.includes('/admin/galleries') || path.includes('/admin/testimonials') || path.includes('/admin/notices')) {
             initial.website_cms = true;
         }
-        if (currentPath.includes('/admin/settings') || currentPath.includes('/admin/backup')) {
+        if (path.includes('/admin/settings') || path.includes('/admin/backup')) {
             initial.system_config = true;
         }
         return initial;
-    });
+    };
+
+    const [openMenus, setOpenMenus] = useState(() => getInitialOpenMenus(currentPath));
+
+    useEffect(() => {
+        setOpenMenus(prev => ({
+            ...prev,
+            ...getInitialOpenMenus(currentPath)
+        }));
+    }, [currentPath]);
 
     const menuGroups = [
         {
@@ -183,7 +207,8 @@ export default function Sidebar({ isCollapsed }) {
                         { label: "Notice Board", path: route('admin.notices.index'), route: "admin.notices.index" },
                         { label: "Upcoming Events", path: route('admin.events.index'), route: "admin.events.index" },
                         { label: "Photo Gallery", path: route('admin.galleries.index'), route: "admin.galleries.index" },
-                        { label: "Success Stories", path: route('admin.testimonials.index'), route: "admin.testimonials.index" },
+                        { label: "Success Stories & Stats", path: route('admin.testimonials.index'), route: "admin.testimonials.index" },
+                        { label: "Footer & Contact CMS", path: route('admin.cms.footer-contact'), route: "admin.cms.footer-contact" },
                     ]
                 },
             ]
@@ -237,9 +262,8 @@ export default function Sidebar({ isCollapsed }) {
                 </div>
 
                 {!isCollapsed && (
-                    <span className={`font-semibold leading-tight transition-all duration-200 text-[13px] flex-1 text-left whitespace-nowrap truncate ${
-                        active ? 'text-[#16a34a] font-bold' : isOpen ? 'text-slate-900' : 'text-slate-600'
-                    }`}>
+                    <span className={`font-semibold leading-tight transition-all duration-200 text-[13px] flex-1 text-left whitespace-nowrap truncate ${active ? 'text-[#16a34a] font-bold' : isOpen ? 'text-slate-900' : 'text-slate-600'
+                        }`}>
                         {item.label}
                     </span>
                 )}
@@ -247,9 +271,8 @@ export default function Sidebar({ isCollapsed }) {
                 {!isCollapsed && item.children && (
                     <ChevronRight
                         size={14}
-                        className={`flex-shrink-0 transition-all duration-200 text-slate-300 group-hover:text-slate-500 ${
-                            isOpen ? 'rotate-90' : ''
-                        } ${active ? 'text-[#16a34a]' : ''}`}
+                        className={`flex-shrink-0 transition-all duration-200 text-slate-300 group-hover:text-slate-500 ${isOpen ? 'rotate-90' : ''
+                            } ${active ? 'text-[#16a34a]' : ''}`}
                     />
                 )}
 

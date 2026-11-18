@@ -119,7 +119,7 @@ export default function AboutUs({ settings: propSettings = {} }) {
                                 src={aboutImage} 
                                 alt={storyTitle} 
                                 className="w-full h-80 object-cover"
-                                onError={(e) => { e.target.src = '/images/campus_academics.png'; }}
+                                onError={(e) => { e.target.src = '/images/coaching/coaching_01.jpg'; }}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end p-5">
                                 <span className="text-white text-xs font-bold">

@@ -13,9 +13,13 @@ import InputError from '@/Components/Form/InputError';
 import AdmissionSummaryCard from './Partials/AdmissionSummaryCard';
 
 export default function CreateAdmission({ courses = [], batches = [], feeTypes = [] }) {
+    const courseList = courses && courses.length > 0 ? courses : batches;
+    const batchList = batches && batches.length > 0 ? batches : [];
+
     // Map initial batch selection if available
-    const initialBatchId = batches[0]?.id || '';
-    const initialCourseId = batches[0]?.course_id || courses[0]?.id || '';
+    const initialBatch = batchList[0];
+    const initialBatchId = initialBatch?.id || '';
+    const initialCourseId = initialBatch?.course_id || courseList[0]?.id || '';
 
     const { data, setData, post, processing, errors } = useForm({
         name: '',
@@ -38,11 +42,11 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
     });
 
     // Helper: find all batches selected
-    const selectedBatches = batches.filter(b => data.batch_ids.includes(b.id));
+    const selectedBatches = batchList.filter(b => data.batch_ids.includes(b.id));
 
     // Calculate total monthly fee of all selected subjects
     const totalMonthlyFee = selectedBatches.reduce((sum, b) => {
-        const c = courses.find(course => String(course.id) === String(b.course_id));
+        const c = b.course || courseList.find(course => String(course.id) === String(b.course_id));
         return sum + Number(c?.fee || 0);
     }, 0);
 
@@ -51,7 +55,7 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
         let currentBatchIds = [...data.batch_ids];
 
         // Find existing batch for this course if any
-        const existingBatchForCourse = batches.find(
+        const existingBatchForCourse = batchList.find(
             b => String(b.course_id) === String(courseId) && currentBatchIds.includes(b.id)
         );
 
@@ -69,7 +73,7 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
             currentBatchIds.push(Number(batchId));
         }
 
-        const primaryBatch = batches.find(b => b.id === currentBatchIds[0]);
+        const primaryBatch = batchList.find(b => b.id === currentBatchIds[0]);
 
         setData(prev => ({
             ...prev,
@@ -263,10 +267,10 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
 
                         {/* Subject Cards Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {courses.map((course) => {
-                                const courseBatches = batches.filter(
-                                    b => String(b.course_id) === String(course.id)
-                                );
+                            {courseList.map((course) => {
+                                const courseBatches = course.batches && course.batches.length > 0
+                                    ? course.batches
+                                    : batchList.filter(b => String(b.course_id) === String(course.id));
                                 const activeBatchForCourse = courseBatches.find(
                                     b => data.batch_ids.includes(b.id)
                                 );
@@ -275,11 +279,10 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
                                 return (
                                     <div
                                         key={course.id}
-                                        className={`p-3 sm:p-3.5 rounded-[4px] border transition-all ${
-                                            isEnrolled
+                                        className={`p-3 sm:p-3.5 rounded-[4px] border transition-all ${isEnrolled
                                                 ? 'border-[#16a34a] bg-emerald-50/25 shadow-2xs'
                                                 : 'border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/40'
-                                        }`}
+                                            }`}
                                     >
                                         <div className="flex items-start justify-between gap-2.5">
                                             <div className="flex items-start gap-2 min-w-0 flex-1">
@@ -364,7 +367,7 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
                                 </h4>
                                 <div className="space-y-1">
                                     {selectedBatches.map((b) => {
-                                        const c = courses.find(course => String(course.id) === String(b.course_id));
+                                        const c = b.course || courseList.find(course => String(course.id) === String(b.course_id));
                                         return (
                                             <div key={b.id} className="flex items-center justify-between text-[11px] py-1 border-b border-emerald-100/60 last:border-0">
                                                 <div className="flex items-center gap-1.5 min-w-0">
@@ -393,7 +396,8 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
                     processing={processing}
                     totalMonthlyFee={totalMonthlyFee}
                     selectedBatches={selectedBatches}
-                    courses={courses}
+                    batches={batchList}
+                    courses={courseList}
                     paymentMethodOptions={paymentMethodOptions}
                 />
             </form>

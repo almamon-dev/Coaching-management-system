@@ -5,7 +5,7 @@ import { Plus, Eye, User, GraduationCap } from 'lucide-react';
 import DataTable from '@/Components/Table/DataTable';
 import SelectInput from '@/Components/Form/SelectInput';
 
-export default function StudentIndex({ students, courses, batches, filters }) {
+export default function StudentIndex({ students, batches, filters }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [selectedCourse, setSelectedCourse] = useState(filters?.course_id || '');
     const [selectedBatch, setSelectedBatch] = useState(filters?.batch_id || '');
@@ -36,8 +36,8 @@ export default function StudentIndex({ students, courses, batches, filters }) {
         {
             header: "Student ID",
             accessor: "student_id",
-            className: "w-[120px]",
-            cell: (row) => <span className="font-bold text-[#16a34a] text-xs">{row.student_id}</span>
+            className: "whitespace-nowrap min-w-[150px]",
+            cell: (row) => <span className="font-bold text-[#16a34a] text-xs whitespace-nowrap font-mono">{row.student_id}</span>
         },
         {
             header: "Student Name",
@@ -103,9 +103,8 @@ export default function StudentIndex({ students, courses, batches, filters }) {
             accessor: "status",
             className: "w-[100px]",
             cell: (row) => (
-                <span className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full capitalize ${
-                    row.status === 'active' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'
-                }`}>
+                <span className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full capitalize ${row.status === 'active' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'
+                    }`}>
                     {row.status}
                 </span>
             )
@@ -142,7 +141,7 @@ export default function StudentIndex({ students, courses, batches, filters }) {
                     setSelectedCourse(val);
                     handleFilterChange('course_id', val);
                 }}
-                options={[{ id: '', name: 'All Courses' }, ...courses.map(c => ({ id: c.id, name: c.title }))]}
+                options={[{ id: '', name: 'All batches' }, ...batches.map(c => ({ id: c.id, name: c.title }))]}
                 placeholder="Filter by Course"
             />
             <SelectInput

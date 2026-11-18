@@ -37,6 +37,7 @@ class SubjectController extends Controller
 
         return Inertia::render('Admin/Courses/Index', [
             'courses' => $courses,
+            'batches' => $courses, // for backwards compat
             'filters' => $request->only(['search', 'category', 'status']),
         ]);
     }
@@ -52,17 +53,21 @@ class SubjectController extends Controller
             'title' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:courses,code',
             'category' => 'nullable|string|max:100',
-            'monthly_fee' => 'required|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0',
+            'fee' => 'nullable|numeric|min:0',
             'admission_fee' => 'nullable|numeric|min:0',
             'duration' => 'nullable|string|max:100',
             'total_lectures' => 'nullable|integer|min:0',
             'total_lessons' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'syllabus_details' => 'nullable|string',
+            'status' => 'nullable|in:active,inactive',
         ]);
 
-        $validated['fee'] = $validated['monthly_fee'];
-        $validated['admission_fee'] = $validated['admission_fee'] ?? 0;
+        $feeAmount = $validated['monthly_fee'] ?? $validated['fee'] ?? 0;
+        $validated['fee'] = (float)$feeAmount;
+        $validated['admission_fee'] = (float)($validated['admission_fee'] ?? 0);
+        $validated['status'] = $validated['status'] ?? 'active';
         unset($validated['monthly_fee']);
 
         $course = Course::create($validated);
@@ -71,9 +76,9 @@ class SubjectController extends Controller
             'user_id' => auth()->id(),
             'user_name' => auth()->user()->name,
             'user_role' => auth()->user()->user_type,
-            'action' => 'Course Created',
-            'module' => 'Courses',
-            'description' => "Created course {$course->title} ({$course->code})",
+            'action' => 'Subject Created',
+            'module' => 'Subjects',
+            'description' => "Created subject {$course->title} ({$course->code})",
             'ip_address' => request()->ip(),
         ]);
 
@@ -82,6 +87,7 @@ class SubjectController extends Controller
 
     public function show($id)
     {
+        $id = ($id instanceof Course) ? $id->id : $id;
         $course = Course::withCount(['batches', 'students'])
             ->with(['batches' => fn($q) => $q->with('teacher')->withCount('students')])
             ->findOrFail($id);
@@ -93,6 +99,7 @@ class SubjectController extends Controller
 
     public function edit($id)
     {
+        $id = ($id instanceof Course) ? $id->id : $id;
         $course = Course::findOrFail($id);
         return Inertia::render('Admin/Courses/Edit', [
             'course' => $course
@@ -101,13 +108,15 @@ class SubjectController extends Controller
 
     public function update(Request $request, $id)
     {
+        $id = ($id instanceof Course) ? $id->id : $id;
         $course = Course::findOrFail($id);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:courses,code,' . $id,
             'category' => 'nullable|string|max:100',
-            'monthly_fee' => 'required|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0',
+            'fee' => 'nullable|numeric|min:0',
             'admission_fee' => 'nullable|numeric|min:0',
             'duration' => 'nullable|string|max:100',
             'total_lectures' => 'nullable|integer|min:0',
@@ -117,8 +126,9 @@ class SubjectController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        $validated['fee'] = $validated['monthly_fee'];
-        $validated['admission_fee'] = $validated['admission_fee'] ?? 0;
+        $feeAmount = $validated['monthly_fee'] ?? $validated['fee'] ?? $course->fee ?? 0;
+        $validated['fee'] = (float)$feeAmount;
+        $validated['admission_fee'] = (float)($validated['admission_fee'] ?? 0);
         unset($validated['monthly_fee']);
 
         $course->update($validated);
@@ -128,10 +138,11 @@ class SubjectController extends Controller
 
     public function destroy($id)
     {
+        $id = ($id instanceof Course) ? $id->id : $id;
         $course = Course::findOrFail($id);
         $title = $course->title;
         $course->delete();
 
-        return redirect()->back()->with('success', "Subject {$title} deleted successfully.");
+        return redirect()->route('admin.courses.index')->with('success', "Subject {$title} deleted successfully.");
     }
 }

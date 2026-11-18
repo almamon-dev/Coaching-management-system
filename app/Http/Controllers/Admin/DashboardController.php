@@ -26,7 +26,7 @@ class DashboardController extends Controller
         $totalStudents = StudentProfile::count();
         $activeStudents = StudentProfile::where('status', 'active')->count();
         $teachersCount = TeacherProfile::where('status', 'active')->count();
-        $coursesCount = Course::where('status', 'active')->count();
+        $batchesCount = Course::where('status', 'active')->count();
         $batchesCount = Batch::where('status', 'active')->count();
 
         $todaysClassesCount = ClassRoutine::whereDate('class_date', $today)->count();
@@ -66,7 +66,19 @@ class DashboardController extends Controller
         $batchDistribution = Batch::withCount('students')
             ->where('status', 'active')
             ->get()
-            ->map(fn($b) => ['name' => $b->name, 'students' => $b->students_count]);
+            ->map(function ($b) {
+                $shortName = $b->name;
+                if (preg_match('/^([A-Za-z]+-\d+)/i', $b->name, $m)) {
+                    $shortName = $m[1];
+                } elseif (strlen($b->name) > 14) {
+                    $shortName = substr($b->name, 0, 12) . '...';
+                }
+                return [
+                    'name' => $shortName,
+                    'fullName' => $b->name,
+                    'students' => (int)$b->students_count,
+                ];
+            });
 
         // Monthly Financial Trend (Last 6 Months)
         $financialTrend = [];
@@ -87,7 +99,7 @@ class DashboardController extends Controller
                 'total_students' => $totalStudents,
                 'active_students' => $activeStudents,
                 'teachers_count' => $teachersCount,
-                'courses_count' => $coursesCount,
+                'batches_count' => $batchesCount,
                 'batches_count' => $batchesCount,
                 'todays_classes' => $todaysClassesCount,
                 'todays_attendance' => $todaysAttendanceCount,

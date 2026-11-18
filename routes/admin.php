@@ -38,6 +38,7 @@ Route::post('/admissions', [AdmissionController::class, 'store'])->name('admissi
 
 // Subject, Batch, Teacher & Routine Management
 Route::resource('courses', SubjectController::class);
+Route::resource('subjects', SubjectController::class);
 Route::resource('batches', BatchController::class);
 Route::resource('teachers', TeacherController::class);
 Route::resource('class-routines', ClassRoutineController::class);
@@ -79,6 +80,7 @@ Route::delete('/study-materials/{id}', [StudyMaterialController::class, 'destroy
 Route::resource('notices', NoticeController::class);
 Route::resource('events', EventController::class);
 Route::resource('galleries', GalleryController::class);
+Route::post('/testimonials/stats', [TestimonialController::class, 'updateStats'])->name('testimonials.stats.update');
 Route::resource('testimonials', TestimonialController::class);
 Route::get('/cms/landing', [SettingController::class, 'landingCms'])->name('cms.landing');
 Route::post('/cms/landing', [SettingController::class, 'updateLandingCms'])->name('cms.landing.update');
@@ -86,6 +88,8 @@ Route::get('/cms/admission', [SettingController::class, 'admissionCms'])->name('
 Route::post('/cms/admission', [SettingController::class, 'updateAdmissionCms'])->name('cms.admission.update');
 Route::get('/cms/about', [SettingController::class, 'aboutCms'])->name('cms.about');
 Route::post('/cms/about', [SettingController::class, 'updateAboutCms'])->name('cms.about.update');
+Route::get('/cms/footer-contact', [SettingController::class, 'footerContactCms'])->name('cms.footer-contact');
+Route::post('/cms/footer-contact', [SettingController::class, 'updateFooterContactCms'])->name('cms.footer-contact.update');
 
 // Reports
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

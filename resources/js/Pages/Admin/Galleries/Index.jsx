@@ -128,7 +128,7 @@ export default function GalleriesIndex({ galleries }) {
                                             src={item.image.startsWith('/') ? item.image : `/${item.image}`}
                                             alt={item.title}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                            onError={(e) => { e.currentTarget.src = '/images/campus_sports.png'; }}
+                                            onError={(e) => { e.currentTarget.src = '/images/coaching/coaching_01.jpg'; }}
                                         />
                                         <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 bg-[#009ca6] text-white text-[10px] font-bold rounded-[2px] uppercase tracking-wider shadow-xs">
                                             {item.category}

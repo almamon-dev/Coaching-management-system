@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { 
-    GraduationCap, ClipboardCheck, Bell, Phone, 
-    ChevronDown, Menu, X, ArrowRight, User 
+import {
+    GraduationCap, ClipboardCheck, Bell, Phone,
+    ChevronDown, Menu, X, ArrowRight, User
 } from 'lucide-react';
 import SchoolLogo from '@/Components/SchoolLogo';
 
@@ -10,7 +10,7 @@ export default function Header() {
     const { url, props } = usePage();
     const { auth, settings } = props;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false);
+    const [batchesDropdownOpen, setbatchesDropdownOpen] = useState(false);
 
     const currentPath = url ? url.split('?')[0].split('#')[0] : '/';
     const isHomeActive = currentPath === '/';
@@ -19,13 +19,14 @@ export default function Header() {
     const isGalleryActive = currentPath.startsWith('/gallery');
     const isSuccessStoriesActive = currentPath.startsWith('/success-stories');
     const isAboutActive = currentPath.startsWith('/about-us') || currentPath.startsWith('/about');
-    const isCoursesActive = currentPath.startsWith('/batches') || currentPath.startsWith('/faculties') || currentPath.startsWith('/courses') || currentPath.startsWith('/class-details');
+    const isContactActive = currentPath.startsWith('/contact');
+    const isbatchesActive = currentPath.startsWith('/batches') || currentPath.startsWith('/faculties') || currentPath.startsWith('/batches') || currentPath.startsWith('/class-details');
     const isAdmissionActive = currentPath === '/admissions';
     const isStudentActive = currentPath.startsWith('/user') || currentPath.startsWith('/student');
 
     const hotline = settings?.phone || "+880 1712-345678";
 
-    const coursesList = [
+    const batchesList = [
         { name: 'All Academic Batches', href: '/batches' },
         { name: 'College Academic Program (HSC 1st & 2nd Paper)', href: '/batches' },
         { name: 'SSC Preparation Program (Class 9 - 10)', href: '/batches' },
@@ -39,24 +40,24 @@ export default function Header() {
                 <div className="container mx-auto px-4 max-w-7xl flex items-center justify-between py-1.5">
                     {/* Left Quick Links */}
                     <div className="flex items-center gap-4 sm:gap-6">
-                        <Link 
-                            href={auth?.user ? route('dashboard') : route('student.login')} 
+                        <Link
+                            href={auth?.user ? route('dashboard') : route('student.login')}
                             className={`flex items-center gap-1.5 transition-colors ${isStudentActive ? 'text-amber-300 font-bold' : 'text-white hover:text-emerald-200'}`}
                         >
                             <GraduationCap size={13} className={isStudentActive ? 'text-amber-300' : 'text-emerald-300'} />
                             <span>Student Portal</span>
                         </Link>
 
-                        <Link 
-                            href={route('admissions')} 
+                        <Link
+                            href={route('admissions')}
                             className={`flex items-center gap-1.5 transition-colors ${isAdmissionActive ? 'text-amber-300 font-bold' : 'text-white hover:text-emerald-200'}`}
                         >
                             <ClipboardCheck size={13} className={isAdmissionActive ? 'text-amber-300' : 'text-emerald-300'} />
                             <span>Online Admission</span>
                         </Link>
 
-                        <Link 
-                            href={route('notices.index')} 
+                        <Link
+                            href={route('notices.index')}
                             className={`flex items-center gap-1.5 transition-colors ${isNoticesActive ? 'text-amber-300 font-bold' : 'text-white hover:text-emerald-200'}`}
                         >
                             <Bell size={13} className={isNoticesActive ? 'text-amber-300' : 'text-emerald-300'} />
@@ -84,40 +85,38 @@ export default function Header() {
                     <nav className="hidden lg:flex items-center gap-1">
                         <Link
                             href="/"
-                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${
-                                isHomeActive 
-                                    ? 'bg-orange-50 text-[#ea580c]' 
+                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${isHomeActive
+                                    ? 'bg-orange-50 text-[#ea580c]'
                                     : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
-                            }`}
+                                }`}
                         >
                             Home
                         </Link>
 
-                        {/* Courses Dropdown */}
-                        <div 
+                        {/* batches Dropdown */}
+                        <div
                             className="relative"
-                            onMouseEnter={() => setCoursesDropdownOpen(true)}
-                            onMouseLeave={() => setCoursesDropdownOpen(false)}
+                            onMouseEnter={() => setbatchesDropdownOpen(true)}
+                            onMouseLeave={() => setbatchesDropdownOpen(false)}
                         >
                             <button
                                 type="button"
-                                className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full flex items-center gap-1 transition-colors cursor-pointer ${
-                                    isCoursesActive 
-                                        ? 'bg-orange-50 text-[#ea580c]' 
+                                className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full flex items-center gap-1 transition-colors cursor-pointer ${isbatchesActive
+                                        ? 'bg-orange-50 text-[#ea580c]'
                                         : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
-                                }`}
+                                    }`}
                             >
-                                <span>Courses & Classes</span>
-                                <ChevronDown size={14} className={`transition-transform ${coursesDropdownOpen ? 'rotate-180 text-[#047857]' : 'text-slate-400'}`} />
+                                <span>batches & Classes</span>
+                                <ChevronDown size={14} className={`transition-transform ${batchesDropdownOpen ? 'rotate-180 text-[#047857]' : 'text-slate-400'}`} />
                             </button>
 
-                            {coursesDropdownOpen && (
+                            {batchesDropdownOpen && (
                                 <div className="absolute left-0 top-full mt-1 w-72 bg-white rounded-[4px] shadow-xl border border-slate-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-1">
-                                    {coursesList.map((c, idx) => (
+                                    {batchesList.map((c, idx) => (
                                         <a
                                             key={idx}
                                             href={c.href}
-                                            onClick={() => setCoursesDropdownOpen(false)}
+                                            onClick={() => setbatchesDropdownOpen(false)}
                                             className="flex items-center justify-between px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 hover:text-[#047857] font-semibold transition-colors"
                                         >
                                             <span>{c.name}</span>
@@ -130,65 +129,64 @@ export default function Header() {
 
                         <Link
                             href={route('notices.index')}
-                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${
-                                isNoticesActive 
-                                    ? 'bg-orange-50 text-[#ea580c]' 
+                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${isNoticesActive
+                                    ? 'bg-orange-50 text-[#ea580c]'
                                     : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
-                            }`}
+                                }`}
                         >
                             Notices
                         </Link>
 
                         <Link
                             href={route('events')}
-                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${
-                                isEventsActive 
-                                    ? 'bg-orange-50 text-[#ea580c]' 
+                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${isEventsActive
+                                    ? 'bg-orange-50 text-[#ea580c]'
                                     : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
-                            }`}
+                                }`}
                         >
                             Events
                         </Link>
 
                         <Link
                             href={route('gallery')}
-                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${
-                                isGalleryActive 
-                                    ? 'bg-orange-50 text-[#ea580c]' 
+                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${isGalleryActive
+                                    ? 'bg-orange-50 text-[#ea580c]'
                                     : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
-                            }`}
+                                }`}
                         >
                             Gallery
                         </Link>
 
                         <Link
                             href={route('success-stories')}
-                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${
-                                isSuccessStoriesActive 
-                                    ? 'bg-orange-50 text-[#ea580c]' 
+                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${isSuccessStoriesActive
+                                    ? 'bg-orange-50 text-[#ea580c]'
                                     : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
-                            }`}
+                                }`}
                         >
                             Success Stories
                         </Link>
 
                         <Link
                             href={route('about-us')}
-                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${
-                                isAboutActive 
-                                    ? 'bg-orange-50 text-[#ea580c]' 
+                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${isAboutActive
+                                    ? 'bg-orange-50 text-[#ea580c]'
                                     : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
-                            }`}
+                                }`}
                         >
                             About Us
                         </Link>
 
-                        <a
-                            href="/#contact"
-                            className="px-3.5 py-1.5 text-[13.5px] font-bold text-slate-700 hover:text-[#047857] hover:bg-slate-50 rounded-full transition-colors"
+                        <Link
+                            href="/contact"
+                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${
+                                isContactActive
+                                    ? 'bg-orange-50 text-[#ea580c]'
+                                    : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
+                            }`}
                         >
                             Contact
-                        </a>
+                        </Link>
                     </nav>
 
                     {/* Right CTA Button */}
@@ -227,73 +225,68 @@ export default function Header() {
                         <Link
                             href="/"
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`px-3 py-2 text-sm font-bold rounded transition-colors ${
-                                isHomeActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
-                            }`}
+                            className={`px-3 py-2 text-sm font-bold rounded transition-colors ${isHomeActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
+                                }`}
                         >
                             Home
                         </Link>
                         <a
-                            href="/#courses"
+                            href="/#batches"
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${
-                                isCoursesActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
-                            }`}
+                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${isbatchesActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
+                                }`}
                         >
-                            Courses & Programs
+                            batches & Programs
                         </a>
                         <Link
                             href={route('notices.index')}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${
-                                isNoticesActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
-                            }`}
+                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${isNoticesActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
+                                }`}
                         >
                             Notices
                         </Link>
                         <Link
                             href={route('events')}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${
-                                isEventsActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
-                            }`}
+                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${isEventsActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
+                                }`}
                         >
                             Events
                         </Link>
                         <Link
                             href={route('gallery')}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${
-                                isGalleryActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
-                            }`}
+                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${isGalleryActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
+                                }`}
                         >
                             Gallery
                         </Link>
                         <Link
                             href={route('success-stories')}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${
-                                isSuccessStoriesActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
-                            }`}
+                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${isSuccessStoriesActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
+                                }`}
                         >
                             Success Stories
                         </Link>
                         <Link
                             href={route('about-us')}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${
-                                isAboutActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
-                            }`}
+                            className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${isAboutActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
+                                }`}
                         >
                             About Us
                         </Link>
-                        <a
-                            href="/#contact"
+                        <Link
+                            href="/contact"
                             onClick={() => setMobileMenuOpen(false)}
-                            className="px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded"
+                            className={`px-3 py-2 text-sm font-semibold rounded ${
+                                isContactActive ? 'text-[#ea580c] bg-orange-50 font-bold' : 'text-slate-700 hover:bg-slate-50'
+                            }`}
                         >
                             Contact
-                        </a>
+                        </Link>
                     </nav>
 
                     <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">

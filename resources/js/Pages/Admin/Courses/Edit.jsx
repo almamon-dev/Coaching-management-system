@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
-import { 
-    Shield, 
-    DollarSign, 
-    Layers, 
-    ChevronRight, 
-    Save, 
+import {
+    Shield,
+    DollarSign,
+    Layers,
+    ChevronRight,
+    Save,
     ArrowLeft
 } from 'lucide-react';
 import InputLabel from '@/Components/Form/InputLabel';
@@ -135,13 +135,13 @@ export default function EditSubject({ course }) {
                         </div>
 
                         {/* RIGHT CONTENT PANEL */}
-                        <div className="flex-1 w-full bg-white rounded-lg border border-slate-200/80 p-6 md:p-7 shadow-2xs h-auto">
+                        <div className="flex-1 w-full bg-white rounded-[4px] border border-slate-200/80 p-5 md:p-6 shadow-2xs h-auto">
                             {/* TAB 1: GENERAL & CATEGORY */}
                             {activeTab === 'general' && (
-                                <div className="space-y-5 animate-in fade-in-50 duration-150">
-                                    <div className="border-b border-slate-100 pb-3">
-                                        <h3 className="text-sm font-bold text-slate-800">Basic Information & Category</h3>
-                                        <p className="text-xs text-slate-500 mt-0.5">Configure the essential details, code, and academic class level.</p>
+                                <div className="space-y-4 animate-in fade-in-50 duration-150">
+                                    <div className="border-b border-slate-100 pb-2.5">
+                                        <h3 className="text-sm font-bold text-slate-800">Basic Information & Fees</h3>
+                                        <p className="text-xs text-slate-500 mt-0.5">Configure the essential subject details, class level, and tuition fee.</p>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -174,7 +174,7 @@ export default function EditSubject({ course }) {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <InputLabel htmlFor="category" value="Academic Category / Class" />
                                             <SelectInput
@@ -197,6 +197,52 @@ export default function EditSubject({ course }) {
                                                 className="mt-1"
                                             />
                                             <InputError message={errors.status} className="mt-1" />
+                                        </div>
+                                    </div>
+
+                                    {/* Subject Fees & Pricing */}
+                                    <div className="border-t border-slate-100 pt-3 mt-1">
+                                        <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Subject Tuition & Fees</h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                            <div>
+                                                <InputLabel htmlFor="monthly_fee" value="Monthly Fee (৳) *" />
+                                                <TextInput
+                                                    id="monthly_fee"
+                                                    type="number"
+                                                    value={data.monthly_fee}
+                                                    onChange={(e) => setData('monthly_fee', e.target.value)}
+                                                    placeholder="1500"
+                                                    required
+                                                    className="mt-1 font-bold text-[#16a34a]"
+                                                />
+                                                <InputError message={errors.monthly_fee} className="mt-1" />
+                                            </div>
+
+                                            <div>
+                                                <InputLabel htmlFor="admission_fee" value="Admission Fee (৳)" />
+                                                <TextInput
+                                                    id="admission_fee"
+                                                    type="number"
+                                                    value={data.admission_fee}
+                                                    onChange={(e) => setData('admission_fee', e.target.value)}
+                                                    placeholder="500"
+                                                    className="mt-1"
+                                                />
+                                                <InputError message={errors.admission_fee} className="mt-1" />
+                                            </div>
+
+                                            <div>
+                                                <InputLabel htmlFor="duration" value="Duration" />
+                                                <TextInput
+                                                    id="duration"
+                                                    type="text"
+                                                    value={data.duration}
+                                                    onChange={(e) => setData('duration', e.target.value)}
+                                                    placeholder="e.g. 6 Months / 1 Year"
+                                                    className="mt-1"
+                                                />
+                                                <InputError message={errors.duration} className="mt-1" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -6,13 +6,44 @@ import {
 import SchoolLogo from "@/Components/SchoolLogo";
 
 const Header = ({ onMenuClick, onToggleSidebar }) => {
-    const { auth, settings } = usePage().props;
+    const { auth, settings, url } = usePage();
+    const currentPath = (url || "").split("?")[0].split("#")[0];
     const coachingMode = settings?.coaching_mode || "single";
     const [open, setOpen] = useState(false);
     const [notifOpen, setNotifOpen] = useState(false);
     const [switchingMode, setSwitchingMode] = useState(false);
     const dropdownRef = useRef(null);
     const notificationRef = useRef(null);
+
+    const getPageTitle = (path) => {
+        if (!path || path === '/admin' || path === '/admin/dashboard') return 'Dashboard';
+        if (path.startsWith('/admin/courses') || path.startsWith('/admin/subjects')) return 'Subject Management';
+        if (path.startsWith('/admin/batches')) return 'Batch Management';
+        if (path.startsWith('/admin/class-routines')) return 'Class Routine';
+        if (path.startsWith('/admin/teachers')) return 'Teacher Management';
+        if (path.startsWith('/admin/admissions')) return 'New Admission';
+        if (path.startsWith('/admin/students')) return 'Student Management';
+        if (path.startsWith('/admin/attendance')) return 'Student Attendance';
+        if (path.startsWith('/admin/exams')) return 'Exams & Results';
+        if (path.startsWith('/admin/assignments')) return 'Assignments & Homework';
+        if (path.startsWith('/admin/study-materials')) return 'Study Materials';
+        if (path.startsWith('/admin/fees')) return 'Fee Collection & Dues';
+        if (path.startsWith('/admin/operational-accounts')) return 'Income & Expense';
+        if (path.startsWith('/admin/reports')) return 'Reports & Analytics';
+        if (path.startsWith('/admin/cms/landing')) return 'Landing Page CMS';
+        if (path.startsWith('/admin/cms/about')) return 'About Page CMS';
+        if (path.startsWith('/admin/cms/admission')) return 'Admission Instructions';
+        if (path.startsWith('/admin/cms/footer-contact')) return 'Footer & Contact CMS';
+        if (path.startsWith('/admin/notices')) return 'Notice Board';
+        if (path.startsWith('/admin/events')) return 'Upcoming Events';
+        if (path.startsWith('/admin/galleries')) return 'Photo Gallery';
+        if (path.startsWith('/admin/testimonials')) return 'Success Stories & Stats';
+        if (path.startsWith('/admin/permissions')) return 'Role Permissions';
+        if (path.startsWith('/admin/activity-logs')) return 'Activity Logs';
+        if (path.startsWith('/admin/settings')) return 'General Settings';
+        if (path.startsWith('/admin/backup')) return 'Database Backup';
+        return 'Admin Dashboard';
+    };
 
     const handleModeSwitch = (targetMode) => {
         if (targetMode === coachingMode || switchingMode) return;
@@ -71,7 +102,7 @@ const Header = ({ onMenuClick, onToggleSidebar }) => {
                     <SchoolLogo variant="wide" className="h-[38px]" />
                 </Link>
                 <h2 className="text-[16px] font-bold text-slate-800 tracking-tight hidden lg:block">
-                    Dashboard
+                    {getPageTitle(currentPath)}
                 </h2>
 
                 {/* MIDDLE: Search Bar */}

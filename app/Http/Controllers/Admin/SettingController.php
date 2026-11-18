@@ -36,7 +36,7 @@ class SettingController extends Controller
             'hero_banner_image' => 'nullable',
             'stat_students' => 'nullable|string|max:50',
             'stat_teachers' => 'nullable|string|max:50',
-            'stat_courses' => 'nullable|string|max:50',
+            'stat_batches' => 'nullable|string|max:50',
             'stat_success' => 'nullable|string|max:50',
             'about_title' => 'nullable|string|max:255',
             'about_description' => 'nullable|string',
@@ -58,6 +58,20 @@ class SettingController extends Controller
             'admission_phone' => 'nullable|string|max:100',
             'admission_email' => 'nullable|string|max:100',
             'admission_location' => 'nullable|string',
+            // Footer & Contact Us CMS
+            'contact_phone_alt' => 'nullable|string|max:50',
+            'contact_office_hours' => 'nullable|string|max:255',
+            'contact_title' => 'nullable|string|max:255',
+            'contact_subtitle' => 'nullable|string',
+            'contact_map_embed' => 'nullable|string',
+            'contact_counseling_note' => 'nullable|string',
+            'footer_about' => 'nullable|string',
+            'footer_copyright' => 'nullable|string|max:255',
+            'facebook_url' => 'nullable|string|max:255',
+            'youtube_url' => 'nullable|string|max:255',
+            'instagram_url' => 'nullable|string|max:255',
+            'linkedin_url' => 'nullable|string|max:255',
+            'whatsapp_number' => 'nullable|string|max:50',
         ]);
 
         if ($request->hasFile('hero_banner_image')) {
@@ -75,6 +89,14 @@ class SettingController extends Controller
         foreach ($validated as $key => $value) {
             if ($value !== null) {
                 Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+            }
+        }
+
+        // Allow clearing optional footer & contact fields
+        foreach (['contact_phone_alt', 'contact_office_hours', 'footer_about', 'facebook_url', 'whatsapp_number', 'youtube_url', 'instagram_url', 'linkedin_url', 'twitter_url', 'telegram_url', 'tiktok_url'] as $optKey) {
+            if ($request->has($optKey)) {
+                $optVal = $request->input($optKey);
+                Setting::updateOrCreate(['key' => $optKey], ['value' => $optVal !== null ? trim((string)$optVal) : '']);
             }
         }
 
@@ -124,7 +146,7 @@ class SettingController extends Controller
             'hero_banner_image' => 'nullable',
             'stat_students' => 'nullable|string|max:50',
             'stat_teachers' => 'nullable|string|max:50',
-            'stat_courses' => 'nullable|string|max:50',
+            'stat_batches' => 'nullable|string|max:50',
             'stat_success' => 'nullable|string|max:50',
         ]);
 
@@ -137,6 +159,14 @@ class SettingController extends Controller
         foreach ($validated as $key => $value) {
             if ($value !== null) {
                 Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+            }
+        }
+
+        // Allow clearing optional footer & contact fields
+        foreach (['contact_phone_alt', 'contact_office_hours', 'footer_about', 'facebook_url', 'whatsapp_number', 'youtube_url', 'instagram_url', 'linkedin_url', 'twitter_url', 'telegram_url', 'tiktok_url'] as $optKey) {
+            if ($request->has($optKey)) {
+                $optVal = $request->input($optKey);
+                Setting::updateOrCreate(['key' => $optKey], ['value' => $optVal !== null ? trim((string)$optVal) : '']);
             }
         }
 
@@ -171,11 +201,55 @@ class SettingController extends Controller
             'admission_phone' => 'nullable|string|max:100',
             'admission_email' => 'nullable|string|max:100',
             'admission_location' => 'nullable|string',
+            // Footer & Contact Us CMS
+            'contact_phone_alt' => 'nullable|string|max:50',
+            'contact_office_hours' => 'nullable|string|max:255',
+            'contact_title' => 'nullable|string|max:255',
+            'contact_subtitle' => 'nullable|string',
+            'contact_map_embed' => 'nullable|string',
+            'contact_counseling_note' => 'nullable|string',
+            'footer_about' => 'nullable|string',
+            'footer_copyright' => 'nullable|string|max:255',
+            'facebook_url' => 'nullable|string|max:255',
+            'youtube_url' => 'nullable|string|max:255',
+            'instagram_url' => 'nullable|string|max:255',
+            'linkedin_url' => 'nullable|string|max:255',
+            'twitter_url' => 'nullable|string|max:255',
+            'whatsapp_number' => 'nullable|string|max:50',
+            'telegram_url' => 'nullable|string|max:255',
+            'tiktok_url' => 'nullable|string|max:255',
         ]);
 
-        foreach ($validated as $key => $value) {
-            if ($value !== null) {
-                Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        $fields = [
+            'center_name',
+            'phone',
+            'contact_phone_alt',
+            'email',
+            'address',
+            'contact_office_hours',
+            'contact_title',
+            'contact_subtitle',
+            'contact_map_embed',
+            'contact_counseling_note',
+            'footer_about',
+            'footer_copyright',
+            'facebook_url',
+            'youtube_url',
+            'instagram_url',
+            'linkedin_url',
+            'twitter_url',
+            'whatsapp_number',
+            'telegram_url',
+            'tiktok_url',
+        ];
+
+        foreach ($fields as $field) {
+            if ($request->has($field)) {
+                $val = $request->input($field);
+                Setting::updateOrCreate(
+                    ['key' => $field],
+                    ['value' => $val !== null ? trim((string)$val) : '']
+                );
             }
         }
 
@@ -220,6 +294,94 @@ class SettingController extends Controller
             }
         }
 
+        // Allow clearing optional footer & contact fields
+        foreach (['contact_phone_alt', 'contact_office_hours', 'footer_about', 'facebook_url', 'whatsapp_number', 'youtube_url', 'instagram_url', 'linkedin_url', 'twitter_url', 'telegram_url', 'tiktok_url'] as $optKey) {
+            if ($request->has($optKey)) {
+                $optVal = $request->input($optKey);
+                Setting::updateOrCreate(['key' => $optKey], ['value' => $optVal !== null ? trim((string)$optVal) : '']);
+            }
+        }
+
         return redirect()->back()->with('success', 'About Us page settings updated successfully.');
+    }
+
+    public function footerContactCms()
+    {
+        $settings = Setting::pluck('value', 'key')->toArray();
+
+        return Inertia::render('Admin/CMS/FooterContactPage', [
+            'settings' => $settings,
+        ]);
+    }
+
+    public function updateFooterContactCms(Request $request)
+    {
+        $validated = $request->validate([
+            'center_name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'contact_phone_alt' => 'nullable|string|max:50',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|string',
+            'contact_office_hours' => 'nullable|string|max:255',
+            'contact_title' => 'nullable|string|max:255',
+            'contact_subtitle' => 'nullable|string',
+            'contact_map_embed' => 'nullable|string',
+            'contact_counseling_note' => 'nullable|string',
+            'footer_about' => 'nullable|string',
+            'footer_copyright' => 'nullable|string|max:255',
+            'facebook_url' => 'nullable|string|max:255',
+            'youtube_url' => 'nullable|string|max:255',
+            'instagram_url' => 'nullable|string|max:255',
+            'linkedin_url' => 'nullable|string|max:255',
+            'twitter_url' => 'nullable|string|max:255',
+            'whatsapp_number' => 'nullable|string|max:50',
+            'telegram_url' => 'nullable|string|max:255',
+            'tiktok_url' => 'nullable|string|max:255',
+        ]);
+
+        $fields = [
+            'center_name',
+            'phone',
+            'contact_phone_alt',
+            'email',
+            'address',
+            'contact_office_hours',
+            'contact_title',
+            'contact_subtitle',
+            'contact_map_embed',
+            'contact_counseling_note',
+            'footer_about',
+            'footer_copyright',
+            'facebook_url',
+            'youtube_url',
+            'instagram_url',
+            'linkedin_url',
+            'twitter_url',
+            'whatsapp_number',
+            'telegram_url',
+            'tiktok_url',
+        ];
+
+        foreach ($fields as $field) {
+            if ($request->has($field)) {
+                $val = $request->input($field);
+                Setting::updateOrCreate(
+                    ['key' => $field],
+                    ['value' => $val !== null ? trim((string)$val) : '']
+                );
+            }
+        }
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'user_name' => auth()->user()->name,
+            'user_role' => auth()->user()->user_type,
+            'action' => 'Footer & Contact CMS Updated',
+            'module' => 'Settings',
+            'description' => "Updated website footer, social media links, and public contact information.",
+            'ip_address' => request()->ip(),
+        ]);
+
+        return redirect()->back()->with('success', 'Footer & Contact information updated successfully.');
     }
 }

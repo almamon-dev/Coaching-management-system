@@ -7,7 +7,7 @@ import {
     Clock, CheckCircle, AlertCircle
 } from 'lucide-react';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Legend
 } from 'recharts';
 
 export default function Dashboard({ stats, todaysClasses = [], subjectSummary = [], batchDistribution = [], financialTrend = [] }) {
@@ -15,6 +15,20 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
     const coachingMode = settings?.coaching_mode || 'single';
     const isMultiTeacher = coachingMode === 'multi';
     const [switching, setSwitching] = useState(false);
+
+    const formatTime = (timeStr) => {
+        if (!timeStr) return '';
+        if (timeStr.includes('AM') || timeStr.includes('PM')) return timeStr;
+        const parts = timeStr.split(':');
+        if (parts.length >= 2) {
+            let h = parseInt(parts[0], 10);
+            const m = parts[1];
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${h < 10 ? '0' + h : h}:${m} ${ampm}`;
+        }
+        return timeStr;
+    };
 
     const toggleMode = () => {
         if (switching) return;
@@ -36,7 +50,7 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
                 <div>
                     <div className="flex flex-wrap items-center gap-3">
                         <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Operational Dashboard</h1>
-                        
+
                         {/* Interactive Mode Switch */}
                         <div
                             onClick={toggleMode}
@@ -61,14 +75,12 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
                             <div
                                 role="switch"
                                 aria-checked={isMultiTeacher}
-                                className={`relative inline-flex h-4.5 w-8 shrink-0 rounded-full border border-transparent transition-colors duration-200 bg-emerald-600 ${
-                                    switching ? 'opacity-50' : ''
-                                }`}
+                                className={`relative inline-flex h-4.5 w-8 shrink-0 rounded-full border border-transparent transition-colors duration-200 bg-emerald-600 ${switching ? 'opacity-50' : ''
+                                    }`}
                             >
                                 <span
-                                    className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-xs transition duration-200 mt-0.5 ml-0.5 ${
-                                        isMultiTeacher ? 'translate-x-3.5' : 'translate-x-0'
-                                    }`}
+                                    className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-xs transition duration-200 mt-0.5 ml-0.5 ${isMultiTeacher ? 'translate-x-3.5' : 'translate-x-0'
+                                        }`}
                                 />
                             </div>
                         </div>
@@ -144,13 +156,13 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
                 {/* Subjects & Batches */}
                 <div className="bg-white p-4 rounded-[4px] border border-slate-200/80 shadow-2xs hover:border-slate-300 transition-all">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-slate-500">Courses & Batches</span>
+                        <span className="text-xs font-semibold text-slate-500">batches & Batches</span>
                         <div className="w-8 h-8 rounded-[4px] bg-emerald-50 text-[#16a34a] flex items-center justify-center">
                             <BookOpen size={16} />
                         </div>
                     </div>
                     <div className="flex items-baseline gap-1.5 text-2xl font-bold text-slate-900 tabular-nums tracking-tight">
-                        <span>{stats.courses_count}</span>
+                        <span>{stats.batches_count}</span>
                         <span className="text-xs font-semibold text-slate-400">Subjects</span>
                     </div>
                     <div className="text-[11px] text-slate-500 font-medium mt-1.5">
@@ -251,7 +263,7 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
                             <p className="text-xs text-slate-500">Summary of all subjects taught, active batches, and enrolled students.</p>
                         </div>
                         <Link
-                            href={route('admin.courses.index')}
+                            href={route('admin.batches.index')}
                             className="text-xs font-semibold text-[#16a34a] hover:underline flex items-center gap-1"
                         >
                             Manage Subjects <ArrowUpRight size={13} />
@@ -297,16 +309,66 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* Financial Trend Chart */}
                 <div className="bg-white p-5 rounded-[4px] border border-slate-200/80 shadow-2xs">
-                    <h3 className="text-sm font-bold text-slate-900 mb-4">Financial Trend (Income vs Expense)</h3>
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 className="text-sm font-bold text-slate-900">Financial Trend (Income vs Expense)</h3>
+                            <p className="text-[11px] text-slate-500">6-Month operational cash flow overview</p>
+                        </div>
+                    </div>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={financialTrend}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                <XAxis dataKey="month" stroke="#64748b" fontSize={11} />
-                                <YAxis stroke="#64748b" fontSize={11} />
-                                <Tooltip formatter={(value) => `৳ ${value.toLocaleString()}`} />
-                                <Area type="monotone" dataKey="income" name="Income" stroke="#16a34a" fill="#dcfce7" />
-                                <Area type="monotone" dataKey="expense" name="Expense" stroke="#e11d48" fill="#ffe4e6" />
+                            <AreaChart data={financialTrend} margin={{ top: 15, right: 15, left: -10, bottom: 5 }}>
+                                <defs>
+                                    <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#16a34a" stopOpacity={0.25} />
+                                        <stop offset="95%" stopColor="#16a34a" stopOpacity={0.0} />
+                                    </linearGradient>
+                                    <linearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#e11d48" stopOpacity={0.25} />
+                                        <stop offset="95%" stopColor="#e11d48" stopOpacity={0.0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="#64748b"
+                                    fontSize={11}
+                                    tickLine={false}
+                                    axisLine={{ stroke: '#cbd5e1' }}
+                                />
+                                <YAxis
+                                    stroke="#64748b"
+                                    fontSize={11}
+                                    tickLine={false}
+                                    axisLine={{ stroke: '#cbd5e1' }}
+                                    tickFormatter={(v) => `৳${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`}
+                                />
+                                <Tooltip
+                                    formatter={(value) => [`৳ ${Number(value).toLocaleString()}`, '']}
+                                    contentStyle={{ backgroundColor: '#fff', borderRadius: '4px', borderColor: '#e2e8f0', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                />
+                                <Legend
+                                    verticalAlign="top"
+                                    align="right"
+                                    iconType="circle"
+                                    wrapperStyle={{ fontSize: 11, paddingBottom: 8 }}
+                                />
+                                <Area
+                                    type="monotone"
+                                    dataKey="income"
+                                    name="Income"
+                                    stroke="#16a34a"
+                                    strokeWidth={2}
+                                    fill="url(#incomeGrad)"
+                                />
+                                <Area
+                                    type="monotone"
+                                    dataKey="expense"
+                                    name="Expense"
+                                    stroke="#e11d48"
+                                    strokeWidth={2}
+                                    fill="url(#expenseGrad)"
+                                />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -314,15 +376,58 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
 
                 {/* Batch Distribution */}
                 <div className="bg-white p-5 rounded-[4px] border border-slate-200/80 shadow-2xs">
-                    <h3 className="text-sm font-bold text-slate-900 mb-4">Batch Enrolled Students</h3>
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 className="text-sm font-bold text-slate-900">Batch Enrolled Students</h3>
+                            <p className="text-[11px] text-slate-500">Student enrollment distribution across active batches</p>
+                        </div>
+                        <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-[3px]">
+                            {batchDistribution.length} Batches
+                        </span>
+                    </div>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={batchDistribution}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
-                                <YAxis stroke="#64748b" fontSize={11} />
-                                <Tooltip />
-                                <Bar dataKey="students" name="Students" fill="#16a34a" radius={[2, 2, 0, 0]} />
+                            <BarChart data={batchDistribution} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis
+                                    dataKey="name"
+                                    stroke="#64748b"
+                                    fontSize={11}
+                                    tickLine={false}
+                                    axisLine={{ stroke: '#cbd5e1' }}
+                                />
+                                <YAxis
+                                    stroke="#64748b"
+                                    fontSize={11}
+                                    tickLine={false}
+                                    axisLine={{ stroke: '#cbd5e1' }}
+                                    allowDecimals={false}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: 'rgba(241, 245, 249, 0.6)' }}
+                                    content={({ active, payload }) => {
+                                        if (active && payload && payload.length) {
+                                            const item = payload[0].payload;
+                                            return (
+                                                <div className="bg-white p-3 rounded-[4px] border border-slate-200 shadow-lg text-xs space-y-1">
+                                                    <p className="font-bold text-slate-900 leading-snug">{item.fullName || item.name}</p>
+                                                    <div className="flex items-center gap-1.5 text-emerald-600 font-semibold pt-1 border-t border-slate-100">
+                                                        <Users size={13} />
+                                                        <span>{item.students} Enrolled Students</span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    }}
+                                />
+                                <Bar
+                                    dataKey="students"
+                                    name="Students"
+                                    fill="#16a34a"
+                                    barSize={28}
+                                    radius={[4, 4, 0, 0]}
+                                />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -331,17 +436,28 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
 
             {/* TODAY'S CLASSES TABLE */}
             <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs overflow-hidden">
-                <div className="p-4 sm:p-5 border-b border-slate-200/80 flex items-center justify-between">
+                <div className="p-4 sm:p-5 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                        <h3 className="text-sm sm:text-base font-bold text-slate-900">Today's Class Schedule</h3>
-                        <p className="text-xs text-slate-500">Live routine for {new Date().toLocaleDateString()}</p>
+                        <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <h3 className="text-sm sm:text-base font-bold text-slate-900">Today's Class Schedule</h3>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-0.5">Live routine for {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Link href={route('admin.class-routines.index')} className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1">
-                            Manage Routine <ArrowUpRight size={13} />
+                    <div className="flex items-center gap-2.5">
+                        <Link
+                            href={route('admin.class-routines.index')}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-[3px] shadow-2xs transition-all"
+                        >
+                            <span>Manage Routine</span>
+                            <ArrowUpRight size={13} />
                         </Link>
-                        <Link href={route('admin.batches.index')} className="text-xs font-semibold text-[#16a34a] hover:underline flex items-center gap-1">
-                            View All Batches <ArrowUpRight size={13} />
+                        <Link
+                            href={route('admin.batches.index')}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#16a34a] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-[3px] transition-all"
+                        >
+                            <span>View All Batches</span>
+                            <ArrowUpRight size={13} />
                         </Link>
                     </div>
                 </div>
@@ -349,44 +465,88 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
                     <table className="w-full text-left text-xs sm:text-sm">
                         <thead className="bg-slate-50/80 border-b border-slate-200 text-xs font-semibold text-slate-600">
                             <tr>
-                                <th className="p-3.5">Time</th>
-                                <th className="p-3.5">Subject</th>
-                                <th className="p-3.5">Batch</th>
-                                {isMultiTeacher && <th className="p-3.5">Teacher</th>}
-                                <th className="p-3.5">Room</th>
-                                <th className="p-3.5">Status</th>
-                                <th className="p-3.5 text-right">Quick Action</th>
+                                <th className="p-3.5 whitespace-nowrap">Time</th>
+                                <th className="p-3.5 whitespace-nowrap">Subject</th>
+                                <th className="p-3.5 min-w-[200px]">Batch</th>
+                                {isMultiTeacher && <th className="p-3.5 whitespace-nowrap">Instructor</th>}
+                                <th className="p-3.5 whitespace-nowrap">Room</th>
+                                <th className="p-3.5 whitespace-nowrap">Status</th>
+                                <th className="p-3.5 text-right whitespace-nowrap">Quick Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {todaysClasses.length > 0 ? (
                                 todaysClasses.map((cls) => (
-                                    <tr key={cls.id} className="hover:bg-slate-50/50 transition-colors">
-                                        <td className="p-3.5 font-semibold text-slate-900">{cls.start_time} - {cls.end_time}</td>
-                                        <td className="p-3.5">
-                                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">
-                                                <BookOpen size={11} />
-                                                {cls.batch?.course?.title || cls.subject?.name || 'Subject'}
-                                            </span>
+                                    <tr key={cls.id} className="hover:bg-slate-50/60 transition-colors">
+                                        {/* Clean formatted 12-hour AM/PM Time */}
+                                        <td className="p-3.5 whitespace-nowrap">
+                                            <div className="flex items-center gap-1.5 font-semibold text-slate-800 text-xs font-mono">
+                                                <Clock size={13} className="text-emerald-600 shrink-0" />
+                                                <span>{formatTime(cls.start_time)} - {formatTime(cls.end_time)}</span>
+                                            </div>
                                         </td>
-                                        <td className="p-3.5 font-medium text-slate-800">{cls.batch ? cls.batch.name : 'N/A'}</td>
+
+                                        {/* Subject with neat icon box */}
+                                        <td className="p-3.5">
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-7 h-7 rounded-[4px] bg-emerald-50 border border-emerald-200 text-[#16a34a] flex items-center justify-center shrink-0">
+                                                    <BookOpen size={13} />
+                                                </span>
+                                                <div className="min-w-0">
+                                                    <div className="font-bold text-xs text-slate-900 truncate">
+                                                        {cls.subject?.name || cls.batch?.course?.title || 'General Subject'}
+                                                    </div>
+                                                    {cls.subject?.code && (
+                                                        <span className="text-[10px] font-mono font-semibold text-emerald-700 block">
+                                                            {cls.subject.code}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        {/* Batch */}
+                                        <td className="p-3.5">
+                                            <div className="font-semibold text-xs text-slate-800 leading-snug">
+                                                {cls.batch ? cls.batch.name : 'N/A'}
+                                            </div>
+                                            {cls.notes && (
+                                                <div className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">
+                                                    {cls.notes}
+                                                </div>
+                                            )}
+                                        </td>
+
+                                        {/* Multi-Teacher Instructor */}
                                         {isMultiTeacher && (
-                                             <td className="p-3.5 text-slate-600 font-medium">
+                                            <td className="p-3.5 text-slate-600 font-medium text-xs whitespace-nowrap">
                                                 {cls.teacher?.name || cls.batch?.teacher?.name || 'Unassigned'}
                                             </td>
                                         )}
-                                        <td className="p-3.5 text-slate-600">{cls.room || 'Room 101'}</td>
-                                        <td className="p-3.5">
-                                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 capitalize">
-                                                {cls.status}
+
+                                        {/* Room */}
+                                        <td className="p-3.5 whitespace-nowrap">
+                                            <span className="px-2 py-0.5 text-[11px] font-semibold text-slate-700 bg-slate-100 rounded-[3px] border border-slate-200">
+                                                {cls.room || 'Room 101'}
                                             </span>
                                         </td>
-                                        <td className="p-3.5 text-right">
+
+                                        {/* Status */}
+                                        <td className="p-3.5 whitespace-nowrap">
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                <span>{cls.status || 'Scheduled'}</span>
+                                            </span>
+                                        </td>
+
+                                        {/* Action */}
+                                        <td className="p-3.5 text-right whitespace-nowrap">
                                             <Link
                                                 href={route('admin.attendance.index', { batch_id: cls.batch_id })}
-                                                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors"
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-[3px] border border-emerald-200/90 transition-colors shadow-2xs"
                                             >
-                                                <ClipboardCheck size={12} /> Attendance
+                                                <ClipboardCheck size={13} />
+                                                <span>Attendance</span>
                                             </Link>
                                         </td>
                                     </tr>

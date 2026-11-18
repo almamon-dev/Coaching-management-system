@@ -22,8 +22,8 @@ class ImportantLinkSeeder extends Seeder
                 'order' => 1,
             ],
             [
-                'title' => 'Academic Courses & Programs',
-                'url' => '/#courses',
+                'title' => 'Academic batches & Programs',
+                'url' => '/#batches',
                 'is_active' => true,
                 'order' => 2,
             ],

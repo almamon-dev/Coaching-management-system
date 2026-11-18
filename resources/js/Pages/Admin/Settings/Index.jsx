@@ -23,6 +23,11 @@ export default function SettingsIndex({ settings = {} }) {
         currency_symbol: settings.currency_symbol || '৳',
         academic_year: settings.academic_year || '2026',
         receipt_footer_note: settings.receipt_footer_note || 'Thank you for choosing Ullash Coaching Center.',
+        contact_phone_alt: settings.contact_phone_alt || '',
+        contact_office_hours: settings.contact_office_hours || '',
+        footer_about: settings.footer_about || '',
+        facebook_url: settings.facebook_url || '',
+        whatsapp_number: settings.whatsapp_number || '',
     });
 
     const handleSubmit = (e) => {
@@ -231,6 +236,57 @@ export default function SettingsIndex({ settings = {} }) {
                                     required
                                 />
                                 <InputError message={errors.address} />
+                            </div>
+
+                            <div>
+                                <InputLabel value="Alternative Phone / Counseling" />
+                                <TextInput
+                                    value={data.contact_phone_alt}
+                                    onChange={(e) => setData('contact_phone_alt', e.target.value)}
+                                    placeholder="+880 1812-345678"
+                                />
+                                <InputError message={errors.contact_phone_alt} />
+                            </div>
+
+                            <div>
+                                <InputLabel value="WhatsApp Number" />
+                                <TextInput
+                                    value={data.whatsapp_number}
+                                    onChange={(e) => setData('whatsapp_number', e.target.value)}
+                                    placeholder="+8801712345678"
+                                />
+                                <InputError message={errors.whatsapp_number} />
+                            </div>
+
+                            <div>
+                                <InputLabel value="Office & Counseling Hours" />
+                                <TextInput
+                                    value={data.contact_office_hours}
+                                    onChange={(e) => setData('contact_office_hours', e.target.value)}
+                                    placeholder="Sat - Thu: 8:00 AM - 8:00 PM"
+                                />
+                                <InputError message={errors.contact_office_hours} />
+                            </div>
+
+                            <div className="md:col-span-2">
+                                <InputLabel value="Facebook Page URL" />
+                                <TextInput
+                                    value={data.facebook_url}
+                                    onChange={(e) => setData('facebook_url', e.target.value)}
+                                    placeholder="https://facebook.com/ullashcoaching"
+                                />
+                                <InputError message={errors.facebook_url} />
+                            </div>
+
+                            <div className="md:col-span-2 lg:col-span-3">
+                                <InputLabel value="Website Footer Mission Statement" />
+                                <TextArea
+                                    value={data.footer_about}
+                                    onChange={(e) => setData('footer_about', e.target.value)}
+                                    rows={2}
+                                    placeholder="Ullash Coaching Center is committed to providing quality education, academic excellence, and a brighter future for every student."
+                                />
+                                <InputError message={errors.footer_about} />
                             </div>
 
                             <div className="md:col-span-2 lg:col-span-3">

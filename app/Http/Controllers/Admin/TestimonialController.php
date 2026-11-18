@@ -14,10 +14,35 @@ class TestimonialController extends Controller
     public function index()
     {
         $testimonials = Testimonial::orderBy('sort_order', 'asc')->paginate(12);
+        $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
 
         return Inertia::render('Admin/Testimonials/Index', [
             'testimonials' => $testimonials,
+            'settings' => $settings,
         ]);
+    }
+
+    public function updateStats(Request $request)
+    {
+        $validated = $request->validate([
+            'success_stat_pass_rate' => 'nullable|string|max:50',
+            'success_stat_pass_label' => 'nullable|string|max:100',
+            'success_stat_gpa5' => 'nullable|string|max:50',
+            'success_stat_gpa5_label' => 'nullable|string|max:100',
+            'success_stat_admissions' => 'nullable|string|max:50',
+            'success_stat_admissions_label' => 'nullable|string|max:100',
+            'success_stat_experience' => 'nullable|string|max:50',
+            'success_stat_experience_label' => 'nullable|string|max:100',
+        ]);
+
+        foreach ($validated as $key => $val) {
+            \App\Models\Setting::updateOrCreate(
+                ['key' => $key],
+                ['value' => $val ?? '']
+            );
+        }
+
+        return redirect()->back()->with('success', 'Student success statistics updated successfully.');
     }
 
     public function store(Request $request)

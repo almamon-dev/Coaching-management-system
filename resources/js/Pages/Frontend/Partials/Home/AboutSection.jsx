@@ -20,18 +20,18 @@ export default function AboutSection() {
                             A Legacy of <span className="text-[#16a34a]">Excellence</span> & Innovation
                         </h2>
                         <p className="text-slate-600 text-[14px] leading-relaxed mb-3 font-medium max-w-3xl">
-                            আমাদের কোচিং সেন্টারে আমরা প্রতিটি শিক্ষার্থীর অন্তর্নিহিত মেধা ও সম্ভাবনাকে বিকশিত করায় বিশ্বাসী। অভিজ্ঞ মেন্টরশিপ, সুনির্দিষ্ট স্টাডি প্ল্যান এবং সৃজনশীল পাঠদানের মাধ্যমে প্রতিটি শিক্ষার্থীকে পরীক্ষার জন্য শতভাগ প্রস্তুত করা হয়।
+                            We believe in nurturing the unique talents and full potential of every student. Through dedicated mentorship, systematic study plans, and innovative pedagogy, we ensure every student is fully prepared to excel in their academic journey.
                         </p>
                         <p className="text-slate-500 text-[13px] leading-relaxed mb-5 max-w-3xl">
-                            মানসম্মত শিক্ষা ও সেরা ফলাফলের অঙ্গীকার নিয়ে আমাদের যাত্রা। প্রতিটি বিষয়ের বেসিক কনসেপ্ট ক্লিয়ারিং এবং নিয়মিত মডেল টেস্টের মাধ্যমে শিক্ষার্থীদের বোর্ড পরীক্ষায় সেরা সাফল্য নিশ্চিত করাই আমাদের মূল লক্ষ্য।
+                            Committed to quality education and outstanding board exam results, our mission is to provide deep conceptual clarity and rigorous weekly assessments that empower students to achieve top rankings.
                         </p>
 
                         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-2 mb-6 max-w-2xl">
                             {[
-                                'বিষয়ভিত্তিক বেসিক কনসেপ্ট ক্লিয়ারিং',
-                                'অধ্যায়ভিত্তিক রিভিশন ও বিশেষ হ্যান্ডনোট',
-                                'নিয়মিত মডেল টেস্ট ও ওএমআর এসেসমেন্ট',
-                                'অভিভাবকদের সাথে নিয়মিত যোগাযোগ ও রিপোর্ট'
+                                'Subject-wise Core Concept Clarification',
+                                'Chapter-based Revision & Specialized Handnotes',
+                                'Regular Model Tests & OMR Assessments',
+                                'Consistent Guardian Communication & Reports'
                             ].map((item, i) => (
                                 <li key={i} className="flex items-center gap-2.5 text-slate-700 font-bold text-xs">
                                     <div className="w-4 h-4 rounded-full bg-[#16a34a]/20 flex items-center justify-center text-[#16a34a] shrink-0">

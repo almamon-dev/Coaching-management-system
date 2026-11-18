@@ -27,7 +27,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -41,7 +41,33 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $loginInput = trim($this->input('email'));
+        $password = $this->input('password');
+
+        // Smart lookup: Check if user entered Email, Phone, or Student ID
+        $user = null;
+        if (filter_var($loginInput, FILTER_VALIDATE_EMAIL)) {
+            $user = \App\Models\User::where('email', $loginInput)->first();
+        } else {
+            // 1. Try finding by phone in users table
+            $user = \App\Models\User::where('phone', $loginInput)->first();
+
+            // 2. Try finding by student_id from student_profile
+            if (!$user) {
+                $profile = \App\Models\StudentProfile::where('student_id', $loginInput)
+                    ->orWhere('student_id', strtoupper($loginInput))
+                    ->first();
+                if ($profile && $profile->user) {
+                    $user = $profile->user;
+                }
+            }
+        }
+
+        $credentials = $user
+            ? ['email' => $user->email, 'password' => $password]
+            : ['email' => $loginInput, 'password' => $password];
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

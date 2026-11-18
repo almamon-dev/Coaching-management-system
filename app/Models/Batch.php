@@ -51,6 +51,11 @@ class Batch extends Model
         return $this->hasMany(ClassRoutine::class);
     }
 
+    public function classRoutines()
+    {
+        return $this->hasMany(ClassRoutine::class);
+    }
+
     public function exams()
     {
         return $this->hasMany(Exam::class);

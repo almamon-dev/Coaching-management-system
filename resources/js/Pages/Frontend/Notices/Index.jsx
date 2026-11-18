@@ -88,7 +88,7 @@ export default function Index({ notices = {}, settings = {} }) {
     ];
 
     const noticeList = (notices.data && notices.data.length > 0)
-        ? [...notices.data, ...defaultNotices.filter(d => !notices.data.some(n => n.title.toLowerCase() === d.title.toLowerCase()))]
+        ? (notices.data.length >= 4 ? notices.data : [...notices.data, ...defaultNotices.filter(d => !notices.data.some(n => n.title.toLowerCase() === d.title.toLowerCase()))])
         : defaultNotices;
 
     // Filter notices based on search & category

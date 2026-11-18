@@ -19,7 +19,7 @@ class PermissionController extends Controller
             'students' => 'Student Management',
             'admissions' => 'Admission Management',
             'teachers' => 'Teacher Management',
-            'courses' => 'Course Management',
+            'batches' => 'Course Management',
             'batches' => 'Batch Management',
             'routines' => 'Class & Routine',
             'attendance' => 'Attendance',

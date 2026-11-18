@@ -119,7 +119,7 @@ export default function Sidebar({ isCollapsed, toggleCollapse, activeTab = 'over
     const isStaff = authUser?.user_type === 'staff' || authUser?.user_type === 'teacher';
 
     const studentName = authUser?.name || "Student";
-    const studentId = studentProfile?.student_id || "CSM-2026";
+    const studentId = studentProfile?.student_id || "UCCA-STUDENT";
     const courseTitle = studentProfile?.course?.title || studentProfile?.batch?.name || "Student Portal";
 
     const menuGroups = isStaff ? TEACHER_MENU : STUDENT_MENU;

@@ -5,11 +5,11 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Course;
 
-class CourseSeeder extends Seeder
+class batcheseeder extends Seeder
 {
     public function run(): void
     {
-        $courses = [
+        $batches = [
             // ─── HSC / Intermediate ───────────────────────────────────
             [
                 'title'       => 'Physics 1st & 2nd Paper',
@@ -127,13 +127,13 @@ class CourseSeeder extends Seeder
             ],
         ];
 
-        foreach ($courses as $course) {
+        foreach ($batches as $course) {
             Course::firstOrCreate(
                 ['code' => $course['code']],
                 $course
             );
         }
 
-        $this->command->info('✅ ' . count($courses) . ' sample subjects seeded successfully!');
+        $this->command->info('✅ ' . count($batches) . ' sample subjects seeded successfully!');
     }
 }

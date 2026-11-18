@@ -47,10 +47,10 @@ export default function Login({ status, canResetPassword, isAdmin, isTeacher, is
         : (isTeacher ? 'Teacher Login' : 'Student Login');
 
     const demoCredentials = isAdmin
-        ? { email: 'admin@coaching.com', label: 'Demo Admin' }
+        ? { email: 'admin@coaching.com', label: 'Demo Admin', pass: 'password' }
         : (isTeacher
-            ? { email: 'teacher1@coaching.com', label: 'Demo Teacher' }
-            : { email: 'student1@coaching.com', label: 'Demo Student' });
+            ? { email: 'teacher1@coaching.com', label: 'Demo Teacher', pass: 'password' }
+            : { email: 'mamon193p@gmail.com', label: 'Student Account', pass: '12345678' });
 
     return (
         <>
@@ -82,25 +82,33 @@ export default function Login({ status, canResetPassword, isAdmin, isTeacher, is
                         )}
 
                         <form onSubmit={submit} className="space-y-4">
-                            {/* Email Field */}
+                            {/* Email / Student ID / Phone Field */}
                             <div>
-                                <InputLabel htmlFor="email" value="Email Address" />
+                                <InputLabel
+                                    htmlFor="email"
+                                    value={isStudent ? "Email / Student ID / Phone" : "Email Address"}
+                                />
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                                         <Mail size={15} />
                                     </div>
                                     <TextInput
                                         id="email"
-                                        type="email"
+                                        type="text"
                                         name="email"
                                         value={data.email}
                                         onChange={(e) => setData('email', e.target.value)}
                                         className="pl-9 h-[38px] text-xs sm:text-sm"
-                                        placeholder={demoCredentials.email}
+                                        placeholder={isStudent ? "Student ID (e.g. UCCA-101-0001) or Email" : demoCredentials.email}
                                         required
                                         autoComplete="username"
                                     />
                                 </div>
+                                {isStudent && (
+                                    <p className="text-[11px] text-slate-500 mt-1">
+                                        Default password for students: <b className="text-emerald-700 font-mono">12345678</b>
+                                    </p>
+                                )}
                                 <InputError message={errors.email} className="mt-1" />
                             </div>
 
@@ -181,7 +189,7 @@ export default function Login({ status, canResetPassword, isAdmin, isTeacher, is
                             <span className="text-[11px] text-slate-400 font-medium">Testing:</span>
                             <SecondaryButton
                                 type="button"
-                                onClick={() => handleQuickLogin(demoCredentials.email, 'password')}
+                                onClick={() => handleQuickLogin(demoCredentials.email, demoCredentials.pass || 'password')}
                                 className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-semibold rounded-[3px] text-[11px] normal-case tracking-normal shadow-none h-auto"
                             >
                                 <span>{copied ? '✓ Credentials Filled' : `Fill ${demoCredentials.label}`}</span>

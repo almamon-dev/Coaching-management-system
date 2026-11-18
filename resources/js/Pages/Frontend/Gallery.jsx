@@ -11,19 +11,29 @@ export default function Gallery({ dbGalleries = [], settings = {} }) {
     const [previewImage, setPreviewImage] = useState(null);
 
     const defaultImages = [
-        { id: 'g1', src: '/images/campus_sports.png', title: 'Annual Athletics Meet 2026', category: 'Sports' },
-        { id: 'g2', src: '/images/campus_culture.png', title: 'Spring Cultural Festival', category: 'Culture' },
-        { id: 'g3', src: '/images/campus_academics.png', title: 'Outdoor Collaborative Learning', category: 'Academics' },
-        { id: 'g4', src: '/images/campus_facilities.png', title: 'Main Campus & Smart Facilities', category: 'Facilities' },
-        { id: 'g5', src: '/images/hero_bg_1.png', title: 'Special Model Test Examination Session', category: 'Academics' },
-        { id: 'g6', src: '/images/hero_bg_2.png', title: 'Mentorship & Award Ceremony', category: 'Events' },
+        { id: 'g1', src: '/images/ullash_classroom_model_test_01.jpg', title: 'Model Test Examination Session in AC Classroom', category: 'Academics' },
+        { id: 'g2', src: '/images/ullash_farewell_gift_ceremony.jpg', title: 'HSC-2026 Batch Grand Farewell & Gift Pack Presentation', category: 'Events' },
+        { id: 'g3', src: '/images/ullash_award_crest_01.jpg', title: 'Merit Crest Award Presentation to Top Achievers', category: 'Events' },
+        { id: 'g4', src: '/images/ullash_campus_mentorship.jpg', title: 'Faculty Mentorship & Guidance in Front of Campus', category: 'Campus' },
+        { id: 'g5', src: '/images/ullash_campus_female_batch.jpg', title: 'Female Students Academic Group Study on Campus', category: 'Campus' },
+        { id: 'g6', src: '/images/ullash_farewell_classroom_celebration.jpg', title: 'Interactive Farewell Celebration & Student Gathering', category: 'Events' },
+        { id: 'g7', src: '/images/ullash_classroom_model_test_02.jpg', title: 'Model Test Hall Examination with Attentive Students', category: 'Academics' },
+        { id: 'g8', src: '/images/ullash_award_crest_06.jpg', title: 'Merit Crest Presentation to Female Achiever', category: 'Events' },
+        { id: 'g9', src: '/images/ullash_roof_garden_batch.jpg', title: 'Campus Roof Garden Student Study Group', category: 'Campus' },
+        { id: 'g10', src: '/images/ullash_guideline_seminar_session.jpg', title: 'Academic Guidance & Concept Discussion Session', category: 'Academics' },
+        { id: 'g11', src: '/images/ullash_farewell_cake_hsc26.jpg', title: 'HSC-2026 Batch Celebration Cake Cutting', category: 'Events' },
+        { id: 'g12', src: '/images/ullash_award_crest_02.jpg', title: 'Merit Award Presentation to Board Examinee', category: 'Events' },
+        { id: 'g13', src: '/images/ullash_classroom_model_test_03.jpg', title: 'Focused Model Test Practice Session', category: 'Academics' },
+        { id: 'g14', src: '/images/ullash_ict_batch_poster.jpg', title: 'New HSC ICT Batch Academic Launch', category: 'Academics' },
+        { id: 'g15', src: '/images/ullash_award_crest_03.jpg', title: 'Merit Crest Presentation to Outstanding Student', category: 'Events' },
+        { id: 'g16', src: '/images/ullash_center_banner.jpg', title: 'Official Ullash Coaching Center Banner', category: 'Campus' },
     ];
 
     const galleryList = (dbGalleries && dbGalleries.length > 0)
         ? [...dbGalleries, ...defaultImages.filter(d => !dbGalleries.some(g => g.title.toLowerCase() === d.title.toLowerCase()))]
         : defaultImages;
 
-    const categories = ['All', 'Sports', 'Culture', 'Academics', 'Facilities', 'Events'];
+    const categories = ['All', 'Academics', 'Events', 'Facilities', 'Seminars', 'Campus'];
 
     const filteredImages = galleryList.filter(item => {
         if (selectedCategory === 'All') return true;
@@ -82,7 +92,7 @@ export default function Gallery({ dbGalleries = [], settings = {} }) {
                         >
                             <div className="aspect-[4/3] w-full bg-slate-100 overflow-hidden">
                                 <img 
-                                    src={img.image || img.src || '/images/campus_facilities.png'} 
+                                    src={img.image || img.src || '/images/ullash_classroom_model_test_01.jpg'} 
                                     alt={img.title} 
                                     loading="lazy" 
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 

@@ -9,7 +9,7 @@ export default function CampusLifeSection({ galleries = [] }) {
                     <div className="max-w-2xl">
                         <div className="inline-block px-3 py-1 bg-amber-100 text-amber-800 font-bold text-[10px] rounded-full mb-2">Coaching Environment & Activities</div>
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">Coaching Life & Academic Activities</h2>
-                        <p className="text-slate-600 text-[13px] leading-relaxed">আমাদের কোচিং সেন্টারের আধুনিক ক্লাসরুম, মডেল টেস্ট সেশন, বিশেষ কুইজ প্রতিযোগিতা এবং আনন্দঘন শিখন পরিবেশের কিছু মুহূর্ত:</p>
+                        <p className="text-slate-600 text-[13px] leading-relaxed">Moments from our modern classrooms, weekly model test sessions, student workshops, and vibrant learning environment:</p>
                     </div>
                     <Link href="/gallery" className="shrink-0 px-5 py-2 border-2 border-[#009ca6] text-[#009ca6] hover:bg-[#009ca6] hover:text-white rounded-[3px] font-bold transition-all text-xs">
                         View Photo Gallery

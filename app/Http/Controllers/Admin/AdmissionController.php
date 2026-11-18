@@ -75,9 +75,8 @@ class AdmissionController extends Controller
         $primaryBatch = $selectedBatches->first();
         $primaryCourse = $primaryBatch?->course;
 
-        // Auto Generate Student ID
-        $studentCount = StudentProfile::count() + 1;
-        $studentIdStr = 'CSM-' . date('Y') . '-' . str_pad($studentCount, 4, '0', STR_PAD_LEFT);
+        // Auto Generate Student ID: UCCA-{BATCH_SHORT}-{SERIAL}
+        $studentIdStr = StudentProfile::generateStudentId($primaryBatch, $primaryCourse);
 
         // Auto Generate User
         $user = User::create([
@@ -188,7 +187,7 @@ class AdmissionController extends Controller
             'user_role' => auth()->user()->user_type,
             'action' => 'New Student Admission',
             'module' => 'Admissions',
-            'description' => "Completed admission for {$student->name} ({$student->student_id}) in course {$course->title}",
+            'description' => "Completed admission for {$student->name} ({$student->student_id}) in " . ($primaryCourse ? "course {$primaryCourse->title}" : "batches {$courseNames}"),
             'ip_address' => request()->ip(),
         ]);
 

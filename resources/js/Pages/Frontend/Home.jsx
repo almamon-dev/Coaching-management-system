@@ -5,14 +5,14 @@ import {
     GraduationCap, Play, Users, UserCheck, BookOpen,
     Award, CheckCircle2, ChevronRight, ArrowRight,
     Calendar, Clock, MapPin, Quote, Check, X, FileText, Download, Bell,
-    Coins, Video
+    Coins, Video, Mail, Phone, MessageSquare, Send
 } from 'lucide-react';
 
 export default function Home({
     dbNotices = [],
     dbImportantLinks = [],
     dbBatches = [],
-    dbCourses = [],
+    dbbatches = [],
     dbEvents = [],
     dbGalleries = [],
     dbTestimonials = [],
@@ -23,7 +23,16 @@ export default function Home({
 
     const [showAllNotices, setShowAllNotices] = useState(false);
     const [selectedNotice, setSelectedNotice] = useState(null);
-    const [selectedBatchCategory, setSelectedBatchCategory] = useState('All Batches');
+    const [inquiryForm, setInquiryForm] = useState({ name: '', phone: '', batch: '', message: '' });
+    const [inquirySent, setInquirySent] = useState(false);
+
+    const handleInquirySubmit = (e) => {
+        e.preventDefault();
+        setInquirySent(true);
+        setTimeout(() => {
+            setInquiryForm({ name: '', phone: '', batch: '', message: '' });
+        }, 4000);
+    };
 
     // Safe route helper
     const safeRoute = (name, params = undefined, fallback = '#') => {
@@ -108,7 +117,7 @@ export default function Home({
     ];
 
     const noticeBoardItems = (dbNotices && dbNotices.length > 0)
-        ? [...dbNotices, ...defaultNotices.filter(d => !dbNotices.some(n => n.title.toLowerCase() === d.title.toLowerCase()))]
+        ? (dbNotices.length >= 4 ? dbNotices : [...dbNotices, ...defaultNotices.filter(d => !dbNotices.some(n => n.title.toLowerCase() === d.title.toLowerCase()))])
         : defaultNotices;
 
     const displayedNotices = showAllNotices ? noticeBoardItems : noticeBoardItems.slice(0, 4);
@@ -116,7 +125,7 @@ export default function Home({
     // 2. Dynamic or Default Important Links
     const defaultImportantLinks = [
         { title: 'Notice Board', href: '#notice-board' },
-        { title: 'Academic Courses & Programs', href: '#courses' },
+        { title: 'Academic batches & Programs', href: '#batches' },
         { title: 'Admission Instructions', href: safeRoute('admissions', undefined, '/admissions') },
         { title: 'Campus Events & Seminars', href: safeRoute('events', undefined, '/events') },
         { title: 'Student Success Stories', href: safeRoute('success-stories', undefined, '/success-stories') },
@@ -134,7 +143,7 @@ export default function Home({
             if (l.title.toLowerCase().includes('notice') && typeof window !== 'undefined' && window.location.pathname === '/') {
                 targetHref = '#notice-board';
             } else if ((l.title.toLowerCase().includes('course') || l.title.toLowerCase().includes('program')) && typeof window !== 'undefined' && window.location.pathname === '/') {
-                targetHref = '#courses';
+                targetHref = '#batches';
             }
             return {
                 title: l.title,
@@ -279,39 +288,32 @@ export default function Home({
 
     const academicBatches = (dbBatches && dbBatches.length > 0) ? dbBatches : defaultBatches;
 
-    // Dynamically derive unique categories: 'All Batches', 'HSC / Intermediate', 'Class 9', 'Class 10'
-    const batchCategories = ['All Batches', ...new Set(academicBatches.map(b => b.category).filter(Boolean))];
-
-    const filteredBatches = selectedBatchCategory === 'All Batches'
-        ? academicBatches
-        : academicBatches.filter(b => b.category === selectedBatchCategory);
-
     // 4. Dynamic or Default Events
     const defaultEvents = [
         {
             id: 1,
-            title: 'Spring Harvest Festival & Cultural Show',
-            image: '/images/event_harvest.png',
+            title: 'Annual Merit Award & Achievers Crest Ceremony',
+            image: '/images/ullash_award_crest_01.jpg',
             month: 'MAR',
             day: '15',
-            time: '10:00 AM',
-            location: 'MAIN FIELD',
-            description: 'Join us for a celebration of local culture, agriculture, and student performances in our open-air campus ground.',
+            time: '04:00 PM',
+            location: 'MAIN AUDITORIUM & RECEPTION',
+            description: 'Ullash Coaching Center honors top scorers in HSC and SSC board exams with merit crests, certificates, and recognition by the Director.',
             accent: {
-                text: 'text-[#e11d48]',
-                border: 'border-[#e11d48]',
-                hoverText: 'group-hover:text-[#e11d48]',
+                text: 'text-[#d97706]',
+                border: 'border-[#d97706]',
+                hoverText: 'group-hover:text-[#d97706]',
             },
         },
         {
             id: 2,
-            title: 'Annual Academic Science Fair & Model Contest',
-            image: '/images/event_science.png',
+            title: 'HSC & SSC Central Model Test Grand Exam',
+            image: '/images/ullash_classroom_model_test_01.jpg',
             month: 'MAR',
-            day: '22',
+            day: '25',
             time: '09:00 AM',
-            location: 'SCIENCE LAB',
-            description: 'Students gather to demonstrate eco-friendly science projects, robotics, and innovation models under expert faculty guidance.',
+            location: 'EXAMINATION HALL 1 & 2',
+            description: 'Board-standard centralized model test examination in our air-conditioned classrooms with strict invigilation and detailed script evaluation.',
             accent: {
                 text: 'text-[#059669]',
                 border: 'border-[#059669]',
@@ -320,41 +322,41 @@ export default function Home({
         },
         {
             id: 3,
-            title: 'Annual Football Championship Final',
-            image: '/images/event_football.png',
+            title: 'HSC Batch Grand Farewell & Celebration Ceremony',
+            image: '/images/ullash_farewell_gift_ceremony.jpg',
             month: 'APR',
             day: '05',
-            time: '03:00 PM',
-            location: 'CAMPUS GROUND',
-            description: 'The most awaited sports event of the year! Cheer for your favorite houses as they battle for the cup.',
+            time: '11:00 AM',
+            location: 'COACHING CAMPUS HALL',
+            description: 'Grand farewell ceremony for outgoing HSC examinees featuring gift pack presentations, celebration cake cutting, and motivational guidance from faculty.',
+            accent: {
+                text: 'text-[#e11d48]',
+                border: 'border-[#e11d48]',
+                hoverText: 'group-hover:text-[#e11d48]',
+            },
+        },
+        {
+            id: 4,
+            title: 'New HSC ICT Batch Admission & Orientation Seminar',
+            image: '/images/ullash_ict_batch_poster.jpg',
+            month: 'APR',
+            day: '14',
+            time: '10:00 AM',
+            location: 'ICT SEMINAR ROOM',
+            description: 'Special orientation seminar on ICT syllabus coverage, C programming, and practical board question mastery for HSC science and commerce students.',
             accent: {
                 text: 'text-[#2563eb]',
                 border: 'border-[#2563eb]',
                 hoverText: 'group-hover:text-[#2563eb]',
             },
         },
-        {
-            id: 4,
-            title: 'Pohela Boishakh Celebration',
-            image: '/images/event_boishakh.png',
-            month: 'APR',
-            day: '14',
-            time: '08:00 AM',
-            location: 'COACHING CAMPUS',
-            description: 'Celebrate the Bengali New Year with traditional food, music, and vibrant rallies across the coaching campus.',
-            accent: {
-                text: 'text-[#d97706]',
-                border: 'border-[#d97706]',
-                hoverText: 'group-hover:text-[#d97706]',
-            },
-        },
     ];
 
     const eventAccentStyles = [
-        { text: 'text-[#e11d48]', border: 'border-[#e11d48]', hoverText: 'group-hover:text-[#e11d48]' },
         { text: 'text-[#059669]', border: 'border-[#059669]', hoverText: 'group-hover:text-[#059669]' },
-        { text: 'text-[#2563eb]', border: 'border-[#2563eb]', hoverText: 'group-hover:text-[#2563eb]' },
         { text: 'text-[#d97706]', border: 'border-[#d97706]', hoverText: 'group-hover:text-[#d97706]' },
+        { text: 'text-[#e11d48]', border: 'border-[#e11d48]', hoverText: 'group-hover:text-[#e11d48]' },
+        { text: 'text-[#2563eb]', border: 'border-[#2563eb]', hoverText: 'group-hover:text-[#2563eb]' },
     ];
 
     const upcomingEventsList = (dbEvents && dbEvents.length > 0)
@@ -374,7 +376,7 @@ export default function Home({
             batch: "HSC Science Batch",
             badge: "GPA 5.00 (Golden A+)",
             institution: "Dhaka College",
-            quote: "ফিজিক্স ও হায়ার ম্যাথের কঠিন বিষয়গুলো এত সহজভাবে বুঝিয়ে দেওয়া হয়েছিল যে পরীক্ষার সময় কোনো সমস্যাই হয়নি। রেগুলার মডেল টেস্ট আমাকে বোর্ড পরীক্ষায় আত্মবিশ্বাসী করে তোলে।",
+            quote: "The complex topics in Physics and Higher Mathematics were explained with such clarity. Regular weekly model tests built my confidence to excel in the board examination.",
         },
         {
             id: 2,
@@ -384,7 +386,7 @@ export default function Home({
             batch: "SSC Science Batch",
             badge: "GPA 5.00 & Board Top",
             institution: "Viqarunnisa Noon School",
-            quote: "স্যারের পার্সোনাল কেয়ার আর প্রশ্ন সমাধানের শর্টকাট টেকনিকগুলো অসাধারণ ছিল। প্রতিটি ক্লাসের পর প্রবলেম সলভিং সেশন আমাকে গণিতে শতভাগ নম্বর পেতে দারুণ সাহায্য করেছে।",
+            quote: "The personal mentorship and problem-solving techniques were extraordinary. Dedicated problem-solving sessions helped me achieve 100% marks in Mathematics.",
         },
         {
             id: 3,
@@ -394,7 +396,7 @@ export default function Home({
             batch: "HSC Special Batch",
             badge: "GPA 5.00 (Golden A+)",
             institution: "Notre Dame College",
-            quote: "কেমিস্ট্রি ও আইসিটির গোছানো লেকচার শিট এবং নিয়মিত উইকলি টেস্ট আমার প্রস্তুতিকে সম্পূর্ণ করে দিয়েছিল। রেজাল্ট ভালো করার পেছনে উল্লাস কোচিংয়ের অবদান সবসময় মনে থাকবে।",
+            quote: "The structured lecture sheets for Chemistry and ICT combined with regular tests made my preparation complete. Ullash Coaching played a key role in my academic success.",
         },
         {
             id: 4,
@@ -404,17 +406,17 @@ export default function Home({
             batch: "Class 10 Intensive Batch",
             badge: "GPA 5.00 Achiever",
             institution: "Holy Cross College",
-            quote: "কোচিংয়ের নিয়মিত হাজিরা ট্র্যাকিং এবং রেজাল্ট ফিডব্যাক সিস্টেম আমাকে নিয়মানুবর্তী হতে সাহায্য করেছিল। কঠিন বিষয়গুলো খুব সহজে আনন্দের সাথে সমাধান শিখিয়ে দিতেন স্যার।",
+            quote: "Regular attendance tracking and result feedback helped me stay disciplined. Complex topics were broken down and explained with joy and simplicity.",
         },
     ];
     const successStories = (dbTestimonials && dbTestimonials.length > 0) ? dbTestimonials : defaultTestimonials;
 
     // 6. Dynamic or Default Bento Gallery Photos
     const defaultGalleries = [
-        { id: 1, title: 'Annual Athletics Meet', category: 'SPORTS', image: '/images/campus_sports.png' },
-        { id: 2, title: 'Spring Cultural Fest', category: 'CULTURE', image: '/images/campus_culture.png' },
-        { id: 3, title: 'Outdoor Learning', category: 'ACADEMICS', image: '/images/campus_academics.png' },
-        { id: 4, title: 'Green Campus', category: 'FACILITIES', image: '/images/campus_facilities.png' },
+        { id: 1, title: 'Model Test Examination Session in AC Classroom', category: 'ACADEMICS', image: '/images/ullash_classroom_model_test_01.jpg' },
+        { id: 2, title: 'HSC-2026 Batch Grand Farewell & Celebration', category: 'EVENTS', image: '/images/ullash_farewell_gift_ceremony.jpg' },
+        { id: 3, title: 'Merit Crest Award Presentation to Top Achievers', category: 'RECOGNITION', image: '/images/ullash_award_crest_01.jpg' },
+        { id: 4, title: 'Faculty Mentorship & Guidance in Front of Campus', category: 'CAMPUS', image: '/images/ullash_campus_mentorship.jpg' },
     ];
     const galleryPhotos = (dbGalleries && dbGalleries.length > 0) ? dbGalleries : defaultGalleries;
 
@@ -481,11 +483,11 @@ export default function Home({
                                 </Link>
 
                                 <a
-                                    href="#courses"
+                                    href="#batches"
                                     className="px-5 py-2.5 bg-emerald-900/40 hover:bg-emerald-900/70 text-white text-xs sm:text-[13px] font-bold rounded-[4px] border border-white/30 backdrop-blur-xs transition-all flex items-center gap-2 cursor-pointer"
                                 >
                                     <Play size={14} fill="currentColor" />
-                                    <span>Explore Our Courses</span>
+                                    <span>Explore Our Batches</span>
                                 </a>
                             </div>
                         </div>
@@ -529,8 +531,8 @@ export default function Home({
                                 <BookOpen size={20} />
                             </div>
                             <div className="text-left">
-                                <div className="text-xl sm:text-2xl font-black leading-none">{cmsSettings?.stat_courses || '10+'}</div>
-                                <div className="text-[11px] text-emerald-200 font-medium mt-1">Courses & Programs</div>
+                                <div className="text-xl sm:text-2xl font-black leading-none">{cmsSettings?.stat_batches || '10+'}</div>
+                                <div className="text-[11px] text-emerald-200 font-medium mt-1">batches & Programs</div>
                             </div>
                         </div>
 
@@ -735,88 +737,56 @@ export default function Home({
             {/* ========================================================================= */}
             {/* 5. EXPLORE OUR ACADEMIC BATCHES                                            */}
             {/* ========================================================================= */}
-            <section id="batches" className="scroll-mt-20 py-14 sm:py-16 bg-slate-50/60 border-b border-slate-200/80">
-                <span id="courses" className="sr-only" aria-hidden="true">Courses & Batches</span>
+            <section id="batches" className="scroll-mt-20 py-14 sm:py-16 bg-slate-50/50 border-b border-slate-200/80" style={gridBgStyle}>
+                <span id="batches" className="sr-only" aria-hidden="true">batches & Batches</span>
                 <div className="container mx-auto px-4 max-w-7xl space-y-8">
 
                     {/* Section Header */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 border-b border-slate-200/80 pb-6">
                         <div className="max-w-2xl">
-                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                            <span className="inline-block px-3 py-1 bg-emerald-50 text-[#047857] font-bold text-[10px] uppercase tracking-wider rounded-full mb-2">
                                 Academic Batches
                             </span>
                             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                                 Explore Our Batches
                             </h2>
-                            <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
-                                Find the right batch for your academic level and schedule.
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                                Find the right batch for your academic level and join our expert-guided learning programs.
                             </p>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-3 shrink-0">
-                            {/* Category Filter Tabs */}
-                            {batchCategories.length > 1 && (
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                    {batchCategories.map((cat) => {
-                                        const count = cat === 'All Batches'
-                                            ? academicBatches.length
-                                            : academicBatches.filter(b => b.category === cat).length;
-                                        const isActive = selectedBatchCategory === cat;
-
-                                        return (
-                                            <button
-                                                key={cat}
-                                                type="button"
-                                                onClick={() => setSelectedBatchCategory(cat)}
-                                                className={`px-3.5 py-1.5 rounded-[4px] text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${isActive
-                                                    ? 'bg-slate-900 text-white'
-                                                    : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'
-                                                    }`}
-                                            >
-                                                <span>{cat}</span>
-                                                <span className={`text-[10px] px-1.5 py-0.2 rounded-[2px] font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
-                                                    }`}>
-                                                    {count}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            {/* View All Batches Button in Section Header */}
-                            <Link
-                                href={safeRoute('batches.index', undefined, '/batches')}
-                                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-[4px] shadow-xs transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
-                            >
-                                <span>View All Batches</span>
-                                <ChevronRight size={13} />
-                            </Link>
-                        </div>
+                        {/* View All Batches Button in Section Header */}
+                        <Link
+                            href={safeRoute('batches.index', undefined, '/batches')}
+                            className="shrink-0 px-5 py-2.5 bg-[#047857] hover:bg-[#065f46] text-white text-xs sm:text-sm font-bold rounded-[4px] shadow-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer self-start md:self-auto"
+                        >
+                            <span>View All Batches</span>
+                            <ChevronRight size={14} />
+                        </Link>
                     </div>
 
                     {/* Batches Grid: 4 Batches in 2 Columns (Matching Upcoming Events Layout) */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {filteredBatches.slice(0, 4).map(batch => (
+                        {academicBatches.slice(0, 4).map(batch => (
                             <div
                                 key={batch.id}
-                                className="bg-white rounded-[4px] overflow-hidden border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row group transition-all"
+                                className="bg-white rounded-[4px] overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-md flex flex-col sm:flex-row group transition-all"
                             >
                                 {/* Left Image with Category & Code Badges */}
                                 <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0 bg-slate-100">
                                     <img
-                                        src={batch.image || '/images/fb_photo_01.jpg'}
+                                        src={batch.image || '/images/batches/batch_physics.jpg'}
                                         alt={batch.display_title || batch.name}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        onError={(e) => { e.target.src = '/images/campus_academics.png'; }}
+                                        onError={(e) => { e.target.src = '/images/batches/batch_physics.jpg'; }}
                                     />
                                     <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs rounded-[4px] px-2.5 py-1 text-center shadow-xs border border-slate-200/90">
-                                        <span className="block text-[10px] font-bold text-slate-800 uppercase tracking-wider leading-none">
+                                        <span className="block text-[10px] font-bold text-[#047857] uppercase tracking-wider leading-none">
                                             {batch.category || 'Academic Batch'}
                                         </span>
                                     </div>
-                                    <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-xs rounded-[4px] px-2 py-0.5 text-center">
-                                        <span className="block font-mono text-[10px] text-white tracking-wider">
+                                    <div className="absolute bottom-3 left-3 bg-[#047857]/90 backdrop-blur-xs rounded-[4px] px-2 py-0.5 text-center">
+                                        <span className="block font-mono text-[10px] text-white tracking-wider font-semibold">
                                             {batch.code || `BATCH-${batch.id}`}
                                         </span>
                                     </div>
@@ -828,17 +798,17 @@ export default function Home({
                                         {/* Routine / Schedule Row */}
                                         <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold text-slate-500 mb-2">
                                             <span className="flex items-center gap-1.5">
-                                                <Calendar size={13} className="text-slate-400" />
+                                                <Calendar size={13} className="text-[#047857]" />
                                                 <span>{batch.class_days || 'Regular Days'}</span>
                                             </span>
                                             <span className="flex items-center gap-1.5">
-                                                <Clock size={13} className="text-slate-400" />
+                                                <Clock size={13} className="text-[#047857]" />
                                                 <span>{batch.class_time || 'Schedule'}</span>
                                             </span>
                                         </div>
 
                                         {/* Title */}
-                                        <h3 className="text-base font-bold text-slate-900 mb-1.5 leading-snug">
+                                        <h3 className="text-base font-bold text-slate-900 mb-1.5 leading-snug group-hover:text-[#047857] transition-colors">
                                             {batch.display_title || batch.name}
                                         </h3>
 
@@ -862,15 +832,15 @@ export default function Home({
                                     <div className="grid grid-cols-2 gap-2 pt-3 border-t border-slate-100 mt-2">
                                         <Link
                                             href={batch.details_url || safeRoute('batches.show', batch.id, `/batches/${batch.id}`)}
-                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-[4px] transition-colors block"
+                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-slate-700 bg-white hover:bg-emerald-50 hover:text-[#047857] border border-slate-300 hover:border-emerald-300 rounded-[4px] transition-colors block"
                                         >
                                             Details
                                         </Link>
                                         <Link
                                             href={batch.link || safeRoute('admissions', undefined, '/admissions')}
-                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-[4px] transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-white bg-[#047857] hover:bg-[#065f46] rounded-[4px] transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
                                         >
-                                            <span>Enroll</span>
+                                            <span>Join</span>
                                             <ArrowRight size={13} />
                                         </Link>
                                     </div>
@@ -881,18 +851,18 @@ export default function Home({
 
 
                     {/* Bottom Guidance Banner */}
-                    <div className="p-5 sm:p-6 bg-slate-900 rounded-[4px] text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="p-5 sm:p-6 bg-gradient-to-r from-[#064e3b] via-[#047857] to-[#065f46] rounded-[4px] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm border border-emerald-800/40">
                         <div className="space-y-1 text-center sm:text-left">
                             <h4 className="text-base sm:text-lg font-bold tracking-tight">
-                                Want to enroll in multiple subjects or need guidance?
+                                Want to join multiple subjects or need guidance?
                             </h4>
-                            <p className="text-xs text-slate-300">
+                            <p className="text-xs text-emerald-100/90">
                                 Our academic counseling team will assist you in selecting the best batch combinations for your school/college schedule.
                             </p>
                         </div>
                         <Link
                             href={safeRoute('admissions', undefined, '/admissions')}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 hover:bg-slate-100 text-xs font-bold rounded-[4px] transition-colors shrink-0 cursor-pointer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold rounded-[4px] shadow-sm transition-colors shrink-0 cursor-pointer"
                         >
                             <span>Admission Instructions</span>
                             <ChevronRight size={14} />
@@ -1000,7 +970,7 @@ export default function Home({
                             Celebrating Our Outstanding Achievers
                         </h2>
                         <p className="text-xs text-slate-500 max-w-xl mx-auto">
-                            আমাদের মেধাবী শিক্ষার্থীদের কঠোর পরিশ্রম ও ক্লাসের সঠিক নির্দেশনায় অর্জিত সাফল্যের অনুপ্রেরণাদায়ী গল্প।
+                            Inspiring stories of dedication, hard work, and academic excellence shared by our brilliant students.
                         </p>
                     </div>
 
@@ -1046,12 +1016,12 @@ export default function Home({
                         </Link>
 
                         <p className="text-xs text-slate-500 pt-1">
-                            আপনিও আপনার লক্ষ্যপূরণে আমাদের পরবর্তী ব্যাচে জয়েন করতে চান?
+                            Ready to achieve your academic dreams in our upcoming batch?
                             <Link
                                 href={safeRoute('admissions', undefined, '/admissions')}
                                 className="ml-1.5 font-bold text-[#ea580c] hover:underline inline-flex items-center gap-1 cursor-pointer"
                             >
-                                <span>ভর্তি সংক্রান্ত তথ্য দেখুন</span>
+                                <span>View Admission Details</span>
                                 <ArrowRight size={11} />
                             </Link>
                         </p>
@@ -1087,79 +1057,283 @@ export default function Home({
                     {/* Bento Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-3 md:gap-4 h-[440px] md:h-[480px] lg:h-[500px]">
 
-                        {/* 1. Large Card Left: Annual Athletics Meet (2 cols, 2 rows) */}
+                        {/* 1. Large Card Left: Model Test Exam in AC Classroom (2 cols, 2 rows) */}
                         <div className="md:col-span-2 md:row-span-2 relative rounded-[4px] overflow-hidden group shadow-2xs">
                             <img
-                                src={galleryPhotos[0]?.image || '/images/campus_sports.png'}
-                                alt={galleryPhotos[0]?.title || 'Annual Athletics Meet'}
+                                src={galleryPhotos[0]?.image || '/images/ullash_classroom_model_test_01.jpg'}
+                                alt={galleryPhotos[0]?.title || 'Model Test Examination Session in AC Classroom'}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                             <div className="absolute bottom-5 left-5 right-5">
                                 <span className="px-2.5 py-0.5 bg-[#009ca6] text-white text-[10px] font-bold rounded-[2px] uppercase inline-block mb-1.5 tracking-wider">
-                                    {galleryPhotos[0]?.category || 'SPORTS'}
+                                    {galleryPhotos[0]?.category || 'ACADEMICS'}
                                 </span>
                                 <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">
-                                    {galleryPhotos[0]?.title || 'Annual Athletics Meet'}
+                                    {galleryPhotos[0]?.title || 'Model Test Examination Session in AC Classroom'}
                                 </h3>
                             </div>
                         </div>
 
-                        {/* 2. Top Right Wide Card: Spring Cultural Fest (2 cols, 1 row) */}
+                        {/* 2. Top Right Wide Card: Farewell Celebration (2 cols, 1 row) */}
                         <div className="md:col-span-2 md:row-span-1 relative rounded-[4px] overflow-hidden group shadow-2xs">
                             <img
-                                src={galleryPhotos[1]?.image || '/images/campus_culture.png'}
-                                alt={galleryPhotos[1]?.title || 'Spring Cultural Fest'}
+                                src={galleryPhotos[1]?.image || '/images/ullash_farewell_gift_ceremony.jpg'}
+                                alt={galleryPhotos[1]?.title || 'HSC-2026 Batch Grand Farewell & Celebration'}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                             <div className="absolute bottom-4 left-4 right-4">
                                 <span className="px-2.5 py-0.5 bg-[#009ca6] text-white text-[10px] font-bold rounded-[2px] uppercase inline-block mb-1.5 tracking-wider">
-                                    {galleryPhotos[1]?.category || 'CULTURE'}
+                                    {galleryPhotos[1]?.category || 'EVENTS'}
                                 </span>
                                 <h3 className="text-lg md:text-xl font-bold text-white leading-tight">
-                                    {galleryPhotos[1]?.title || 'Spring Cultural Fest'}
+                                    {galleryPhotos[1]?.title || 'HSC-2026 Batch Grand Farewell & Celebration'}
                                 </h3>
                             </div>
                         </div>
 
-                        {/* 3. Bottom Right Card 1: Outdoor Learning (1 col, 1 row) */}
+                        {/* 3. Bottom Right Card 1: Merit Crest Award (1 col, 1 row) */}
                         <div className="md:col-span-1 md:row-span-1 relative rounded-[4px] overflow-hidden group shadow-2xs">
                             <img
-                                src={galleryPhotos[2]?.image || '/images/campus_academics.png'}
-                                alt={galleryPhotos[2]?.title || 'Outdoor Learning'}
+                                src={galleryPhotos[2]?.image || '/images/ullash_award_crest_01.jpg'}
+                                alt={galleryPhotos[2]?.title || 'Merit Crest Award Presentation to Top Achievers'}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                             <div className="absolute bottom-3 left-3 right-3">
                                 <span className="px-2.5 py-0.5 bg-[#009ca6] text-white text-[10px] font-bold rounded-[2px] uppercase inline-block mb-1 tracking-wider">
-                                    {galleryPhotos[2]?.category || 'ACADEMICS'}
+                                    {galleryPhotos[2]?.category || 'RECOGNITION'}
                                 </span>
                                 <h3 className="text-sm md:text-base font-bold text-white leading-tight">
-                                    {galleryPhotos[2]?.title || 'Outdoor Learning'}
+                                    {galleryPhotos[2]?.title || 'Merit Crest Award Presentation to Top Achievers'}
                                 </h3>
                             </div>
                         </div>
 
-                        {/* 4. Bottom Right Card 2: Green Campus (1 col, 1 row) */}
+                        {/* 4. Bottom Right Card 2: Faculty Mentorship (1 col, 1 row) */}
                         <div className="md:col-span-1 md:row-span-1 relative rounded-[4px] overflow-hidden group shadow-2xs">
                             <img
-                                src={galleryPhotos[3]?.image || '/images/campus_facilities.png'}
-                                alt={galleryPhotos[3]?.title || 'Green Campus'}
+                                src={galleryPhotos[3]?.image || '/images/ullash_campus_mentorship.jpg'}
+                                alt={galleryPhotos[3]?.title || 'Faculty Mentorship & Guidance in Front of Campus'}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                             <div className="absolute bottom-3 left-3 right-3">
                                 <span className="px-2.5 py-0.5 bg-[#009ca6] text-white text-[10px] font-bold rounded-[2px] uppercase inline-block mb-1 tracking-wider">
-                                    {galleryPhotos[3]?.category || 'FACILITIES'}
+                                    {galleryPhotos[3]?.category || 'CAMPUS'}
                                 </span>
                                 <h3 className="text-sm md:text-base font-bold text-white leading-tight">
-                                    {galleryPhotos[3]?.title || 'Green Campus'}
+                                    {galleryPhotos[3]?.title || 'Faculty Mentorship & Guidance in Front of Campus'}
                                 </h3>
                             </div>
                         </div>
 
                     </div>
+                </div>
+            </section>
+
+            {/* ========================================================================= */}
+            {/* 9. CONTACT US & CAMPUS COUNSELING SECTION                                  */}
+            {/* ========================================================================= */}
+            <section id="contact" className="scroll-mt-20 py-14 sm:py-16 bg-white border-t border-slate-200/80">
+                <div className="container mx-auto px-4 max-w-7xl space-y-10">
+
+                    {/* Section Header */}
+                    <div className="max-w-2xl text-left">
+                        <span className="inline-block px-3 py-1 bg-emerald-50 text-[#047857] font-bold text-[10px] uppercase tracking-wider rounded-full mb-2">
+                            GET IN TOUCH
+                        </span>
+                        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                            {settings?.contact_title || 'Contact Our Campus'}
+                        </h2>
+                        <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+                            {settings?.contact_subtitle || 'Have questions about academic batches, admission guidelines, or fee structures? Reach out to our campus office or academic counseling desk today.'}
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        {/* Left Column: 4 Information Cards & Counseling Box (7 cols) */}
+                        <div className="lg:col-span-7 space-y-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {/* Card 1: Campus Address */}
+                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-2">
+                                    <div className="w-8 h-8 rounded-[4px] bg-emerald-100 text-[#047857] flex items-center justify-center">
+                                        <MapPin size={16} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Campus Location</h4>
+                                        <p className="text-xs font-semibold text-slate-800 mt-0.5 leading-relaxed">
+                                            {settings?.address || 'House 123, Road 5, Mirpur-10, Dhaka-1216, Bangladesh'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Card 2: Hotlines */}
+                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-2">
+                                    <div className="w-8 h-8 rounded-[4px] bg-emerald-100 text-[#047857] flex items-center justify-center">
+                                        <Phone size={16} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Official Hotline</h4>
+                                        <div className="mt-0.5 space-y-0.5">
+                                            <a href={`tel:${settings?.phone || '+880 1712-345678'}`} className="text-xs font-bold text-slate-800 hover:text-[#047857] block transition-colors">
+                                                {settings?.phone || '+880 1712-345678'}
+                                            </a>
+                                            {settings?.contact_phone_alt && (
+                                                <a href={`tel:${settings.contact_phone_alt}`} className="text-xs text-slate-600 hover:text-[#047857] block transition-colors">
+                                                    Alt: {settings.contact_phone_alt}
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Card 3: Email */}
+                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-2">
+                                    <div className="w-8 h-8 rounded-[4px] bg-teal-100 text-[#009ca6] flex items-center justify-center">
+                                        <Mail size={16} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Official Email</h4>
+                                        <a href={`mailto:${settings?.email || 'info@ullashcoachingcenter.com'}`} className="text-xs font-bold text-slate-800 hover:text-[#009ca6] mt-0.5 block truncate transition-colors">
+                                            {settings?.email || 'info@ullashcoachingcenter.com'}
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {/* Card 4: Office Hours */}
+                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-2">
+                                    <div className="w-8 h-8 rounded-[4px] bg-amber-100 text-amber-700 flex items-center justify-center">
+                                        <Clock size={16} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Office & Counseling Hours</h4>
+                                        <p className="text-xs font-semibold text-slate-800 mt-0.5 leading-relaxed">
+                                            {settings?.contact_office_hours || 'Saturday - Thursday: 8:00 AM - 8:00 PM (Friday Closed)'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Counseling Guidance Banner */}
+                            <div className="p-5 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-white rounded-[4px] border border-emerald-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#047857] block">Academic Counseling Desk</span>
+                                    <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                                        {settings?.contact_counseling_note || 'Walk-in academic counseling and batch placement discussions are open daily during office hours.'}
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    {settings?.whatsapp_number && (
+                                        <a
+                                            href={`https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, '')}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="px-3.5 py-2 bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold rounded-[3px] shadow-2xs flex items-center gap-1.5 transition-colors"
+                                        >
+                                            <MessageSquare size={13} />
+                                            <span>WhatsApp</span>
+                                        </a>
+                                    )}
+                                    <Link
+                                        href={safeRoute('admissions', undefined, '/admissions')}
+                                        className="px-4 py-2 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-bold rounded-[3px] shadow-2xs flex items-center gap-1.5 transition-colors"
+                                    >
+                                        <span>Admission</span>
+                                        <ArrowRight size={13} />
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Column: Quick Counseling Inquiry Form (5 cols) */}
+                        <div className="lg:col-span-5 bg-slate-50/80 p-5 sm:p-6 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-4">
+                            <div>
+                                <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                                    Send an Academic Inquiry
+                                </h3>
+                                <p className="text-xs text-slate-500 mt-0.5">
+                                    Leave your contact details and our counseling team will get back to you.
+                                </p>
+                            </div>
+
+                            {inquirySent ? (
+                                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-[4px] text-center space-y-2 animate-in fade-in">
+                                    <CheckCircle2 size={28} className="mx-auto text-[#047857]" />
+                                    <h4 className="text-xs font-bold text-emerald-900">Inquiry Received Successfully!</h4>
+                                    <p className="text-[11px] text-emerald-700 leading-relaxed">
+                                        Thank you for contacting {centerName}. Our academic counseling team will reach out to your phone number shortly.
+                                    </p>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleInquirySubmit} className="space-y-3">
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
+                                            Student / Guardian Name *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={inquiryForm.name}
+                                            onChange={(e) => setInquiryForm({ ...inquiryForm, name: e.target.value })}
+                                            placeholder="Enter your name"
+                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857]"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
+                                            Mobile Number *
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            required
+                                            value={inquiryForm.phone}
+                                            onChange={(e) => setInquiryForm({ ...inquiryForm, phone: e.target.value })}
+                                            placeholder="+880 1712-000000"
+                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857]"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
+                                            Target Class / Batch
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={inquiryForm.batch}
+                                            onChange={(e) => setInquiryForm({ ...inquiryForm, batch: e.target.value })}
+                                            placeholder="e.g. HSC Physics, SSC Science"
+                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857]"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
+                                            Your Question / Note
+                                        </label>
+                                        <textarea
+                                            rows={2}
+                                            value={inquiryForm.message}
+                                            onChange={(e) => setInquiryForm({ ...inquiryForm, message: e.target.value })}
+                                            placeholder="Inquire about batch schedules, fees, or routine..."
+                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857]"
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        className="w-full py-2.5 px-4 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-bold rounded-[3px] shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                                    >
+                                        <Send size={13} />
+                                        <span>Submit Inquiry</span>
+                                    </button>
+                                </form>
+                            )}
+                        </div>
+                    </div>
+
                 </div>
             </section>
 

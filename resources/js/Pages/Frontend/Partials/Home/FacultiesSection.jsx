@@ -9,8 +9,8 @@ export default function FacultiesSection() {
             badge: 'Class 6-8 Batch',
             color: 'bg-amber-50 text-amber-700 font-semibold',
             icon: '📖',
-            subjects: ['General Math (সাধারণ গণিত)', 'Science (সাধারণ বিজ্ঞান)', 'English Special Care (ইংরেজি)', 'ICT (তথ্য ও যোগাযোগ প্রযুক্তি)'],
-            description: 'বেসিক কনসেপ্ট বিল্ডিং, গণিত ও বিজ্ঞানের ভিত্তি মজবুত করা এবং অধ্যায়ভিত্তিক মডেল টেস্ট।'
+            subjects: ['General Mathematics', 'General Science', 'English Special Care', 'ICT & Computing'],
+            description: 'Fundamental concept building, strong academic foundation in Math & Science, and chapter-wise tests.'
         },
         {
             id: 'class9-10',
@@ -18,8 +18,8 @@ export default function FacultiesSection() {
             badge: 'SSC Special',
             color: 'bg-blue-50 text-blue-700 font-semibold',
             icon: '📚',
-            subjects: ['Physics (পদার্থবিজ্ঞান)', 'Chemistry (রসায়ন)', 'Higher Math (উচ্চতর গণিত)', 'General Math (সাধারণ গণিত)', 'ICT (তথ্য ও যোগাযোগ প্রযুক্তি)'],
-            description: 'এসএসসি পরীক্ষার সম্পূর্ণ সিলেবাস কভারেজ, টেস্ট পেপার সলভিং এবং অধ্যায়ভিত্তিক রিভিশন ব্যাচ।'
+            subjects: ['Physics', 'Chemistry', 'Higher Mathematics', 'General Mathematics', 'ICT'],
+            description: 'Comprehensive SSC syllabus coverage, board exam test-paper solving, and intensive revision batches.'
         },
         {
             id: 'hsc1-2',
@@ -27,8 +27,8 @@ export default function FacultiesSection() {
             badge: 'HSC Mastery',
             color: 'bg-emerald-50 text-emerald-700 font-semibold',
             icon: '🔬',
-            subjects: ['Physics 1st & 2nd Paper', 'Chemistry 1st & 2nd Paper', 'Higher Math 1st & 2nd Paper', 'ICT Special Care'],
-            description: 'এইচএসসি বোর্ড পরীক্ষার সৃজনশীল (CQ), বহুনির্বাচনী (MCQ) ও কনসেপ্ট ক্লিয়ারিং ক্লাস।'
+            subjects: ['Physics (1st & 2nd Paper)', 'Chemistry (1st & 2nd Paper)', 'Higher Math (1st & 2nd Paper)', 'ICT Special Care'],
+            description: 'Comprehensive HSC board exam preparation focusing on Creative Questions (CQ), MCQs, and concept clarity.'
         }
     ];
 
@@ -38,7 +38,7 @@ export default function FacultiesSection() {
                 <div className="text-center max-w-2xl mx-auto mb-8">
                     <div className="inline-block px-3 py-1 bg-[#16a34a]/10 text-[#16a34a] font-bold text-[10px] rounded-full mb-2">Academic Subjects & Classes</div>
                     <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">Classes & Subjects We Teach</h2>
-                    <p className="text-slate-600 text-[13px] leading-relaxed">আমাদের কোচিংয়ে যে সকল শ্রেণী ও বিষয়ের ওপর পাঠদান ও মডেল টেস্ট গ্রহণ করা হয়:</p>
+                    <p className="text-slate-600 text-[13px] leading-relaxed">Structured academic coaching and weekly evaluations across key classes and subjects:</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -56,7 +56,7 @@ export default function FacultiesSection() {
                                 <p className="text-[12px] text-slate-500 mb-3 leading-snug">{offering.description}</p>
                                 
                                 <div className="space-y-1.5 border-t border-slate-100 pt-3 mb-4">
-                                    <span className="text-[10px] font-bold text-slate-400 block mb-1.5">বিষয়সমূহ (Subjects):</span>
+                                    <span className="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">Covered Subjects:</span>
                                     {offering.subjects.map((sub, sIdx) => (
                                         <div key={sIdx} className="flex items-center gap-2 text-xs font-medium text-slate-700">
                                             <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a]"></span>

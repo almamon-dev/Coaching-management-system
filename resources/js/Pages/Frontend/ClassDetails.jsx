@@ -9,67 +9,67 @@ export default function ClassDetails({ classId }) {
             title: 'Class 6 - 8 (Junior Academic Foundation)',
             badge: 'Class 6 - 8 Batch',
             icon: '📖',
-            description: 'ষষ্ঠ থেকে অষ্টম শ্রেণীর শিক্ষার্থীদের জন্য গণিত, বিজ্ঞান ও ইংরেজির বেসিক কনসেপ্ট ক্লিয়ারিং ক্লাস, অধ্যায়ভিত্তিক অনুশীলন ও বিশেষ দুর্বলতা সংশোধন সেশন।',
-            feeInfo: 'মাসিক ফি: ৳ ২,০০০ (সকল বিষয় অন্তর্ভুক্ত)',
+            description: 'Basic conceptual foundation classes in Mathematics, Science, and English for grades 6 to 8 with chapter-wise problem solving and personalized doubt-clearing sessions.',
+            feeInfo: 'Monthly Fee: ৳ 2,000 (All Subjects Included)',
             subjects: [
-                { name: 'General Math (সাধারণ গণিত)', desc: 'বীজগণিত, পাটিগণিত ও জ্যামিতির মৌলিক ধারণা ও অনুশীধনী সলভিং।' },
-                { name: 'General Science (সাধারণ বিজ্ঞান)', desc: 'পদার্থ, রসায়ন ও জীববিজ্ঞানের বুনিয়াদি পাঠদান।' },
-                { name: 'English Special Care (ইংরেজি)', desc: 'Grammar, Reading Skill, Vocabulary & Creative Writing.' },
-                { name: 'ICT (তথ্য ও যোগাযোগ প্রযুক্তি)', desc: 'বেসিক আইসিটি ও কম্পিউটার বিষয়ের ব্যবহারিক প্রস্তুতি।' }
+                { name: 'General Mathematics', desc: 'Core fundamentals of Algebra, Arithmetic, and Geometry with exercise-solving.' },
+                { name: 'General Science', desc: 'Fundamental concepts in Physics, Chemistry, and Biology.' },
+                { name: 'English Special Care', desc: 'Grammar mastery, reading comprehension, vocabulary, and creative writing.' },
+                { name: 'ICT & Computing', desc: 'Basic information technology, computer science fundamentals, and practical applications.' }
             ],
             routines: [
-                { day: 'শনিবার, সোমবার, বুধবার', time: 'বিকেল ৩:৩০ - বিকেল ৫:০০', subject: 'সাধারণ গণিত ও বিজ্ঞান' },
-                { day: 'রবিবার, মঙ্গলবার, বৃহস্পতিবার', time: 'বিকেল ৩:৩০ - বিকেল ৫:০০', subject: 'English Special & ICT' }
+                { day: 'Saturday, Monday, Wednesday', time: '03:30 PM - 05:00 PM', subject: 'General Mathematics & Science' },
+                { day: 'Sunday, Tuesday, Thursday', time: '03:30 PM - 05:00 PM', subject: 'English Special & ICT' }
             ],
             features: [
-                'প্রতি সপ্তাহে অধ্যায়ভিত্তিক ক্লাস টেস্ট ও ফিডব্যাক',
-                'দুর্বল শিক্ষার্থীদের জন্য অতিরিক্ত কেয়ার সেশন',
-                'অভিভাবকদের নিয়মিত অগ্রগতি রিপোর্ট প্রদান'
+                'Weekly chapter-wise class tests and analytical performance feedback',
+                'Dedicated extra doubt-clearing care sessions for struggling students',
+                'Regular student progress and attendance updates for guardians'
             ]
         },
         'class9-10': {
             title: 'Class 9 - 10 (SSC Preparation Batch)',
             badge: 'SSC Special',
             icon: '📚',
-            description: 'এসএসসি পরীক্ষার্থীদের জন্য পদার্থবিজ্ঞান, রসায়ন, উচ্চতর গণিত ও সাধারণ গণিতের সম্পূর্ণ সিলেবাস কভারেজ, টেস্ট পেপার সলভিং এবং টার্গেট A+ প্রস্তুতি।',
-            feeInfo: 'মাসিক ফি: ৳ ২,৫০০ (সকল বিষয় অন্তর্ভুক্ত)',
+            description: 'Complete board curriculum coverage for Physics, Chemistry, Higher Math, and General Math with board test-paper solving and target A+ preparation.',
+            feeInfo: 'Monthly Fee: ৳ 2,500 (All Subjects Included)',
             subjects: [
-                { name: 'Physics (পদার্থবিজ্ঞান)', desc: 'গতি, বল, কাজ-ক্ষমতা, আলো ও তড়িৎ অধ্যায়ের গাণিতিক সমস্যার সমাধান।' },
-                { name: 'Chemistry (রসায়ন)', desc: 'মৌলের পর্যায় সারণি, রাসায়নিক বন্ধন ও বিক্রিয়ার সহজ মেথড।' },
-                { name: 'Higher Math (উচ্চতর গণিত)', desc: 'স্থানাঙ্ক জ্যামিতি, ত্রিকোণমিতি, ভেক্টর ও সম্ভাবনা সলভিং।' },
-                { name: 'General Math (সাধারণ গণিত)', desc: 'বোর্ড টেস্ট পেপার ও সৃজনশীল (CQ) সলভিং মেথড।' },
-                { name: 'ICT (তথ্য ও যোগাযোগ প্রযুক্তি)', desc: 'এইচটিএমএল, সি প্রোগ্রামিং ও আইসিটি শর্টকাটস।' }
+                { name: 'Physics', desc: 'Kinematics, dynamics, energy, optics, and electricity numerical problem-solving.' },
+                { name: 'Chemistry', desc: 'Periodic table, chemical bonding, reactions, and stoichiometry simplified.' },
+                { name: 'Higher Mathematics', desc: 'Coordinate geometry, trigonometry, vectors, and probability problem-solving.' },
+                { name: 'General Mathematics', desc: 'Board test-paper solving and creative question (CQ) strategies.' },
+                { name: 'ICT & Programming', desc: 'HTML, C programming basics, and digital logic shortcuts.' }
             ],
             routines: [
-                { day: 'শনিবার, সোমবার, বুধবার', time: 'বিকেল ৫:০০ - সন্ধ্যা ৭:০০', subject: 'পদার্থবিজ্ঞান ও উচ্চতর গণিত' },
-                { day: 'রবিবার, মঙ্গলবার, বৃহস্পতিবার', time: 'বিকেল ৫:০০ - সন্ধ্যা ৭:০০', subject: 'রসায়ন, সাধারণ গণিত ও ICT' }
+                { day: 'Saturday, Monday, Wednesday', time: '05:00 PM - 07:00 PM', subject: 'Physics & Higher Mathematics' },
+                { day: 'Sunday, Tuesday, Thursday', time: '05:00 PM - 07:00 PM', subject: 'Chemistry, General Math & ICT' }
             ],
             features: [
-                'বিগত ১০ বছরের বোর্ড প্রশ্ন ও শীর্ষ স্কুলের টেস্ট পেপার সলভিং',
-                'ওএমআর সিটে নিয়মিত এমসিকিউ টেস্ট গ্রহণ',
-                'পরীক্ষার পূর্বে ফাইনাল মডেল টেস্ট ও সাজেশন প্রদান'
+                'Last 10 years of board exam questions and top school test papers solved',
+                'Regular OMR-sheet based MCQ mock exams',
+                'Comprehensive final model test series with high-probability suggestions'
             ]
         },
         'hsc1-2': {
             title: 'HSC 1st & 2nd Year (HSC Mastery Batch)',
             badge: 'HSC Special',
             icon: '🔬',
-            description: 'এইচএসসি পরীক্ষার্থীদের জন্য ফিজিক্স, কেমিস্ট্রি, হায়ার ম্যাথ ১ম ও ২য় পত্রের পূর্ণাঙ্গ প্রস্তুতি, গাণিতিক প্রবলেম সলভিং ও বোর্ড CQ/MCQ মাস্টারপ্লাস।',
-            feeInfo: 'মাসিক ফি: ৳ ৩,০০০ (সকল বিষয় অন্তর্ভুক্ত)',
+            description: 'Comprehensive preparation for Physics, Chemistry, and Higher Math (1st & 2nd paper) focusing on advanced numerical problem solving and board CQ/MCQ mastery.',
+            feeInfo: 'Monthly Fee: ৳ 3,000 (All Subjects Included)',
             subjects: [
-                { name: 'Physics 1st & 2nd Paper', desc: 'ভেক্টর, নিউটনীয় বলবিদ্যা, তাপগতিবিদ্যা, আলো ও আধুনিক পদার্থবিজ্ঞান।' },
-                { name: 'Chemistry 1st & 2nd Paper', desc: 'গুণগত রসায়ন, জৈব রসায়ন (Organic Chemistry) ও তড়িৎ রসায়ন।' },
-                { name: 'Higher Math 1st & 2nd Paper', desc: 'ক্যালকুলাস (ডিফারেন্সিয়েশন ও ইন্টিগ্রেশন), জটিল সংখ্যা ও বহুপদী।' },
-                { name: 'ICT Special Care', desc: 'C Programming, HTML Code, Data Structure & Logic Gates.' }
+                { name: 'Physics (1st & 2nd Paper)', desc: 'Vectors, Newtonian mechanics, thermodynamics, wave optics, and modern physics.' },
+                { name: 'Chemistry (1st & 2nd Paper)', desc: 'Qualitative analysis, organic chemistry mechanisms, and electrochemistry.' },
+                { name: 'Higher Mathematics (1st & 2nd Paper)', desc: 'Calculus (differentiation & integration), complex numbers, and polynomials.' },
+                { name: 'ICT Special Care', desc: 'C Programming, HTML web design, data structures, and logic circuits.' }
             ],
             routines: [
-                { day: 'শনিবার, সোমবার, বুধবার', time: 'সকাল ৮:০০ - ১০:০০ / বিকেল ৪:০০ - ৬:০০', subject: 'পদার্থবিজ্ঞান ১ম/২য় পত্র ও উচ্চতর গণিত' },
-                { day: 'রবিবার, মঙ্গলবার, বৃহস্পতিবার', time: 'সকাল ৮:০০ - ১০:০০ / বিকেল ৪:০০ - ৬:০০', subject: 'রসায়ন ১ম/২য় পত্র ও ICT Special' }
+                { day: 'Saturday, Monday, Wednesday', time: '08:00 AM - 10:00 AM / 04:00 PM - 06:00 PM', subject: 'Physics (1st/2nd Paper) & Higher Math' },
+                { day: 'Sunday, Tuesday, Thursday', time: '08:00 AM - 10:00 AM / 04:00 PM - 06:00 PM', subject: 'Chemistry (1st/2nd Paper) & ICT' }
             ],
             features: [
-                'অধ্যায়ভিত্তিক বেসিক থেকে এডভান্সড গাণিতিক নোট প্রদান',
-                'এইচএসসি বোর্ড পরীক্ষার প্রশ্ন ব্যাংক সম্পূর্ণ সমাধান',
-                'ফাইনাল মডেল টেস্ট ও পারফরম্যান্স র‍্যাংকিং প্রকাশ'
+                'Chapter-wise basic-to-advanced numerical formulas and lecture notes',
+                'Complete solution of HSC board examination question banks',
+                'Final board model test series with published merit rankings'
             ]
         }
     };
@@ -105,7 +105,7 @@ export default function ClassDetails({ classId }) {
                         {/* SUBJECTS TAUGHT */}
                         <div className="bg-white p-5 rounded-lg border border-slate-200/70 shadow-sm space-y-3">
                             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2.5">
-                                <BookOpen className="text-[#16a34a]" size={18} /> বিষয়ভিত্তিক পাঠদান ও সিলেবাস (Subjects Taught)
+                                <BookOpen className="text-[#16a34a]" size={18} /> Subjects Taught & Syllabus
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {info.subjects.map((sub, idx) => (
@@ -122,7 +122,7 @@ export default function ClassDetails({ classId }) {
                         {/* WEEKLY ROUTINE */}
                         <div className="bg-white p-5 rounded-lg border border-slate-200/70 shadow-sm space-y-3">
                             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2.5">
-                                <Clock className="text-[#009ca6]" size={18} /> সাপ্তাহিক ব্যাচ শিডিউল (Batch Routine)
+                                <Clock className="text-[#009ca6]" size={18} /> Weekly Batch Schedule
                             </h3>
                             <div className="space-y-2">
                                 {info.routines.map((r, idx) => (
@@ -142,7 +142,7 @@ export default function ClassDetails({ classId }) {
                         {/* SPECIAL FEATURES */}
                         <div className="bg-white p-5 rounded-lg border border-slate-200/70 shadow-sm space-y-3">
                             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2.5">
-                                <ShieldCheck className="text-purple-600" size={18} /> বিশেষ সুবিধাসমূহ (Batch Features)
+                                <ShieldCheck className="text-purple-600" size={18} /> Batch Highlights & Features
                             </h3>
                             <div className="space-y-1.5 text-xs font-medium text-slate-700">
                                 {info.features.map((feat, idx) => (
@@ -172,18 +172,18 @@ export default function ClassDetails({ classId }) {
                                     href="tel:+8801711000000"
                                     className="w-full py-2.5 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] flex items-center justify-center gap-2 transition-all shadow"
                                 >
-                                    <PhoneCall size={15} /> কল করে ভর্তি হোন: +880 1711-000000
+                                    <PhoneCall size={15} /> Call for Admission: +880 1711-000000
                                 </a>
                                 <Link
                                     href={route('student.login')}
                                     className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-[3px] flex items-center justify-center gap-2 transition-all border border-slate-700"
                                 >
-                                    <LogIn size={15} /> স্টুডেন্ট পোর্টালে লগইন
+                                    <LogIn size={15} /> Login to Student Portal
                                 </Link>
                             </div>
 
                             <div className="text-[10px] text-slate-400 text-center border-t border-slate-800 pt-3">
-                                নিয়মিত মডেল টেস্ট ও আপডেট পেতে কোচিং পোর্টালে যুক্ত থাকুন।
+                                Stay connected via the coaching portal for routine updates and exam results.
                             </div>
                         </div>
                     </div>

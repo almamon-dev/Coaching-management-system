@@ -54,6 +54,10 @@ Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us');
 Route::get('/about', function () {
     return redirect()->route('about-us');
 });
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::get('/contact-us', function () {
+    return redirect()->route('contact');
+})->name('contact-us');
 
 Route::get('/complaints/create', function () {
     return Inertia::render('Errors/ComingSoon');

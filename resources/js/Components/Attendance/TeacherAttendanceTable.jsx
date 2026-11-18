@@ -75,6 +75,7 @@ export default function TeacherAttendanceTable({
                                     </td>
                                     <td className="py-1.5 px-2 border border-[#e5e7e5]">
                                         <StatusRadio 
+                                            teacherId={teacher.id}
                                             status={attendanceData.status} 
                                             onChange={(val) => handleStatusChange(teacher.id, val)} 
                                         />
@@ -106,35 +107,57 @@ export default function TeacherAttendanceTable({
     );
 }
 
-function StatusRadio({ status, onChange }) {
+function StatusRadio({ teacherId, status, onChange }) {
     const options = [
-        { value: 'present', label: 'Present', activeColor: 'text-emerald-700 bg-emerald-50 border-emerald-300 ring-1 ring-emerald-300 z-10', baseColor: 'text-[#6d7175] border-[#d1d1d1] bg-white hover:bg-[#f9fafb]' },
-        { value: 'absent', label: 'Absent', activeColor: 'text-red-700 bg-red-50 border-red-300 ring-1 ring-red-300 z-10', baseColor: 'text-[#6d7175] border-[#d1d1d1] bg-white hover:bg-[#f9fafb]' },
-        { value: 'late', label: 'Late', activeColor: 'text-amber-700 bg-amber-50 border-amber-300 ring-1 ring-amber-300 z-10', baseColor: 'text-[#6d7175] border-[#d1d1d1] bg-white hover:bg-[#f9fafb]' },
-        { value: 'on_leave', label: 'On Leave', activeColor: 'text-purple-700 bg-purple-50 border-purple-300 ring-1 ring-purple-300 z-10', baseColor: 'text-[#6d7175] border-[#d1d1d1] bg-white hover:bg-[#f9fafb]' },
+        {
+            value: 'present',
+            label: 'Present',
+            activeClass: 'bg-emerald-50/80 border-emerald-300 text-emerald-800 font-bold',
+            radioColor: 'text-emerald-600 focus:ring-emerald-500',
+        },
+        {
+            value: 'absent',
+            label: 'Absent',
+            activeClass: 'bg-rose-50/80 border-rose-300 text-rose-800 font-bold',
+            radioColor: 'text-rose-600 focus:ring-rose-500',
+        },
+        {
+            value: 'late',
+            label: 'Late',
+            activeClass: 'bg-amber-50/80 border-amber-300 text-amber-800 font-bold',
+            radioColor: 'text-amber-500 focus:ring-amber-500',
+        },
+        {
+            value: 'on_leave',
+            label: 'Leave',
+            activeClass: 'bg-purple-50/80 border-purple-300 text-purple-800 font-bold',
+            radioColor: 'text-purple-600 focus:ring-purple-500',
+        },
     ];
 
     return (
-        <div className="flex items-center shadow-sm rounded-[3px] overflow-hidden group/radios w-full min-w-[280px]">
-            {options.map((opt, i) => {
-                const isActive = status === opt.value;
-                const isFirst = i === 0;
-                const isLast = i === options.length - 1;
-                
+        <div className="flex items-center gap-1.5 flex-nowrap">
+            {options.map((opt) => {
+                const isSelected = status === opt.value || (opt.value === 'on_leave' && status === 'leave');
                 return (
-                    <button
+                    <label
                         key={opt.value}
-                        type="button"
-                        onClick={() => onChange(opt.value)}
-                        className={`relative flex-1 px-2 py-1.5 text-[12px] font-semibold border-y border-r transition-all
-                            ${isFirst ? 'border-l rounded-l-[3px]' : ''} 
-                            ${isLast ? 'rounded-r-[3px]' : ''}
-                            ${!isActive && !isLast ? 'border-r-[#d1d1d1]' : ''}
-                            ${isActive ? opt.activeColor : opt.baseColor}
-                        `}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[3px] border text-xs cursor-pointer select-none transition-all ${
+                            isSelected
+                                ? `${opt.activeClass} shadow-2xs`
+                                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                        }`}
                     >
-                        {opt.label}
-                    </button>
+                        <input
+                            type="radio"
+                            name={`teacher_status_${teacherId}`}
+                            value={opt.value}
+                            checked={isSelected}
+                            onChange={() => onChange(opt.value)}
+                            className={`w-3.5 h-3.5 border-slate-300 cursor-pointer focus:ring-0 focus:ring-offset-0 ${opt.radioColor}`}
+                        />
+                        <span className="leading-none text-[11.5px]">{opt.label}</span>
+                    </label>
                 );
             })}
         </div>

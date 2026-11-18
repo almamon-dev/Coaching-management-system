@@ -25,7 +25,7 @@ class ReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        $courses = Course::where('status', 'active')->get();
+        $batches = Course::where('status', 'active')->get();
         $batches = Batch::where('status', 'active')->get();
 
         $data = [];
@@ -64,7 +64,7 @@ class ReportController extends Controller
 
         return Inertia::render('Admin/Reports/Index', [
             'type' => $type,
-            'courses' => $courses,
+            'batches' => $batches,
             'batches' => $batches,
             'data' => $data,
             'filters' => $request->only(['type', 'course_id', 'batch_id', 'start_date', 'end_date']),

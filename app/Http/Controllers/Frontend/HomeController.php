@@ -56,8 +56,8 @@ class HomeController extends Controller
             ->get()
             ->map(fn($b) => $this->formatBatchData($b));
 
-        // Dynamic Courses for reference
-        $dbCourses = Course::where('status', 'active')
+        // Dynamic batches for reference
+        $dbbatches = Course::where('status', 'active')
             ->with(['subjects', 'batches' => function($q) {
                 $q->where('status', 'active');
             }])
@@ -106,7 +106,7 @@ class HomeController extends Controller
             return [
                 'id' => $evt->id,
                 'title' => $evt->title,
-                'image' => $evt->image ?? '/images/coaching/coaching_12.jpg',
+                'image' => $evt->image ?? '/images/ullash_award_crest_01.jpg',
                 'month' => strtoupper($dateObj->format('M')),
                 'day' => $dateObj->format('d'),
                 'time' => $evt->time ?? '10:00 AM',
@@ -137,7 +137,7 @@ class HomeController extends Controller
             'dbNotices' => $dbNotices,
             'dbImportantLinks' => $dbImportantLinks,
             'dbBatches' => $dbBatches,
-            'dbCourses' => $dbCourses,
+            'dbbatches' => $dbbatches,
             'dbEvents' => $dbEvents,
             'dbGalleries' => $dbGalleries,
             'dbTestimonials' => $dbTestimonials,
@@ -208,6 +208,8 @@ class HomeController extends Controller
                 'id' => $n->id,
                 'title' => $n->title,
                 'date' => $d->format('Y-m-d'),
+                'day' => $d->format('d'),
+                'month' => strtoupper($d->format('M')),
             ];
         });
 
@@ -226,7 +228,7 @@ class HomeController extends Controller
             return [
                 'id' => $evt->id,
                 'title' => $evt->title,
-                'image' => $evt->image ?? '/images/coaching/coaching_12.jpg',
+                'image' => $evt->image ?? '/images/ullash_award_crest_01.jpg',
                 'month' => strtoupper($dateObj->format('M')),
                 'day' => $dateObj->format('d'),
                 'time' => $evt->time ?? '10:00 AM',
@@ -286,21 +288,26 @@ class HomeController extends Controller
         ]);
     }
 
+    public function contact()
+    {
+        $settings = Setting::pluck('value', 'key')->toArray();
+
+        return Inertia::render('Frontend/Contact', [
+            'settings' => $settings,
+        ]);
+    }
+
     protected function formatBatchData($b)
     {
         $course = $b->course;
-        $cleanTitle = $course?->title ?? $b->name;
-        if (preg_match('/:\s*(HSC\s+[A-Za-z\s]+)/i', $b->name, $m)) {
-            $cleanTitle = trim($m[1]) . ' Batch';
-        } elseif (preg_match('/:\s*([^(\n\r]+)/i', $b->name, $m)) {
+        $cleanTitle = $course?->title ?: $b->name;
+        if (preg_match('/^Batch\s*\d*\s*:\s*(.+)$/i', $b->name, $m)) {
             $cleanTitle = trim($m[1]);
-            if (!str_contains(strtolower($cleanTitle), 'batch')) {
-                $cleanTitle .= ' Batch';
-            }
-        } else {
-            if (!str_contains(strtolower($cleanTitle), 'batch')) {
-                $cleanTitle .= ' Batch';
-            }
+        } elseif (preg_match('/:\s*(HSC\s+[A-Za-z\s]+)/i', $b->name, $m)) {
+            $cleanTitle = trim($m[1]);
+        }
+        if (!str_contains(strtolower($cleanTitle), 'batch') && !str_contains(strtolower($b->name), 'batch')) {
+            $cleanTitle .= ' Batch';
         }
 
         $desc = $course?->description;

@@ -42,7 +42,7 @@ export default function Localization({ settings = {} }) {
     // Prepare static dropdown options
     const languageOptions = [
         { id: 'English (US)', name: 'English (US)' },
-        { id: 'Bengali (বাংলা)', name: 'Bengali (বাংলা)' },
+        { id: 'Bengali', name: 'Bengali' },
     ];
 
     const timezoneOptions = [

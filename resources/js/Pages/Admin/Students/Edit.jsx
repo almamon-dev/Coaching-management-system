@@ -8,7 +8,7 @@ import SelectInput from '@/Components/Form/SelectInput';
 import TextArea from '@/Components/Form/TextArea';
 import InputError from '@/Components/Form/InputError';
 
-export default function StudentEdit({ student, courses = [], batches = [] }) {
+export default function StudentEdit({ student, batches = [] }) {
     const initialBatchIds = (student.batches && student.batches.length > 0)
         ? student.batches.map(b => b.id)
         : (student.batch_id ? [student.batch_id] : []);
@@ -32,7 +32,7 @@ export default function StudentEdit({ student, courses = [], batches = [] }) {
 
     const selectedBatches = batches.filter(b => data.batch_ids.includes(b.id));
     const totalMonthlyFee = selectedBatches.reduce((sum, b) => {
-        const c = courses.find(course => String(course.id) === String(b.course_id));
+        const c = batches.find(course => String(course.id) === String(b.course_id));
         return sum + Number(c?.fee || 0);
     }, 0);
 
@@ -225,7 +225,7 @@ export default function StudentEdit({ student, courses = [], batches = [] }) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                        {courses.map((course) => {
+                        {batches.map((course) => {
                             const courseBatches = batches.filter(
                                 b => String(b.course_id) === String(course.id)
                             );
@@ -237,11 +237,10 @@ export default function StudentEdit({ student, courses = [], batches = [] }) {
                             return (
                                 <div
                                     key={course.id}
-                                    className={`p-3.5 rounded-lg border transition-all ${
-                                        isEnrolled
+                                    className={`p-3.5 rounded-lg border transition-all ${isEnrolled
                                             ? 'border-emerald-500 bg-emerald-50/20 ring-1 ring-emerald-500/20'
                                             : 'border-slate-200 bg-slate-50/40 hover:border-slate-300'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="flex items-center justify-between gap-2 mb-2">
                                         <div className="flex items-center gap-2">

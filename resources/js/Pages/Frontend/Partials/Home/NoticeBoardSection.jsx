@@ -26,8 +26,8 @@ export default function NoticeBoardSection({ notices = [] }) {
                                 {notices && notices.length > 0 ? (
                                     <div className="divide-y divide-[#16a34a]/10">
                                         {notices.map((notice, index) => (
-                                            <Link 
-                                                key={index} 
+                                            <Link
+                                                key={index}
                                                 href={route('notices.show', notice.id)}
                                                 className="flex gap-3.5 items-center p-3 hover:bg-white/90 transition-colors group cursor-pointer"
                                             >
@@ -75,7 +75,7 @@ export default function NoticeBoardSection({ notices = [] }) {
                                 <div className="flex flex-col py-1.5 min-h-[220px]">
                                     {[
                                         { title: 'Notice Board', url: route('notices.index') },
-                                        { title: 'Academic Courses & Programs', url: '/#courses' },
+                                        { title: 'Academic batches & Programs', url: '/#batches' },
                                         { title: 'Admission Instructions', url: route('admissions') },
                                         { title: 'Campus Events & Seminars', url: route('events') },
                                         { title: 'Student Success Stories', url: route('success-stories') },

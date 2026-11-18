@@ -80,11 +80,11 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
             <section className="py-8 bg-transparent font-inter print:py-0 print:bg-white">
                 <div className="container mx-auto px-4 md:px-8 max-w-7xl">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start print:grid-cols-1 print:block">
-                        
+
                         {/* Left Content Column (Notice Details) */}
                         <div className="lg:col-span-2 print:col-span-1">
                             <div className="bg-white rounded-[4px] border border-slate-200/90 shadow-2xs overflow-hidden print:shadow-none print:border-none">
-                                
+
                                 {/* Print Only Title */}
                                 <h1 className="hidden print:block text-2xl font-bold text-slate-900 mb-4 px-5 pt-5">
                                     {notice.title}
@@ -138,7 +138,7 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
 
                                     {/* Action Buttons: Print & Share */}
                                     <div className="flex items-center gap-2 shrink-0 self-end sm:self-center print:hidden">
-                                        <button 
+                                        <button
                                             onClick={() => window.print()}
                                             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200/90 rounded-[4px] text-xs font-bold transition-all shadow-2xs cursor-pointer"
                                             title="Print Notice"
@@ -146,7 +146,7 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
                                             <Printer size={14} className="text-[#009ca6]" />
                                             <span>Print</span>
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => {
                                                 if (navigator.share) {
                                                     navigator.share({ title: notice.title, url: window.location.href });
@@ -183,7 +183,7 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
                                                 <FileText size={16} className="text-rose-500" />
                                                 Attached Documents
                                             </h3>
-                                            <a 
+                                            <a
                                                 href="#"
                                                 className="inline-flex items-center gap-3 p-3.5 border border-slate-200/90 rounded-[4px] hover:border-[#009ca6] hover:bg-teal-50/30 transition-all group w-full sm:w-auto shadow-2xs"
                                             >
@@ -200,7 +200,7 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
 
                                     {/* Back to Notices Link */}
                                     <div className="mt-8 pt-5 border-t border-slate-100 flex items-center justify-between print:hidden">
-                                        <Link 
+                                        <Link
                                             href={route('notices.index')}
                                             className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-[#009ca6] transition-colors"
                                         >
@@ -209,7 +209,7 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
                                         </Link>
                                     </div>
                                 </div>
-                                
+
                                 {/* Print Only Footer/Signature Area */}
                                 <div className="hidden print:block mt-24 px-6">
                                     <div className="flex justify-end">
@@ -223,13 +223,13 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
                                         Printed from {centerName} Official Portal
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
 
                         {/* Right Column (Sidebar) - Hidden in Print */}
                         <div className="lg:col-span-1 space-y-6 print:hidden">
-                            
+
                             {/* Recent Notices Widget */}
                             <div className="bg-white border border-slate-200/90 shadow-2xs rounded-[4px] overflow-hidden">
                                 <div className="bg-slate-50 border-b border-slate-200/80 px-4 py-3 flex items-center justify-between">
@@ -246,19 +246,19 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
                                 <div className="divide-y divide-slate-100">
                                     {recentNotices && recentNotices.length > 0 ? (
                                         recentNotices.map((recent) => (
-                                            <Link 
-                                                key={recent.id} 
+                                            <Link
+                                                key={recent.id}
                                                 href={route('notices.show', recent.id)}
                                                 className="flex items-start gap-3 p-3.5 hover:bg-teal-50/25 transition-all group cursor-pointer"
                                             >
                                                 {/* Tear-off Calendar Date Badge (Exact match to screenshot) */}
                                                 <div className="flex flex-col items-center rounded-[4px] overflow-hidden border border-slate-200/90 bg-white shadow-2xs shrink-0 w-14 group-hover:border-[#009ca6] group-hover:shadow-xs transition-all mt-0.5">
                                                     <div className="w-full bg-[#009ca6] group-hover:bg-[#008790] text-white text-[10px] font-black uppercase tracking-wider text-center py-0.5 leading-tight transition-colors">
-                                                        {recent.month || getMonthAbbr(recent.date, 'JUL')}
+                                                        {recent.month || getMonthAbbr(recent.date)}
                                                     </div>
                                                     <div className="w-full py-1.5 flex items-center justify-center bg-white group-hover:bg-teal-50/20 transition-colors">
                                                         <span className="font-black text-lg text-slate-800 leading-none group-hover:text-[#009ca6] transition-colors">
-                                                            {recent.day || getDayNum(recent.date, '28')}
+                                                            {recent.day || getDayNum(recent.date)}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -284,8 +284,8 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
                                     )}
                                 </div>
                                 <div className="bg-slate-50/80 p-2.5 border-t border-slate-200/80 text-center">
-                                    <Link 
-                                        href={route('notices.index')} 
+                                    <Link
+                                        href={route('notices.index')}
                                         className="text-[11px] font-bold text-[#009ca6] hover:text-[#007f87] uppercase tracking-wider inline-flex items-center gap-1 transition-colors"
                                     >
                                         <span>View All Notices</span>
@@ -302,7 +302,7 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
                                 <div className="flex flex-col py-1.5">
                                     {[
                                         { title: 'Notice Board', url: route('notices.index') },
-                                        { title: 'Academic Courses & Programs', url: '/#courses' },
+                                        { title: 'Academic batches & Programs', url: '/#batches' },
                                         { title: 'Admission Instructions', url: route('admissions') },
                                         { title: 'Campus Events & Seminars', url: route('events') },
                                         { title: 'Student Success Stories', url: route('success-stories') },

@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, useForm, router } from '@inertiajs/react';
-import { Plus, X, Eye, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, X, Eye, Trash2, ExternalLink, UploadCloud, FileText, Download } from 'lucide-react';
 import InputLabel from '@/Components/Form/InputLabel';
 import TextInput from '@/Components/Form/TextInput';
 import SelectInput from '@/Components/Form/SelectInput';
@@ -10,28 +10,72 @@ import TextArea from '@/Components/Form/TextArea';
 import InputError from '@/Components/Form/InputError';
 import DataTable from '@/Components/Table/DataTable';
 
-export default function StudyMaterialIndex({ materials = [], courses = [], batches = [], subjects = [] }) {
+export default function StudyMaterialIndex({ materials = [], batches = [], subjects = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [search, setSearch] = useState('');
     const [selectedBatch, setSelectedBatch] = useState('');
     const [selectedType, setSelectedType] = useState('');
+    const [filePreview, setFilePreview] = useState(null);
+    const [showExternalLink, setShowExternalLink] = useState(false);
+    const fileInputRef = useRef(null);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         title: '',
-        course_id: courses[0]?.id || '',
+        course_id: batches[0]?.id || '',
         batch_id: batches[0]?.id || '',
         subject_id: subjects[0]?.id || '',
         file_type: 'PDF',
+        file: null,
         link_url: '',
         description: '',
     });
 
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setData('file', file);
+            setFilePreview({
+                name: file.name,
+                size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+                type: file.type,
+            });
+
+            // Auto-fill title if empty
+            if (!data.title) {
+                const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                setData('title', nameWithoutExt);
+            }
+
+            // Auto-detect type
+            const ext = file.name.split('.').pop()?.toLowerCase();
+            if (ext === 'pdf') {
+                setData('file_type', 'PDF');
+            } else if (['doc', 'docx', 'txt', 'odt'].includes(ext)) {
+                setData('file_type', 'Document');
+            } else if (['ppt', 'pptx'].includes(ext)) {
+                setData('file_type', 'Note');
+            } else if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
+                setData('file_type', 'Image');
+            }
+        }
+    };
+
+    const handleRemoveFile = (e) => {
+        e.stopPropagation();
+        setData('file', null);
+        setFilePreview(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route('admin.study-materials.store'), {
-            onSuccess: () => { 
-                reset(); 
-                setShowModal(false); 
+            forceFormData: true,
+            onSuccess: () => {
+                reset();
+                setFilePreview(null);
+                setShowExternalLink(false);
+                setShowModal(false);
             }
         });
     };
@@ -47,6 +91,7 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
         { id: 'PDF', name: 'PDF File' },
         { id: 'Note', name: 'Lecture Note' },
         { id: 'Document', name: 'Document' },
+        { id: 'Image', name: 'Image' },
         { id: 'Video', name: 'Video Link' },
         { id: 'Link', name: 'External Link' },
     ];
@@ -81,6 +126,8 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
                 return 'bg-purple-50 text-purple-700 border-purple-200';
             case 'Document':
                 return 'bg-blue-50 text-blue-700 border-blue-200';
+            case 'Image':
+                return 'bg-teal-50 text-teal-700 border-teal-200';
             default:
                 return 'bg-emerald-50 text-[#16a34a] border-emerald-200';
         }
@@ -129,19 +176,22 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
             ),
         },
         {
-            header: 'Resource Link',
-            accessor: 'link_url',
+            header: 'File / Resource',
+            accessor: 'file_path',
             cell: (row) => {
-                if (!row.link_url) return <span className="text-slate-400 text-xs">—</span>;
+                const targetUrl = row.file_path || row.link_url;
+                if (!targetUrl) return <span className="text-slate-400 text-xs">—</span>;
+                const isLocal = !!row.file_path || targetUrl.startsWith('/storage');
                 return (
                     <a
-                        href={row.link_url}
+                        href={targetUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-xs font-bold text-[#16a34a] hover:underline whitespace-nowrap"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#16a34a] hover:underline whitespace-nowrap"
                     >
-                        <span>Open Resource</span>
-                        <ExternalLink size={12} />
+                        {isLocal ? <Download size={13} /> : <FileText size={13} />}
+                        <span>{isLocal ? 'Download File' : 'Open Link'}</span>
+                        <ExternalLink size={11} className="text-slate-400" />
                     </a>
                 );
             },
@@ -159,28 +209,31 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
             header: 'Actions',
             accessor: 'actions',
             className: 'text-right',
-            cell: (row) => (
-                <div className="flex items-center justify-end gap-1.5">
-                    {row.link_url && (
-                        <a
-                            href={row.link_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1 font-bold text-slate-700 hover:bg-slate-100 border border-slate-200 px-2 py-1 rounded-[3px] text-[11px] transition-all"
-                            title="Open Link"
+            cell: (row) => {
+                const targetUrl = row.file_path || row.link_url;
+                return (
+                    <div className="flex items-center justify-end gap-1.5">
+                        {targetUrl && (
+                            <a
+                                href={targetUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 font-bold text-slate-700 hover:bg-slate-100 border border-slate-200 px-2 py-1 rounded-[3px] text-[11px] transition-all"
+                                title="View or Download"
+                            >
+                                <Eye size={12} /> View
+                            </a>
+                        )}
+                        <button
+                            onClick={() => handleDelete(row.id, row.title)}
+                            className="text-rose-600 hover:text-rose-800 p-1 cursor-pointer transition-colors"
+                            title="Delete Material"
                         >
-                            <Eye size={12} /> View
-                        </a>
-                    )}
-                    <button
-                        onClick={() => handleDelete(row.id, row.title)}
-                        className="text-rose-600 hover:text-rose-800 p-1 cursor-pointer transition-colors"
-                        title="Delete Material"
-                    >
-                        <Trash2 size={14} />
-                    </button>
-                </div>
-            ),
+                            <Trash2 size={14} />
+                        </button>
+                    </div>
+                );
+            },
         },
     ];
 
@@ -216,11 +269,16 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Study Materials</h1>
-                    <p className="text-sm text-slate-500">Upload lecture notes, PDFs, documents, video links & course resources.</p>
+                    <p className="text-sm text-slate-500">Upload lecture notes, PDFs, documents and course resources.</p>
                 </div>
                 <div>
                     <button
-                        onClick={() => setShowModal(true)}
+                        onClick={() => {
+                            reset();
+                            setFilePreview(null);
+                            setShowExternalLink(false);
+                            setShowModal(true);
+                        }}
                         className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] shadow-sm transition-all cursor-pointer"
                     >
                         <Plus size={15} /> Upload Material
@@ -247,10 +305,15 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
                         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                             <div>
                                 <h3 className="text-base font-bold text-slate-900">Upload Study Material</h3>
-                                <p className="text-xs text-slate-500 mt-0.5">Attach documents, notes or lecture links.</p>
+                                <p className="text-xs text-slate-500 mt-0.5">Upload PDFs, documents or lecture notes directly from your device.</p>
                             </div>
-                            <button 
-                                onClick={() => setShowModal(false)} 
+                            <button
+                                onClick={() => {
+                                    setShowModal(false);
+                                    reset();
+                                    setFilePreview(null);
+                                    setShowExternalLink(false);
+                                }}
                                 className="text-slate-400 hover:text-slate-600 p-1 rounded-md transition-colors cursor-pointer"
                             >
                                 <X size={18} />
@@ -258,6 +321,59 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* File Upload Box (Replaces pure resource URL) */}
+                            <div>
+                                <InputLabel value="Select File to Upload (PDF or Note File) *" />
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className={`mt-1.5 border-2 border-dashed rounded-[4px] p-5 text-center cursor-pointer transition-all ${filePreview
+                                            ? 'border-emerald-400 bg-emerald-50/30'
+                                            : 'border-slate-300 hover:border-[#16a34a] bg-slate-50/50 hover:bg-slate-50'
+                                        }`}
+                                >
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                        accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.zip,.rar,.jpg,.jpeg,.png"
+                                    />
+
+                                    {filePreview ? (
+                                        <div className="flex items-center justify-between gap-3 text-left bg-white p-3 rounded-[4px] border border-emerald-200 shadow-2xs">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className="w-10 h-10 rounded-[4px] bg-emerald-100 text-[#16a34a] flex items-center justify-center shrink-0">
+                                                    <FileText size={20} />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-bold text-slate-900 truncate">{filePreview.name}</p>
+                                                    <p className="text-[11px] text-slate-500">{filePreview.size}</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={handleRemoveFile}
+                                                className="text-rose-500 hover:text-rose-700 text-xs font-bold px-2 py-1 rounded hover:bg-rose-50 transition-colors shrink-0 cursor-pointer"
+                                            >
+                                                Change File
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center space-y-1.5 py-3">
+                                            <div className="w-11 h-11 rounded-full bg-emerald-50 text-[#16a34a] flex items-center justify-center">
+                                                <UploadCloud size={22} />
+                                            </div>
+                                            <div>
+                                                <span className="text-xs font-bold text-[#16a34a] hover:underline">Click to browse file</span>
+                                                <span className="text-xs text-slate-500"> or drag and drop</span>
+                                            </div>
+                                            <p className="text-[10.5px] text-slate-400">PDF, Word (DOC/DOCX), PowerPoint, Excel, Images (Max 50MB)</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <InputError message={errors.file} className="mt-1" />
+                            </div>
+
                             <div>
                                 <InputLabel htmlFor="title" value="Material Title *" />
                                 <TextInput
@@ -283,6 +399,7 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
                                                 { id: 'PDF', name: 'PDF File' },
                                                 { id: 'Note', name: 'Lecture Note' },
                                                 { id: 'Document', name: 'Document' },
+                                                { id: 'Image', name: 'Image / Diagram' },
                                                 { id: 'Video', name: 'Video Link' },
                                                 { id: 'Link', name: 'External Link' },
                                             ]}
@@ -315,7 +432,7 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
                                             onChange={(e) => setData('course_id', e.target ? e.target.value : e)}
                                             options={[
                                                 { id: '', name: 'General' },
-                                                ...courses.map(c => ({ id: c.id, name: c.title }))
+                                                ...batches.map(c => ({ id: c.id, name: c.title }))
                                             ]}
                                             placeholder="Select Course"
                                         />
@@ -337,27 +454,52 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
                                 </div>
                             </div>
 
-                            <div>
-                                <InputLabel htmlFor="link_url" value="Resource URL / Download Link" />
-                                <TextInput
-                                    id="link_url"
-                                    type="url"
-                                    value={data.link_url}
-                                    onChange={(e) => setData('link_url', e.target.value)}
-                                    placeholder="https://drive.google.com/... or https://youtube.com/..."
-                                    className="mt-1"
-                                />
-                                <InputError message={errors.link_url} className="mt-1" />
+                            {/* Optional External Link Toggle */}
+                            <div className="pt-1">
+                                {!showExternalLink ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowExternalLink(true)}
+                                        className="text-[11px] font-semibold text-slate-500 hover:text-[#16a34a] flex items-center gap-1 transition-colors cursor-pointer"
+                                    >
+                                        <span>+ Add external YouTube or Google Drive link instead (optional)</span>
+                                    </button>
+                                ) : (
+                                    <div className="space-y-1">
+                                        <div className="flex items-center justify-between">
+                                            <InputLabel htmlFor="link_url" value="External Link (YouTube, Drive, etc.)" />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setShowExternalLink(false);
+                                                    setData('link_url', '');
+                                                }}
+                                                className="text-[10.5px] text-slate-400 hover:text-slate-600 cursor-pointer"
+                                            >
+                                                Hide
+                                            </button>
+                                        </div>
+                                        <TextInput
+                                            id="link_url"
+                                            type="url"
+                                            value={data.link_url}
+                                            onChange={(e) => setData('link_url', e.target.value)}
+                                            placeholder="https://drive.google.com/... or https://youtube.com/..."
+                                            className="mt-1"
+                                        />
+                                        <InputError message={errors.link_url} className="mt-1" />
+                                    </div>
+                                )}
                             </div>
 
                             <div>
-                                <InputLabel htmlFor="description" value="Description / Details" />
+                                <InputLabel htmlFor="description" value="Description / Details (Optional)" />
                                 <TextArea
                                     id="description"
                                     value={data.description}
                                     onChange={(e) => setData('description', e.target.value)}
-                                    placeholder="Brief details..."
-                                    rows={3}
+                                    placeholder="Brief details about this study material..."
+                                    rows={2}
                                     className="mt-1"
                                 />
                             </div>
@@ -365,7 +507,12 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
                             <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                                 <button
                                     type="button"
-                                    onClick={() => setShowModal(false)}
+                                    onClick={() => {
+                                        setShowModal(false);
+                                        reset();
+                                        setFilePreview(null);
+                                        setShowExternalLink(false);
+                                    }}
                                     className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-[3px] cursor-pointer transition-colors"
                                 >
                                     Cancel
@@ -373,9 +520,10 @@ export default function StudyMaterialIndex({ materials = [], courses = [], batch
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] cursor-pointer shadow-sm transition-colors"
+                                    className="px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-xs rounded-[3px] cursor-pointer shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50"
                                 >
-                                    Upload Material
+                                    <UploadCloud size={14} />
+                                    <span>{processing ? 'Uploading File...' : 'Upload Material'}</span>
                                 </button>
                             </div>
                         </form>

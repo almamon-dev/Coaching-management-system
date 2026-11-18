@@ -9,7 +9,7 @@ import SelectInput from '@/Components/Form/SelectInput';
 import InputError from '@/Components/Form/InputError';
 import DataTable from '@/Components/Table/DataTable';
 
-export default function ExamIndex({ exams = [], courses = [], batches = [] }) {
+export default function ExamIndex({ exams = [], batches = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [search, setSearch] = useState('');
     const [selectedBatch, setSelectedBatch] = useState('');
@@ -17,7 +17,7 @@ export default function ExamIndex({ exams = [], courses = [], batches = [] }) {
 
     const { data, setData, post, processing, errors, reset } = useForm({
         title: '',
-        course_id: courses[0]?.id || '',
+        course_id: batches[0]?.id || '',
         batch_id: batches[0]?.id || '',
         exam_date: new Date().toISOString().split('T')[0],
         total_marks: 100,
@@ -27,9 +27,9 @@ export default function ExamIndex({ exams = [], courses = [], batches = [] }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route('admin.exams.store'), {
-            onSuccess: () => { 
-                reset(); 
-                setShowModal(false); 
+            onSuccess: () => {
+                reset();
+                setShowModal(false);
             }
         });
     };
@@ -47,13 +47,13 @@ export default function ExamIndex({ exams = [], courses = [], batches = [] }) {
 
     const filteredExams = useMemo(() => {
         return exams.filter((ex) => {
-            const matchesSearch = !search || 
+            const matchesSearch = !search ||
                 ex.title?.toLowerCase().includes(search.toLowerCase()) ||
                 ex.batch?.name?.toLowerCase().includes(search.toLowerCase()) ||
                 ex.course?.title?.toLowerCase().includes(search.toLowerCase());
-            
+
             const matchesBatch = !selectedBatch || String(ex.batch_id) === String(selectedBatch);
-            const matchesStatus = !selectedStatus || 
+            const matchesStatus = !selectedStatus ||
                 (selectedStatus === 'published' ? ex.status === 'published' : ex.status !== 'published');
 
             return matchesSearch && matchesBatch && matchesStatus;
@@ -116,9 +116,8 @@ export default function ExamIndex({ exams = [], courses = [], batches = [] }) {
             header: 'Status',
             accessor: 'status',
             cell: (row) => (
-                <span className={`inline-block whitespace-nowrap px-2.5 py-0.5 text-[10.5px] font-bold rounded-full capitalize ${
-                    row.status === 'published' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
-                }`}>
+                <span className={`inline-block whitespace-nowrap px-2.5 py-0.5 text-[10.5px] font-bold rounded-full capitalize ${row.status === 'published' ? 'bg-emerald-50 text-[#16a34a] border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
+                    }`}>
                     {row.status}
                 </span>
             ),
@@ -213,8 +212,8 @@ export default function ExamIndex({ exams = [], courses = [], batches = [] }) {
                                 <h3 className="text-base font-bold text-slate-900">Create Coaching Exam</h3>
                                 <p className="text-xs text-slate-500 mt-0.5">Define exam schedule, batch and grading parameters.</p>
                             </div>
-                            <button 
-                                onClick={() => setShowModal(false)} 
+                            <button
+                                onClick={() => setShowModal(false)}
                                 className="text-slate-400 hover:text-slate-600 p-1 rounded-md transition-colors cursor-pointer"
                             >
                                 <X size={18} />

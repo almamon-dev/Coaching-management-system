@@ -7,8 +7,8 @@ import InputError from '@/Components/Form/InputError';
 import TextArea from '@/Components/Form/TextArea';
 import ImageUpload from '@/Components/Form/ImageUpload';
 import PrimaryButton from '@/Components/Button/PrimaryButton';
-import { 
-    Sparkles, Save, CheckCircle2, ExternalLink, 
+import {
+    Sparkles, Save, CheckCircle2, ExternalLink,
     Users, Award, BookOpen, TrendingUp, Layers
 } from 'lucide-react';
 
@@ -19,7 +19,7 @@ export default function LandingPage({ settings = {} }) {
         hero_banner_image: null,
         stat_students: settings.stat_students || '500+',
         stat_teachers: settings.stat_teachers || '20+',
-        stat_courses: settings.stat_courses || '10+',
+        stat_batches: settings.stat_batches || '10+',
         stat_success: settings.stat_success || '95%',
     });
 
@@ -173,11 +173,11 @@ export default function LandingPage({ settings = {} }) {
                             <div className="p-4 rounded-[4px] border border-slate-200/80 bg-slate-50/50 space-y-2">
                                 <div className="flex items-center gap-1.5 text-purple-700 text-xs font-bold">
                                     <BookOpen size={15} />
-                                    <span>Active Courses</span>
+                                    <span>Active batches</span>
                                 </div>
                                 <TextInput
-                                    value={data.stat_courses}
-                                    onChange={(e) => setData('stat_courses', e.target.value)}
+                                    value={data.stat_batches}
+                                    onChange={(e) => setData('stat_batches', e.target.value)}
                                     placeholder="10+"
                                 />
                             </div>

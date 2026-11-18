@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, useForm, router } from '@inertiajs/react';
-import { Award, Plus, Edit, Trash2, Quote, X } from 'lucide-react';
+import { Head, useForm, router, Link } from '@inertiajs/react';
+import { Award, Plus, Edit, Trash2, Quote, X, TrendingUp, CheckCircle, ExternalLink, Save } from 'lucide-react';
 import TextInput from '@/Components/Form/TextInput';
 import TextArea from '@/Components/Form/TextArea';
 import InputLabel from '@/Components/Form/InputLabel';
@@ -10,9 +10,28 @@ import SelectInput from '@/Components/Form/SelectInput';
 import PrimaryButton from '@/Components/Button/PrimaryButton';
 import SecondaryButton from '@/Components/Button/SecondaryButton';
 
-export default function TestimonialsIndex({ testimonials }) {
+export default function TestimonialsIndex({ testimonials, settings = {} }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+
+    // Form for Success Highlights / 4 Stat cards
+    const statsForm = useForm({
+        success_stat_pass_rate: settings?.success_stat_pass_rate || '98.4%',
+        success_stat_pass_label: settings?.success_stat_pass_label || 'Board Exam Pass Rate',
+        success_stat_gpa5: settings?.success_stat_gpa5 || '1,250+',
+        success_stat_gpa5_label: settings?.success_stat_gpa5_label || 'GPA 5.00 Achievers',
+        success_stat_admissions: settings?.success_stat_admissions || '500+',
+        success_stat_admissions_label: settings?.success_stat_admissions_label || 'University Admissions',
+        success_stat_experience: settings?.success_stat_experience || '15+',
+        success_stat_experience_label: settings?.success_stat_experience_label || 'Years of Excellence',
+    });
+
+    const handleSaveStats = (e) => {
+        e.preventDefault();
+        statsForm.post(route('admin.testimonials.stats.update'), {
+            preserveScroll: true,
+        });
+    };
 
     const { data, setData, post, put, processing, reset, errors } = useForm({
         name: '',
@@ -101,6 +120,172 @@ export default function TestimonialsIndex({ testimonials }) {
                         <Plus size={16} />
                         <span>Add Success Story</span>
                     </PrimaryButton>
+                </div>
+
+                {/* Success Highlights & Statistics Editor */}
+                <div className="bg-white rounded-[4px] border border-slate-200/90 shadow-2xs overflow-hidden">
+                    <div className="p-4 sm:p-5 bg-slate-50/70 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-[4px] bg-[#009ca6]/10 text-[#009ca6] flex items-center justify-center shrink-0">
+                                <TrendingUp size={18} />
+                            </div>
+                            <div>
+                                <h2 className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                    Success Highlights & Statistics
+                                </h2>
+                                <p className="text-[11px] text-slate-500">
+                                    Manage the 4 achievement highlight cards shown on the public <span className="font-semibold text-slate-700">/success-stories</span> page.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 self-end sm:self-auto">
+                            <a
+                                href="/success-stories"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-slate-600 bg-white border border-slate-200 rounded-[3px] hover:text-[#009ca6] hover:border-[#009ca6] transition-colors"
+                            >
+                                <span>Preview Page</span>
+                                <ExternalLink size={12} />
+                            </a>
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSaveStats} className="p-4 sm:p-5 space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {/* Card 1: Pass Rate */}
+                            <div className="p-3.5 rounded-[4px] border border-teal-200/80 bg-teal-50/20 space-y-2.5">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-black uppercase text-[#009ca6] tracking-wider">Card 1: Pass Rate</span>
+                                    <span className="w-2.5 h-2.5 rounded-full bg-[#009ca6]"></span>
+                                </div>
+                                <div>
+                                    <label className="block text-[10.5px] font-bold text-slate-600 uppercase mb-1">Value (e.g. 98.4%)</label>
+                                    <input
+                                        type="text"
+                                        value={statsForm.data.success_stat_pass_rate}
+                                        onChange={(e) => statsForm.setData('success_stat_pass_rate', e.target.value)}
+                                        placeholder="98.4%"
+                                        className="w-full text-base font-black text-[#009ca6] px-3 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:ring-1 focus:ring-[#009ca6] focus:border-[#009ca6]"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10.5px] font-bold text-slate-600 uppercase mb-1">Title / Label</label>
+                                    <input
+                                        type="text"
+                                        value={statsForm.data.success_stat_pass_label}
+                                        onChange={(e) => statsForm.setData('success_stat_pass_label', e.target.value)}
+                                        placeholder="Board Exam Pass Rate"
+                                        className="w-full text-xs font-semibold text-slate-700 px-3 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:ring-1 focus:ring-[#009ca6] focus:border-[#009ca6]"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Card 2: GPA 5.00 */}
+                            <div className="p-3.5 rounded-[4px] border border-emerald-200/80 bg-emerald-50/20 space-y-2.5">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-black uppercase text-emerald-600 tracking-wider">Card 2: GPA 5.00</span>
+                                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                                </div>
+                                <div>
+                                    <label className="block text-[10.5px] font-bold text-slate-600 uppercase mb-1">Value (e.g. 1,250+)</label>
+                                    <input
+                                        type="text"
+                                        value={statsForm.data.success_stat_gpa5}
+                                        onChange={(e) => statsForm.setData('success_stat_gpa5', e.target.value)}
+                                        placeholder="1,250+"
+                                        className="w-full text-base font-black text-emerald-600 px-3 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10.5px] font-bold text-slate-600 uppercase mb-1">Title / Label</label>
+                                    <input
+                                        type="text"
+                                        value={statsForm.data.success_stat_gpa5_label}
+                                        onChange={(e) => statsForm.setData('success_stat_gpa5_label', e.target.value)}
+                                        placeholder="GPA 5.00 Achievers"
+                                        className="w-full text-xs font-semibold text-slate-700 px-3 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Card 3: Admissions */}
+                            <div className="p-3.5 rounded-[4px] border border-blue-200/80 bg-blue-50/20 space-y-2.5">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-black uppercase text-blue-600 tracking-wider">Card 3: Admissions</span>
+                                    <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                                </div>
+                                <div>
+                                    <label className="block text-[10.5px] font-bold text-slate-600 uppercase mb-1">Value (e.g. 500+)</label>
+                                    <input
+                                        type="text"
+                                        value={statsForm.data.success_stat_admissions}
+                                        onChange={(e) => statsForm.setData('success_stat_admissions', e.target.value)}
+                                        placeholder="500+"
+                                        className="w-full text-base font-black text-blue-600 px-3 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10.5px] font-bold text-slate-600 uppercase mb-1">Title / Label</label>
+                                    <input
+                                        type="text"
+                                        value={statsForm.data.success_stat_admissions_label}
+                                        onChange={(e) => statsForm.setData('success_stat_admissions_label', e.target.value)}
+                                        placeholder="University Admissions"
+                                        className="w-full text-xs font-semibold text-slate-700 px-3 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Card 4: Experience */}
+                            <div className="p-3.5 rounded-[4px] border border-amber-200/80 bg-amber-50/20 space-y-2.5">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-black uppercase text-amber-600 tracking-wider">Card 4: Experience</span>
+                                    <span className="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+                                </div>
+                                <div>
+                                    <label className="block text-[10.5px] font-bold text-slate-600 uppercase mb-1">Value (e.g. 15+)</label>
+                                    <input
+                                        type="text"
+                                        value={statsForm.data.success_stat_experience}
+                                        onChange={(e) => statsForm.setData('success_stat_experience', e.target.value)}
+                                        placeholder="15+"
+                                        className="w-full text-base font-black text-amber-600 px-3 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10.5px] font-bold text-slate-600 uppercase mb-1">Title / Label</label>
+                                    <input
+                                        type="text"
+                                        value={statsForm.data.success_stat_experience_label}
+                                        onChange={(e) => statsForm.setData('success_stat_experience_label', e.target.value)}
+                                        placeholder="Years of Excellence"
+                                        className="w-full text-xs font-semibold text-slate-700 px-3 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                            <div>
+                                {statsForm.recentlySuccessful && (
+                                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-[3px] border border-emerald-200">
+                                        <CheckCircle size={14} className="text-emerald-600" />
+                                        <span>Statistics updated successfully!</span>
+                                    </span>
+                                )}
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={statsForm.processing}
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-[#009ca6] hover:bg-[#008790] text-white text-xs font-bold rounded-[3px] shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+                            >
+                                <Save size={14} />
+                                <span>{statsForm.processing ? 'Saving...' : 'Save Statistics'}</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
                 {/* Testimonials Grid */}

@@ -9,7 +9,7 @@ import SelectInput from '@/Components/Form/SelectInput';
 import TextArea from '@/Components/Form/TextArea';
 import InputError from '@/Components/Form/InputError';
 
-export default function NoticeIndex({ notices, courses, batches }) {
+export default function NoticeIndex({ notices, batches }) {
     const [showModal, setShowModal] = useState(false);
 
     const { data, setData, post, processing, reset, errors } = useForm({

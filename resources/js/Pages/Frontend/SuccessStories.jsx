@@ -16,7 +16,7 @@ export default function SuccessStories({ dbTestimonials = [], settings = {} }) {
             batch: "HSC Science Batch",
             institution: "Now at BUET (CSE)",
             badge: "GPA 5.00 (Golden A+)",
-            quote: "ফিজিক্স ও হায়ার ম্যাথের জটিল বিষয়গুলো এত সহজভাবে বুঝিয়ে দেওয়া হয়েছিল যে পরীক্ষার সময় কোনো সমস্যাই হয়নি। রেগুলার উইকলি মডেল টেস্ট আমাকে বোর্ড পরীক্ষায় আত্মবিশ্বাসী করে তোলে।",
+            quote: "The complex topics in Physics and Higher Mathematics were explained with such clarity and patience. Regular weekly model tests built my confidence to excel in the board examinations.",
             initials: "AI",
             color: "bg-emerald-100 text-emerald-800 border-emerald-300",
             category: "HSC",
@@ -28,7 +28,7 @@ export default function SuccessStories({ dbTestimonials = [], settings = {} }) {
             batch: "SSC Science Batch",
             institution: "Viqarunnisa Noon College",
             badge: "Board Top 20 & Golden A+",
-            quote: "কোচিংয়ের শিক্ষকগণের নিয়মিত কেয়ার ও পারসোনাল গাইডেন্স আমার এসএসসি প্রস্তুতিকে সহজ করে দিয়েছিল। বিশেষ করে টেস্ট পেপার সলভিং ক্লাসগুলো অসাধারণ কার্যকর ছিল।",
+            quote: "The personalized mentorship from teachers and intensive test-paper solving sessions made my SSC preparation seamless, helping me achieve a top board ranking and Golden A+.",
             initials: "NJ",
             color: "bg-cyan-100 text-cyan-800 border-cyan-300",
             category: "SSC",
@@ -40,7 +40,7 @@ export default function SuccessStories({ dbTestimonials = [], settings = {} }) {
             batch: "HSC Science Batch",
             institution: "Dhaka Medical College",
             badge: "GPA 5.00",
-            quote: "বায়োলজি ও কেমিস্ট্রির কনসেপ্টগুলো মুখস্থ না করে প্র্যাক্টিক্যালি বোঝার সুযোগ পেয়েছি। শিক্ষকদের আন্তরিকতা ও নির্ভুল গাইডলাইন আমাকে মেডিকেলে চান্স পেতে সবচেয়ে বড় ভূমিকা রেখেছে।",
+            quote: "Rather than rote memorization, I truly understood the core principles of Chemistry and Biology. The faculty's structured guidance played a decisive role in my medical admission.",
             initials: "TA",
             color: "bg-amber-100 text-amber-800 border-amber-300",
             category: "HSC",
@@ -52,7 +52,7 @@ export default function SuccessStories({ dbTestimonials = [], settings = {} }) {
             batch: "Class 10 SSC Candidate",
             institution: "Rajuk Uttara Model College",
             badge: "GPA 5.00",
-            quote: "ক্লাসের পড়া ক্লাসেই ক্লিয়ার হয়ে যেত। নিয়মিত উইকলি টেস্ট ও রিভিশন শিটের কারণে বোর্ড পরীক্ষার আগে কোনো বাড়তি চাপ বা দুশ্চিন্তা ছিল না।",
+            quote: "Every concept was thoroughly clarified right inside the classroom. Regular weekly tests and organized revision lecture sheets eliminated all exam anxiety before the board finals.",
             initials: "SR",
             color: "bg-purple-100 text-purple-800 border-purple-300",
             category: "SSC",
@@ -64,7 +64,7 @@ export default function SuccessStories({ dbTestimonials = [], settings = {} }) {
             batch: "Junior Academic Batch (Class 8)",
             institution: "Ideal School & College",
             badge: "Scholarship Achiever",
-            quote: "জুনিয়র সেকশন থেকেই গণিত এবং বিজ্ঞানের মৌলিক ভিত্তি শক্ত করে দিয়েছিলেন আমাদের শিক্ষকরা। এটি আমার পরবর্তী উচ্চশিক্ষায় বিশাল সাহায্য করছে।",
+            quote: "The teachers built a solid academic foundation in Mathematics and Science from the ground up. That early conceptual clarity continues to benefit me in advanced studies.",
             initials: "MH",
             color: "bg-blue-100 text-blue-800 border-blue-300",
             category: "Junior",
@@ -76,7 +76,7 @@ export default function SuccessStories({ dbTestimonials = [], settings = {} }) {
             batch: "HSC Science Batch",
             institution: "Dhaka University (Applied Chemistry)",
             badge: "GPA 5.00 (Golden A+)",
-            quote: "সবচেয়ে ভালো লেগেছে এখানকার রুটিনমাফিক ডিসিপ্লিন এবং শিক্ষকদের যত্নশীল মনোভাব। প্রতিদিনের পড়া প্রতিদিন শেষ করার অভ্যাস আমাকে সফল করেছে।",
+            quote: "The disciplined study routine and genuine dedication of the faculty stood out the most. Developing consistent daily study habits here helped me achieve my dream academic goals.",
             initials: "FA",
             color: "bg-rose-100 text-rose-800 border-rose-300",
             category: "HSC",
@@ -124,20 +124,36 @@ export default function SuccessStories({ dbTestimonials = [], settings = {} }) {
                     {/* Stats Highlights */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="bg-white p-5 rounded-[4px] border border-slate-200/90 shadow-2xs text-center">
-                            <span className="block text-3xl md:text-4xl font-black text-[#009ca6]">98.4%</span>
-                            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1 block">Board Exam Pass Rate</span>
+                            <span className="block text-3xl md:text-4xl font-black text-[#009ca6]">
+                                {settings?.success_stat_pass_rate || '98.4%'}
+                            </span>
+                            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1 block">
+                                {settings?.success_stat_pass_label || 'Board Exam Pass Rate'}
+                            </span>
                         </div>
                         <div className="bg-white p-5 rounded-[4px] border border-slate-200/90 shadow-2xs text-center">
-                            <span className="block text-3xl md:text-4xl font-black text-emerald-600">1,250+</span>
-                            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1 block">GPA 5.00 Achievers</span>
+                            <span className="block text-3xl md:text-4xl font-black text-emerald-600">
+                                {settings?.success_stat_gpa5 || '1,250+'}
+                            </span>
+                            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1 block">
+                                {settings?.success_stat_gpa5_label || 'GPA 5.00 Achievers'}
+                            </span>
                         </div>
                         <div className="bg-white p-5 rounded-[4px] border border-slate-200/90 shadow-2xs text-center">
-                            <span className="block text-3xl md:text-4xl font-black text-blue-600">500+</span>
-                            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1 block">University Admissions</span>
+                            <span className="block text-3xl md:text-4xl font-black text-blue-600">
+                                {settings?.success_stat_admissions || '500+'}
+                            </span>
+                            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1 block">
+                                {settings?.success_stat_admissions_label || 'University Admissions'}
+                            </span>
                         </div>
                         <div className="bg-white p-5 rounded-[4px] border border-slate-200/90 shadow-2xs text-center">
-                            <span className="block text-3xl md:text-4xl font-black text-amber-600">15+</span>
-                            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1 block">Years of Excellence</span>
+                            <span className="block text-3xl md:text-4xl font-black text-amber-600">
+                                {settings?.success_stat_experience || '15+'}
+                            </span>
+                            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1 block">
+                                {settings?.success_stat_experience_label || 'Years of Excellence'}
+                            </span>
                         </div>
                     </div>
 

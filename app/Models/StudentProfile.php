@@ -40,6 +40,60 @@ class StudentProfile extends Model
         return $this->belongsTo(Course::class);
     }
 
+    /**
+     * Get a short code for a batch / subject.
+     */
+    public static function getBatchShortCode($batch = null, $course = null): string
+    {
+        $courseObj = $course ?? $batch?->course;
+        
+        // 1. Try from course code (e.g. HSC-HMATH-101 -> HMATH, CLS10-SCI-201 -> CLS10)
+        if ($courseObj && !empty($courseObj->code)) {
+            $parts = explode('-', $courseObj->code);
+            if (count($parts) >= 2) {
+                if (str_starts_with(strtoupper($parts[0]), 'CLS')) {
+                    return strtoupper($parts[0]);
+                }
+                return strtoupper($parts[1]);
+            }
+            return strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $courseObj->code));
+        }
+
+        // 2. Try from batch name or course title
+        $name = strtolower($batch?->name ?? $courseObj?->title ?? '');
+        if (str_contains($name, 'math')) return 'HMATH';
+        if (str_contains($name, 'physic') || str_contains($name, 'phy')) return 'PHY';
+        if (str_contains($name, 'ict')) return 'ICT';
+        if (str_contains($name, 'class 10') || str_contains($name, 'ssc')) return 'CLS10';
+        if (str_contains($name, 'class 9')) return 'CLS9';
+        if (str_contains($name, 'chem')) return 'CHEM';
+        if (str_contains($name, 'bio')) return 'BIO';
+
+        if (!empty($name)) {
+            $cleaned = preg_replace('/[^A-Za-z0-9]/', '', strtoupper(substr($name, 0, 5)));
+            if (!empty($cleaned)) return $cleaned;
+        }
+
+        return 'GEN';
+    }
+
+    /**
+     * Auto Generate Student ID in format: UCCA-{BATCH_SHORT}-{SERIAL} (e.g. UCCA-HMATH-0001)
+     */
+    public static function generateStudentId($batch = null, $course = null): string
+    {
+        $batchCode = static::getBatchShortCode($batch, $course);
+
+        $serial = 1;
+        do {
+            $candidate = "UCCA-{$batchCode}-" . str_pad($serial, 4, '0', STR_PAD_LEFT);
+            if (!static::where('student_id', $candidate)->exists()) {
+                return $candidate;
+            }
+            $serial++;
+        } while (true);
+    }
+
     public function batch()
     {
         return $this->belongsTo(Batch::class);
@@ -52,7 +106,7 @@ class StudentProfile extends Model
             ->withTimestamps();
     }
 
-    public function enrolledCourses()
+    public function enrolledbatches()
     {
         return $this->belongsToMany(Course::class, 'batch_student', 'student_id', 'course_id')
             ->withPivot(['monthly_fee', 'status'])

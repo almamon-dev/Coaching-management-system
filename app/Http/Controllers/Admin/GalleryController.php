@@ -39,7 +39,7 @@ class GalleryController extends Controller
         }
 
         if (empty($validated['image'])) {
-            $validated['image'] = '/images/campus_sports.png';
+            $validated['image'] = '/images/coaching/coaching_01.jpg';
         }
 
         Gallery::create($validated);

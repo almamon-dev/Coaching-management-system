@@ -24,7 +24,7 @@ export default function Header({ onMenuClick, onToggleSidebar, isCollapsed, acti
 
     const user = auth?.user;
     const studentProfile = user?.student_profile;
-    const studentId = studentProfile?.student_id || "CSM-2026";
+    const studentId = studentProfile?.student_id || "UCCA-STUDENT";
     const centerName = settings?.center_name || "Coaching Management System";
 
     const currentTitle = TAB_TITLES[activeTab] || "Student Portal";

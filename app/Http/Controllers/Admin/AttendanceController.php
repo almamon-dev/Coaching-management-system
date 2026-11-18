@@ -21,6 +21,8 @@ class AttendanceController extends Controller
 
         $students = [];
         $existingAttendances = [];
+        $existingRemarks = [];
+        $isAttendanceTaken = false;
 
         if ($batchId) {
             $students = StudentProfile::where(function($q) use ($batchId) {
@@ -31,10 +33,13 @@ class AttendanceController extends Controller
             ->where('status', 'active')
             ->get();
 
-            $existingAttendances = Attendance::where('batch_id', $batchId)
+            $attendancesQuery = Attendance::where('batch_id', $batchId)
                 ->whereDate('date', $date)
-                ->pluck('status', 'student_id')
-                ->toArray();
+                ->get();
+
+            $isAttendanceTaken = $attendancesQuery->isNotEmpty();
+            $existingAttendances = $attendancesQuery->pluck('status', 'student_id')->toArray();
+            $existingRemarks = $attendancesQuery->pluck('remark', 'student_id')->toArray();
         }
 
         // Low Attendance Alert List (< 75%)
@@ -57,6 +62,8 @@ class AttendanceController extends Controller
             'batches' => $batches,
             'students' => $students,
             'existingAttendances' => $existingAttendances,
+            'existingRemarks' => $existingRemarks,
+            'isAttendanceTaken' => $isAttendanceTaken,
             'selectedBatchId' => $batchId,
             'selectedDate' => $date,
             'lowAttendanceStudents' => $lowAttendanceStudents,
@@ -67,11 +74,15 @@ class AttendanceController extends Controller
     {
         $validated = $request->validate([
             'batch_id' => 'required|exists:batches,id',
-            'date' => 'required|date',
+            'date' => 'required|date|before_or_equal:today',
             'attendances' => 'required|array', // key: student_id, val: status (present, absent, late, leave)
+            'remarks' => 'nullable|array',
         ]);
 
         foreach ($validated['attendances'] as $studentId => $status) {
+            $normStatus = ($status === 'on_leave') ? 'leave' : $status;
+            $remark = $request->input("remarks.{$studentId}") ?? null;
+
             Attendance::updateOrCreate(
                 [
                     'student_id' => $studentId,
@@ -79,7 +90,8 @@ class AttendanceController extends Controller
                     'date' => $validated['date'],
                 ],
                 [
-                    'status' => $status,
+                    'status' => $normStatus,
+                    'remark' => $remark,
                 ]
             );
         }
@@ -88,12 +100,15 @@ class AttendanceController extends Controller
             'user_id' => auth()->id(),
             'user_name' => auth()->user()->name,
             'user_role' => auth()->user()->user_type,
-            'action' => 'Attendance Taken',
+            'action' => 'Attendance Recorded',
             'module' => 'Attendance',
-            'description' => "Marked attendance for Batch #{$validated['batch_id']} on {$validated['date']}",
+            'description' => "Recorded/Updated attendance for Batch #{$validated['batch_id']} on {$validated['date']}",
             'ip_address' => request()->ip(),
         ]);
 
-        return redirect()->back()->with('success', 'Attendance recorded successfully.');
+        return redirect()->route('admin.attendance.index', [
+            'batch_id' => $validated['batch_id'],
+            'date' => $validated['date'],
+        ])->with('success', 'Attendance recorded/updated successfully for ' . date('d M, Y', strtotime($validated['date'])));
     }
 }

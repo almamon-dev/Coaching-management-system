@@ -168,8 +168,8 @@ export default function BatchesIndex({ dbBatches = [], settings = {} }) {
                                     onClick={() => setSelectedCategory(cat)}
                                     className={`px-3.5 py-1.5 rounded-[4px] text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
                                         isActive
-                                            ? 'bg-slate-900 text-white'
-                                            : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'
+                                            ? 'bg-[#047857] text-white'
+                                            : 'bg-white hover:bg-emerald-50 hover:text-[#047857] text-slate-600 border border-slate-200'
                                     }`}
                                 >
                                     <span>{cat}</span>
@@ -189,7 +189,7 @@ export default function BatchesIndex({ dbBatches = [], settings = {} }) {
                             placeholder="Search by title, subject or code..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-[4px] text-xs focus:ring-1 focus:ring-slate-900 focus:border-slate-900 outline-hidden transition-colors"
+                            className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-[4px] text-xs focus:ring-1 focus:ring-[#047857] focus:border-[#047857] outline-hidden transition-colors"
                         />
                         <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
                     </div>
@@ -201,23 +201,23 @@ export default function BatchesIndex({ dbBatches = [], settings = {} }) {
                         {filteredBatches.map(batch => (
                             <div 
                                 key={batch.id}
-                                className="bg-white rounded-[4px] overflow-hidden border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row group transition-all"
+                                className="bg-white rounded-[4px] overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-md flex flex-col sm:flex-row group transition-all"
                             >
                                 {/* Left Image with Category Badge */}
                                 <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0 bg-slate-100">
                                     <img 
                                         src={batch.image || '/images/fb_photo_01.jpg'} 
                                         alt={batch.display_title || batch.name} 
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => { e.target.src = '/images/campus_academics.png'; }}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        onError={(e) => { e.target.src = '/images/coaching/coaching_01.jpg'; }}
                                     />
                                     <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs rounded-[4px] px-2.5 py-1 text-center shadow-xs border border-slate-200/90">
-                                        <span className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider leading-none">
+                                        <span className="block text-[10px] font-bold text-[#047857] uppercase tracking-wider leading-none">
                                             {batch.category || 'Batch'}
                                         </span>
                                     </div>
-                                    <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-xs rounded-[4px] px-2 py-0.5 text-center">
-                                        <span className="block font-mono text-[10px] text-white tracking-wider">
+                                    <div className="absolute bottom-3 left-3 bg-[#047857]/90 backdrop-blur-xs rounded-[4px] px-2 py-0.5 text-center">
+                                        <span className="block font-mono text-[10px] text-white tracking-wider font-semibold">
                                             {batch.code || `BATCH-${batch.id}`}
                                         </span>
                                     </div>
@@ -229,17 +229,17 @@ export default function BatchesIndex({ dbBatches = [], settings = {} }) {
                                         {/* Routine Row */}
                                         <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold text-slate-500 mb-2">
                                             <span className="flex items-center gap-1.5">
-                                                <Calendar size={13} className="text-slate-400" />
+                                                <Calendar size={13} className="text-[#047857]" />
                                                 <span>{batch.class_days || 'Regular Days'}</span>
                                             </span>
                                             <span className="flex items-center gap-1.5">
-                                                <Clock size={13} className="text-slate-400" />
+                                                <Clock size={13} className="text-[#047857]" />
                                                 <span>{batch.class_time || 'Schedule'}</span>
                                             </span>
                                         </div>
 
                                         {/* Batch Title */}
-                                        <h3 className="text-base font-bold text-slate-900 mb-1.5 leading-snug">
+                                        <h3 className="text-base font-bold text-slate-900 mb-1.5 leading-snug group-hover:text-[#047857] transition-colors">
                                             {batch.display_title || batch.name}
                                         </h3>
 
@@ -263,15 +263,15 @@ export default function BatchesIndex({ dbBatches = [], settings = {} }) {
                                     <div className="grid grid-cols-2 gap-2 pt-3 border-t border-slate-100 mt-2">
                                         <Link
                                             href={batch.details_url || `/batches/${batch.id}`}
-                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-[4px] transition-colors block"
+                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-slate-700 bg-white hover:bg-emerald-50 hover:text-[#047857] border border-slate-300 hover:border-emerald-300 rounded-[4px] transition-colors block"
                                         >
                                             Details
                                         </Link>
                                         <Link
                                             href={batch.link || '/admissions'}
-                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-[4px] transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-white bg-[#047857] hover:bg-[#065f46] rounded-[4px] transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
                                         >
-                                            <span>Enroll</span>
+                                            <span>Join</span>
                                             <ArrowRight size={13} />
                                         </Link>
                                     </div>
