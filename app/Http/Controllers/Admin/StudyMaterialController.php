@@ -16,13 +16,13 @@ class StudyMaterialController extends Controller
     public function index()
     {
         $materials = StudyMaterial::with(['course', 'batch', 'subject', 'uploader'])->latest()->get();
-        $batches = Course::where('status', 'active')->get();
+        $courses = Course::where('status', 'active')->get();
         $batches = Batch::where('status', 'active')->get();
         $subjects = Subject::all();
 
         return Inertia::render('Admin/StudyMaterials/Index', [
             'materials' => $materials,
-            'batches' => $batches,
+            'courses' => $courses,
             'batches' => $batches,
             'subjects' => $subjects,
         ]);
@@ -32,11 +32,11 @@ class StudyMaterialController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'course_id' => 'nullable|exists:batches,id',
+            'course_id' => 'nullable|exists:courses,id',
             'batch_id' => 'nullable|exists:batches,id',
             'subject_id' => 'nullable|exists:subjects,id',
-            'file_type' => 'nullable|string', // PDF, Note, Document, Image, Video, Link
-            'file' => 'nullable|file|max:51200', // Max 50MB
+            'file_type' => 'nullable|string',
+            'file' => 'nullable|file|max:512000', // Max 500MB (PDF, ZIP, Video, Doc, etc.)
             'link_url' => 'nullable|string',
             'description' => 'nullable|string',
         ]);
@@ -48,19 +48,23 @@ class StudyMaterialController extends Controller
             $stored = $file->store('study_materials', 'public');
             $filePath = '/storage/' . $stored;
 
-            // Auto-detect file_type if not manually selected
-            if (empty($validated['file_type']) || $validated['file_type'] === 'PDF') {
-                if (in_array($originalExt, ['pdf'])) {
-                    $validated['file_type'] = 'PDF';
-                } elseif (in_array($originalExt, ['doc', 'docx', 'odt', 'txt'])) {
-                    $validated['file_type'] = 'Document';
-                } elseif (in_array($originalExt, ['ppt', 'pptx'])) {
-                    $validated['file_type'] = 'Note';
-                } elseif (in_array($originalExt, ['jpg', 'jpeg', 'png', 'webp'])) {
-                    $validated['file_type'] = 'Image';
-                } else {
-                    $validated['file_type'] = strtoupper($originalExt ?: 'File');
-                }
+            // Auto-detect file_type
+            if (in_array($originalExt, ['pdf'])) {
+                $validated['file_type'] = 'PDF';
+            } elseif (in_array($originalExt, ['zip', 'rar', '7z', 'tar', 'gz'])) {
+                $validated['file_type'] = 'ZIP';
+            } elseif (in_array($originalExt, ['mp4', 'mkv', 'avi', 'mov', 'wmv', 'webm', 'flv'])) {
+                $validated['file_type'] = 'Video';
+            } elseif (in_array($originalExt, ['mp3', 'wav', 'ogg', 'm4a', 'aac'])) {
+                $validated['file_type'] = 'Audio';
+            } elseif (in_array($originalExt, ['doc', 'docx', 'odt', 'txt', 'rtf', 'csv', 'xls', 'xlsx'])) {
+                $validated['file_type'] = 'Document';
+            } elseif (in_array($originalExt, ['ppt', 'pptx'])) {
+                $validated['file_type'] = 'Note';
+            } elseif (in_array($originalExt, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'])) {
+                $validated['file_type'] = 'Image';
+            } else {
+                $validated['file_type'] = strtoupper($originalExt ?: 'File');
             }
 
             if (empty($validated['link_url'])) {
@@ -68,7 +72,21 @@ class StudyMaterialController extends Controller
             }
         } else {
             if (empty($validated['file_type'])) {
-                $validated['file_type'] = 'Link';
+                $link = strtolower($validated['link_url'] ?? '');
+                if (str_contains($link, 'youtube') || str_contains($link, 'youtu.be') || str_contains($link, 'vimeo')) {
+                    $validated['file_type'] = 'Video';
+                } else {
+                    $validated['file_type'] = 'Link';
+                }
+            }
+        }
+
+        // Auto-link Course and Subject from Batch if not explicitly given
+        if (!empty($validated['batch_id']) && empty($validated['course_id'])) {
+            $batchObj = Batch::find($validated['batch_id']);
+            if ($batchObj) {
+                $validated['course_id'] = $batchObj->course_id;
+                $validated['subject_id'] = $validated['subject_id'] ?? $batchObj->subject_id;
             }
         }
 
@@ -78,7 +96,7 @@ class StudyMaterialController extends Controller
             'batch_id' => $validated['batch_id'] ?? null,
             'subject_id' => $validated['subject_id'] ?? null,
             'file_path' => $filePath,
-            'file_type' => $validated['file_type'],
+            'file_type' => $validated['file_type'] ?? 'File',
             'link_url' => $validated['link_url'] ?? $filePath,
             'description' => $validated['description'] ?? null,
             'uploaded_by' => auth()->id(),

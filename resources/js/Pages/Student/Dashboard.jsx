@@ -6,7 +6,8 @@ import {
     BookMarked, FileCode, Bell, CheckCircle2, XCircle,
     User, Layers, Clock, MapPin, Printer, Eye, X, 
     FileText, Check, ArrowRight, TrendingUp, AlertCircle,
-    BookOpen, Filter, CheckCheck, BarChart2
+    BookOpen, Filter, CheckCheck, BarChart2,
+    Video, Play, FileArchive, Download, ExternalLink, Search, Sparkles
 } from 'lucide-react';
 import MarksheetSlipModal from '@/Components/Marksheet/MarksheetSlipModal';
 
@@ -34,6 +35,18 @@ export default function StudentDashboard({
     // BATCH & MONTH FILTERS
     const [selectedBatchId, setSelectedBatchId] = useState('all');
     const [selectedMonth, setSelectedMonth] = useState('all'); // 'YYYY-MM' or 'all'
+
+    // STUDY MATERIALS FILTER & VIDEO MODAL
+    const [materialSearch, setMaterialSearch] = useState('');
+    const [materialTypeFilter, setMaterialTypeFilter] = useState('all');
+    const [activeVideoModal, setActiveVideoModal] = useState(null);
+
+    const getYouTubeEmbedUrl = (url) => {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}?autoplay=1` : null;
+    };
 
     // Sync tab when prop changes or on initial mount
     useEffect(() => {
@@ -1082,18 +1095,20 @@ export default function StudentDashboard({
                                 {invoices.length > 0 ? (
                                     invoices.map(inv => (
                                         <tr key={inv.id} className="hover:bg-slate-50/60 transition-colors">
-                                            <td className="px-3.5 py-2.5 font-mono font-bold text-slate-800">{inv.invoice_number}</td>
-                                            <td className="px-3.5 py-2.5 text-slate-900">{inv.fee_type?.name || 'Monthly Tuition'}</td>
-                                            <td className="px-3.5 py-2.5 text-right font-medium">৳ {Number(inv.net_amount).toLocaleString()}</td>
-                                            <td className="px-3.5 py-2.5 text-right text-[#16a34a] font-bold">৳ {Number(inv.paid_amount).toLocaleString()}</td>
+                                            <td className="px-3.5 py-2.5 font-mono font-bold text-slate-800">{inv.invoice_no || inv.invoice_number || `INV-${inv.id}`}</td>
+                                            <td className="px-3.5 py-2.5 text-slate-900 font-medium">{inv.title || inv.fee_type?.name || 'Monthly Tuition Fee'}</td>
+                                            <td className="px-3.5 py-2.5 text-right font-medium">৳ {Number(inv.net_amount ?? inv.amount ?? 0).toLocaleString()}</td>
+                                            <td className="px-3.5 py-2.5 text-right text-[#16a34a] font-bold">৳ {Number(inv.paid_amount ?? 0).toLocaleString()}</td>
                                             <td className={`px-3.5 py-2.5 text-right font-bold ${Number(inv.due_amount) > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
-                                                ৳ {Number(inv.due_amount).toLocaleString()}
+                                                ৳ {Number(inv.due_amount ?? 0).toLocaleString()}
                                             </td>
                                             <td className="px-3.5 py-2.5 text-center">
                                                 <span className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-bold capitalize border ${
-                                                    inv.status === 'paid' ? 'bg-emerald-50 text-[#16a34a] border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'
+                                                    inv.status === 'paid' ? 'bg-emerald-50 text-[#16a34a] border-emerald-200' :
+                                                    inv.status === 'partial' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                                    'bg-rose-50 text-rose-600 border-rose-200'
                                                 }`}>
-                                                    {inv.status}
+                                                    {inv.status || 'unpaid'}
                                                 </span>
                                             </td>
                                         </tr>
@@ -1154,38 +1169,456 @@ export default function StudentDashboard({
                 </div>
             )}
 
-            {/* TAB 8: STUDY MATERIALS */}
-            {activeTab === 'materials' && (
-                <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs p-4 space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                        <div>
-                            <h3 className="text-sm font-bold text-slate-900">Study materials & lecture notes</h3>
-                            <p className="text-xs text-slate-500">Download lecture sheets, question banks, and slides.</p>
-                        </div>
-                    </div>
+            {/* TAB 8: STUDY MATERIALS & DIGITAL LEARNING HUB */}
+            {activeTab === 'materials' && (() => {
+                const videoCount = studyMaterials.filter(m => (m.file_type || '').toUpperCase() === 'VIDEO').length;
+                const zipCount = studyMaterials.filter(m => ['ZIP', 'RAR', '7Z'].includes((m.file_type || '').toUpperCase())).length;
+                const pdfCount = studyMaterials.filter(m => (m.file_type || '').toUpperCase() === 'PDF').length;
+                const otherCount = studyMaterials.length - (videoCount + zipCount + pdfCount);
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                        {studyMaterials.length > 0 ? (
-                            studyMaterials.map(m => (
-                                <div key={m.id} className="p-3.5 bg-slate-50/70 rounded-[4px] border border-slate-200 space-y-2">
-                                    <div className="flex justify-between font-bold text-slate-900">
-                                        <span>{m.title}</span>
-                                        <span className="text-[10px] bg-emerald-100 text-[#16a34a] px-2 py-0.5 rounded-[2px]">{m.file_type || 'PDF'}</span>
+                const filtered = studyMaterials.filter((m) => {
+                    const matchesSearch = !materialSearch ||
+                        m.title?.toLowerCase().includes(materialSearch.toLowerCase()) ||
+                        m.description?.toLowerCase().includes(materialSearch.toLowerCase()) ||
+                        m.subject?.name?.toLowerCase().includes(materialSearch.toLowerCase());
+
+                    const type = (m.file_type || '').toUpperCase();
+                    let matchesType = true;
+                    if (materialTypeFilter === 'video') matchesType = type === 'VIDEO';
+                    else if (materialTypeFilter === 'zip') matchesType = ['ZIP', 'RAR', '7Z'].includes(type);
+                    else if (materialTypeFilter === 'pdf') matchesType = type === 'PDF';
+                    else if (materialTypeFilter === 'other') matchesType = !['VIDEO', 'ZIP', 'RAR', '7Z', 'PDF'].includes(type);
+
+                    return matchesSearch && matchesType;
+                });
+
+                return (
+                    <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs p-4 sm:p-5 space-y-4">
+                        {/* Header Bar */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3.5">
+                            <div>
+                                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                                    <BookOpen size={17} className="text-[#16a34a]" />
+                                    <span>Study Materials & Lecture Resources</span>
+                                </h3>
+                                <p className="text-xs text-slate-500 mt-0.5">
+                                    Access lecture sheets, video classes, ZIP resource packages, and board revision guides.
+                                </p>
+                            </div>
+
+                            {/* Search Box */}
+                            <div className="relative w-full sm:w-64">
+                                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    type="text"
+                                    value={materialSearch}
+                                    onChange={(e) => setMaterialSearch(e.target.value)}
+                                    placeholder="Search topic, chapter..."
+                                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-[3px] focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all"
+                                />
+                                {materialSearch && (
+                                    <button
+                                        onClick={() => setMaterialSearch('')}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                                    >
+                                        <X size={12} />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Category Filter Pills */}
+                        <div className="flex flex-wrap items-center gap-1.5 pb-1">
+                            <button
+                                type="button"
+                                onClick={() => setMaterialTypeFilter('all')}
+                                className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer ${
+                                    materialTypeFilter === 'all'
+                                        ? 'bg-slate-900 text-white shadow-xs'
+                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                }`}
+                            >
+                                All Resources ({studyMaterials.length})
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setMaterialTypeFilter('video')}
+                                className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    materialTypeFilter === 'video'
+                                        ? 'bg-purple-600 text-white shadow-xs'
+                                        : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200/60'
+                                }`}
+                            >
+                                <Video size={12} />
+                                <span>Videos ({videoCount})</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setMaterialTypeFilter('zip')}
+                                className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    materialTypeFilter === 'zip'
+                                        ? 'bg-amber-600 text-white shadow-xs'
+                                        : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200/60'
+                                }`}
+                            >
+                                <FileArchive size={12} />
+                                <span>ZIP Bundles ({zipCount})</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setMaterialTypeFilter('pdf')}
+                                className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    materialTypeFilter === 'pdf'
+                                        ? 'bg-rose-600 text-white shadow-xs'
+                                        : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/60'
+                                }`}
+                            >
+                                <FileText size={12} />
+                                <span>PDF Sheets ({pdfCount})</span>
+                            </button>
+                            {otherCount > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={() => setMaterialTypeFilter('other')}
+                                    className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer ${
+                                        materialTypeFilter === 'other'
+                                            ? 'bg-emerald-600 text-white shadow-xs'
+                                            : 'bg-emerald-50 text-[#16a34a] hover:bg-emerald-100 border border-emerald-200/60'
+                                    }`}
+                                >
+                                    Other Notes ({otherCount})
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Materials Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                            {filtered.length > 0 ? (
+                                filtered.map((m) => {
+                                    const typeUpper = (m.file_type || '').toUpperCase();
+                                    const isVideo = typeUpper === 'VIDEO';
+                                    const isZip = ['ZIP', 'RAR', '7Z'].includes(typeUpper);
+                                    const isPdf = typeUpper === 'PDF';
+                                    const targetUrl = m.file_path || m.link_url || '#';
+                                    const isLocalFile = targetUrl.startsWith('/storage');
+
+                                    // 1. VIDEO CARD FORMAT
+                                    if (isVideo) {
+                                        return (
+                                            <div
+                                                key={m.id}
+                                                className="rounded-[4px] border border-purple-200/80 bg-white hover:border-purple-400 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between overflow-hidden group"
+                                            >
+                                                {/* Video Preview Banner */}
+                                                <div className="h-28 bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 relative p-3 flex flex-col justify-between text-white">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-[2px] bg-purple-500/80 text-white backdrop-blur-xs flex items-center gap-1">
+                                                            <Video size={10} /> Video Class
+                                                        </span>
+                                                        {m.subject?.name && (
+                                                            <span className="text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded text-purple-200">
+                                                                {m.subject.name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center justify-center">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setActiveVideoModal(m)}
+                                                            className="w-10 h-10 rounded-full bg-white/90 hover:bg-white text-purple-700 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform cursor-pointer"
+                                                        >
+                                                            <Play size={18} className="ml-0.5" />
+                                                        </button>
+                                                    </div>
+                                                    <span className="text-[10px] text-purple-200/80 truncate">
+                                                        {m.created_at ? new Date(m.created_at).toLocaleDateString('en-GB') : 'Interactive Lesson'}
+                                                    </span>
+                                                </div>
+
+                                                <div className="p-3.5 flex flex-col justify-between flex-1 gap-2.5">
+                                                    <div>
+                                                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors leading-snug">
+                                                            {m.title}
+                                                        </h4>
+                                                        <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                                                            {m.description || 'Watch recorded concept lecture, numerical solutions and problem discussion.'}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setActiveVideoModal(m)}
+                                                            className="text-xs font-bold text-purple-700 hover:text-purple-900 flex items-center gap-1.5 cursor-pointer"
+                                                        >
+                                                            <Play size={13} />
+                                                            <span>Watch in Portal</span>
+                                                        </button>
+                                                        {targetUrl !== '#' && (
+                                                            <a
+                                                                href={targetUrl}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="text-[11px] text-slate-400 hover:text-slate-600 flex items-center gap-1"
+                                                            >
+                                                                <span>Direct link</span>
+                                                                <ExternalLink size={10} />
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    // 2. ZIP ARCHIVE CARD FORMAT
+                                    if (isZip) {
+                                        return (
+                                            <div
+                                                key={m.id}
+                                                className="rounded-[4px] border border-amber-200 bg-gradient-to-br from-amber-50/40 via-white to-amber-50/20 hover:border-amber-400 shadow-2xs hover:shadow-xs transition-all p-3.5 flex flex-col justify-between gap-3 group"
+                                            >
+                                                <div>
+                                                    <div className="flex items-center justify-between gap-2 mb-2">
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-[2px] bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1">
+                                                            <FileArchive size={11} /> Complete ZIP Bundle
+                                                        </span>
+                                                        {m.subject?.name && (
+                                                            <span className="text-[10px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+                                                                {m.subject.name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="w-10 h-10 rounded-[4px] bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200/80 group-hover:scale-105 transition-transform">
+                                                            <FileArchive size={20} />
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-amber-800 transition-colors leading-snug">
+                                                                {m.title}
+                                                            </h4>
+                                                            <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                                                                {m.description || 'Full package containing lecture notes, formula cheat-sheets, and practice problem sets.'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-2 border-t border-amber-100 flex items-center justify-between">
+                                                    <span className="text-[10.5px] text-slate-400">
+                                                        {m.created_at ? new Date(m.created_at).toLocaleDateString('en-GB') : 'Archive Ready'}
+                                                    </span>
+                                                    <a
+                                                        href={targetUrl}
+                                                        download
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-[3px] shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                                                    >
+                                                        <Download size={13} />
+                                                        <span>Download Bundle (.zip)</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    // 3. PDF LECTURE SHEET CARD FORMAT
+                                    if (isPdf) {
+                                        return (
+                                            <div
+                                                key={m.id}
+                                                className="rounded-[4px] border border-rose-200/80 bg-white hover:border-rose-400 shadow-2xs hover:shadow-xs transition-all p-3.5 flex flex-col justify-between gap-3 group"
+                                            >
+                                                <div>
+                                                    <div className="flex items-center justify-between gap-2 mb-2">
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-[2px] bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                                                            <FileText size={11} /> PDF Document
+                                                        </span>
+                                                        {m.subject?.name && (
+                                                            <span className="text-[10px] font-semibold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+                                                                {m.subject.name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="w-10 h-10 rounded-[4px] bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-200 group-hover:scale-105 transition-transform">
+                                                            <FileText size={20} />
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-rose-700 transition-colors leading-snug">
+                                                                {m.title}
+                                                            </h4>
+                                                            <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                                                                {m.description || 'Board standard concise lecture summary and solution guidelines.'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                                                    <span className="text-[10.5px] text-slate-400">
+                                                        {m.created_at ? new Date(m.created_at).toLocaleDateString('en-GB') : 'PDF Available'}
+                                                    </span>
+                                                    <a
+                                                        href={targetUrl}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-[3px] shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                                                    >
+                                                        <Download size={13} />
+                                                        <span>Download PDF</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    // 4. GENERAL DOCUMENT / NOTE / OTHER FORMAT
+                                    return (
+                                        <div
+                                            key={m.id}
+                                            className="rounded-[4px] border border-slate-200 bg-white hover:border-[#16a34a] shadow-2xs hover:shadow-xs transition-all p-3.5 flex flex-col justify-between gap-3 group"
+                                        >
+                                            <div>
+                                                <div className="flex items-center justify-between gap-2 mb-2">
+                                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-[2px] bg-emerald-50 text-[#16a34a] border border-emerald-200">
+                                                        {m.file_type || 'Resource'}
+                                                    </span>
+                                                    {m.subject?.name && (
+                                                        <span className="text-[10px] font-semibold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+                                                            {m.subject.name}
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex items-start gap-3">
+                                                    <div className="w-10 h-10 rounded-[4px] bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 border border-slate-200 group-hover:scale-105 transition-transform">
+                                                        <BookOpen size={20} />
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-[#16a34a] transition-colors leading-snug">
+                                                            {m.title}
+                                                        </h4>
+                                                        <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                                                            {m.description || 'Downloadable academic resource file.'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                                                <span className="text-[10.5px] text-slate-400">
+                                                    {m.created_at ? new Date(m.created_at).toLocaleDateString('en-GB') : 'Ready'}
+                                                </span>
+                                                <a
+                                                    href={targetUrl}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="px-3 py-1.5 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-bold rounded-[3px] shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                                                >
+                                                    <Download size={13} />
+                                                    <span>Get Resource</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="col-span-1 md:col-span-2 text-center py-10 bg-slate-50/50 rounded-[4px] border border-dashed border-slate-200">
+                                    <BookOpen size={28} className="mx-auto text-slate-300 mb-2" />
+                                    <p className="text-sm font-bold text-slate-700">No study materials found</p>
+                                    <p className="text-xs text-slate-400 mt-0.5">
+                                        {materialSearch ? 'Try a different search keyword.' : 'Study materials uploaded by teachers will appear here.'}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Interactive In-Portal Video Player Modal */}
+                        {activeVideoModal && (
+                            <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+                                <div className="bg-slate-900 max-w-3xl w-full rounded-[4px] shadow-2xl border border-slate-800 overflow-hidden text-white animate-in fade-in">
+                                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 rounded bg-purple-600 flex items-center justify-center text-white">
+                                                <Play size={12} className="ml-0.5" />
+                                            </div>
+                                            <h4 className="text-xs sm:text-sm font-bold truncate max-w-md">
+                                                {activeVideoModal.title}
+                                            </h4>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveVideoModal(null)}
+                                            className="text-slate-400 hover:text-white p-1 rounded transition-colors cursor-pointer"
+                                        >
+                                            <X size={18} />
+                                        </button>
                                     </div>
-                                    <p className="text-slate-500 text-[11px]">{m.description || 'Downloadable study resource.'}</p>
-                                    {(m.file_path || m.link_url) && (
-                                        <a href={m.file_path || m.link_url} target="_blank" rel="noreferrer" className="text-[#16a34a] font-bold block pt-1 hover:underline">
-                                            Download material &rarr;
-                                        </a>
+
+                                    <div className="p-2 sm:p-4 bg-black">
+                                        {(() => {
+                                            const videoUrl = activeVideoModal.file_path || activeVideoModal.link_url || '';
+                                            const ytEmbed = getYouTubeEmbedUrl(videoUrl);
+
+                                            if (ytEmbed) {
+                                                return (
+                                                    <iframe
+                                                        src={ytEmbed}
+                                                        title={activeVideoModal.title}
+                                                        className="w-full aspect-video rounded-[3px] border-0"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                    />
+                                                );
+                                            }
+
+                                            if (videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.endsWith('.ogg') || videoUrl.startsWith('/storage/')) {
+                                                return (
+                                                    <video
+                                                        src={videoUrl}
+                                                        controls
+                                                        autoPlay
+                                                        className="w-full aspect-video rounded-[3px] bg-black"
+                                                    >
+                                                        Your browser does not support the video tag.
+                                                    </video>
+                                                );
+                                            }
+
+                                            return (
+                                                <div className="py-12 text-center space-y-3">
+                                                    <Video size={40} className="mx-auto text-purple-400 opacity-80" />
+                                                    <p className="text-sm font-bold">External Video Resource</p>
+                                                    <p className="text-xs text-slate-400">Click below to open the video in a dedicated tab.</p>
+                                                    <a
+                                                        href={videoUrl}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded"
+                                                    >
+                                                        <span>Open Video Link</span>
+                                                        <ExternalLink size={12} />
+                                                    </a>
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
+
+                                    {activeVideoModal.description && (
+                                        <div className="px-4 py-3 bg-slate-900 border-t border-slate-800 text-xs text-slate-300">
+                                            <p>{activeVideoModal.description}</p>
+                                        </div>
                                     )}
                                 </div>
-                            ))
-                        ) : (
-                            <div className="col-span-2 text-center text-slate-400 py-6">No study materials published yet.</div>
+                            </div>
                         )}
                     </div>
-                </div>
-            )}
+                );
+            })()}
 
             {/* TAB 9: NOTICE BOARD */}
             {activeTab === 'notices' && (

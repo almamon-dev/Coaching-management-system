@@ -67,6 +67,9 @@ class HandleInertiaRequests extends Middleware
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
             ],
+            'pendingInquiriesCount' => ($user && in_array($user->user_type, ['super_admin', 'admin', 'manager', 'accountant', 'staff']))
+                ? \App\Models\AcademicInquiry::where('status', 'pending')->count()
+                : 0,
         ];
     }
 }

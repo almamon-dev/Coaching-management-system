@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\Admin\AcademicInquiryController;
 
 // Dashboard
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -35,6 +36,12 @@ Route::resource('students', StudentController::class);
 // Admission Management
 Route::get('/admissions/create', [AdmissionController::class, 'create'])->name('admissions.create');
 Route::post('/admissions', [AdmissionController::class, 'store'])->name('admissions.store');
+
+// Academic Inquiries (Prospective student counseling leads)
+Route::get('/inquiries', [AcademicInquiryController::class, 'index'])->name('inquiries.index');
+Route::put('/inquiries/{id}', [AcademicInquiryController::class, 'update'])->name('inquiries.update');
+Route::delete('/inquiries/{id}', [AcademicInquiryController::class, 'destroy'])->name('inquiries.destroy');
+Route::post('/inquiries/bulk-delete', [AcademicInquiryController::class, 'bulkDelete'])->name('inquiries.bulk-delete');
 
 // Subject, Batch, Teacher & Routine Management
 Route::resource('courses', SubjectController::class);

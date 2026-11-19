@@ -1,12 +1,41 @@
 import React, { useState } from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage, useForm } from '@inertiajs/react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
+import { motion } from 'framer-motion';
 import {
     GraduationCap, Play, Users, UserCheck, BookOpen,
     Award, CheckCircle2, ChevronRight, ArrowRight,
     Calendar, Clock, MapPin, Quote, Check, X, FileText, Download, Bell,
     Coins, Video, Mail, Phone, MessageSquare, Send
 } from 'lucide-react';
+
+const fadeInUp = {
+    hidden: { opacity: 0, y: 28 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] }
+    }
+};
+
+const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
+    }
+};
+
+const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.08,
+            delayChildren: 0.04
+        }
+    }
+};
 
 export default function Home({
     dbNotices = [],
@@ -23,15 +52,31 @@ export default function Home({
 
     const [showAllNotices, setShowAllNotices] = useState(false);
     const [selectedNotice, setSelectedNotice] = useState(null);
-    const [inquiryForm, setInquiryForm] = useState({ name: '', phone: '', batch: '', message: '' });
     const [inquirySent, setInquirySent] = useState(false);
+
+    const {
+        data: inquiryData,
+        setData: setInquiryData,
+        post: postInquiry,
+        processing: inquiryProcessing,
+        reset: resetInquiry,
+        errors: inquiryErrors
+    } = useForm({
+        name: '',
+        phone: '',
+        batch: '',
+        message: '',
+    });
 
     const handleInquirySubmit = (e) => {
         e.preventDefault();
-        setInquirySent(true);
-        setTimeout(() => {
-            setInquiryForm({ name: '', phone: '', batch: '', message: '' });
-        }, 4000);
+        postInquiry(route('academic-inquiry.store'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setInquirySent(true);
+                resetInquiry();
+            },
+        });
     };
 
     // Safe route helper
@@ -125,7 +170,7 @@ export default function Home({
     // 2. Dynamic or Default Important Links
     const defaultImportantLinks = [
         { title: 'Notice Board', href: '#notice-board' },
-        { title: 'Academic batches & Programs', href: '#batches' },
+        { title: 'Academic Batches & Programs', href: '#batches' },
         { title: 'Admission Instructions', href: safeRoute('admissions', undefined, '/admissions') },
         { title: 'Campus Events & Seminars', href: safeRoute('events', undefined, '/events') },
         { title: 'Student Success Stories', href: safeRoute('success-stories', undefined, '/success-stories') },
@@ -448,7 +493,12 @@ export default function Home({
                 <div className="container mx-auto px-4 max-w-7xl py-12 md:py-16 lg:py-20 relative z-10">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 
-                        <div className="lg:col-span-6 space-y-5 text-left max-w-xl">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 24 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            className="lg:col-span-6 space-y-5 text-left max-w-xl"
+                        >
                             {/* Top Badge */}
                             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/25 text-white text-xs font-semibold backdrop-blur-xs">
                                 <GraduationCap size={14} className="text-emerald-200" />
@@ -476,7 +526,7 @@ export default function Home({
                             <div className="flex flex-wrap items-center gap-3 pt-2">
                                 <Link
                                     href={safeRoute('admissions', undefined, '/admissions')}
-                                    className="px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs sm:text-[13px] font-bold rounded-[4px] shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                                    className="px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs sm:text-[13px] font-bold rounded-[4px] shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out flex items-center gap-2 cursor-pointer"
                                 >
                                     <GraduationCap size={16} />
                                     <span>Apply for Admission</span>
@@ -484,13 +534,13 @@ export default function Home({
 
                                 <a
                                     href="#batches"
-                                    className="px-5 py-2.5 bg-emerald-900/40 hover:bg-emerald-900/70 text-white text-xs sm:text-[13px] font-bold rounded-[4px] border border-white/30 backdrop-blur-xs transition-all flex items-center gap-2 cursor-pointer"
+                                    className="px-5 py-2.5 bg-emerald-900/40 hover:bg-emerald-900/70 text-white text-xs sm:text-[13px] font-bold rounded-[4px] border border-white/30 backdrop-blur-xs shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out flex items-center gap-2 cursor-pointer"
                                 >
                                     <Play size={14} fill="currentColor" />
                                     <span>Explore Our Batches</span>
                                 </a>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Spacer column */}
                         <div className="hidden lg:block lg:col-span-6" aria-hidden="true" />
@@ -504,9 +554,14 @@ export default function Home({
             {/* ========================================================================= */}
             <section className="bg-[#064e3b] text-white py-4 sm:py-5 border-t border-emerald-900/60 font-inter">
                 <div className="container mx-auto px-4 max-w-7xl">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 divide-x-0 md:divide-x divide-emerald-800/60">
-
-                        <div className="flex items-center justify-center gap-3.5 px-3">
+                    <motion.div 
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-40px" }}
+                        variants={staggerContainer}
+                        className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 divide-x-0 md:divide-x divide-emerald-800/60"
+                    >
+                        <motion.div variants={fadeInUp} className="flex items-center justify-center gap-3.5 px-3">
                             <div className="w-10 h-10 rounded-full bg-emerald-800/60 flex items-center justify-center shrink-0 text-emerald-300">
                                 <Users size={20} />
                             </div>
@@ -514,9 +569,9 @@ export default function Home({
                                 <div className="text-xl sm:text-2xl font-black leading-none">{cmsSettings?.stat_students || '500+'}</div>
                                 <div className="text-[11px] text-emerald-200 font-medium mt-1">Students</div>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        <div className="flex items-center justify-center gap-3.5 px-3">
+                        <motion.div variants={fadeInUp} className="flex items-center justify-center gap-3.5 px-3">
                             <div className="w-10 h-10 rounded-full bg-emerald-800/60 flex items-center justify-center shrink-0 text-emerald-300">
                                 <UserCheck size={20} />
                             </div>
@@ -524,19 +579,19 @@ export default function Home({
                                 <div className="text-xl sm:text-2xl font-black leading-none">{cmsSettings?.stat_teachers || '20+'}</div>
                                 <div className="text-[11px] text-emerald-200 font-medium mt-1">Expert Teachers</div>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        <div className="flex items-center justify-center gap-3.5 px-3">
+                        <motion.div variants={fadeInUp} className="flex items-center justify-center gap-3.5 px-3">
                             <div className="w-10 h-10 rounded-full bg-emerald-800/60 flex items-center justify-center shrink-0 text-emerald-300">
                                 <BookOpen size={20} />
                             </div>
                             <div className="text-left">
                                 <div className="text-xl sm:text-2xl font-black leading-none">{cmsSettings?.stat_batches || '10+'}</div>
-                                <div className="text-[11px] text-emerald-200 font-medium mt-1">batches & Programs</div>
+                                <div className="text-[11px] text-emerald-200 font-medium mt-1">Batches & Programs</div>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        <div className="flex items-center justify-center gap-3.5 px-3">
+                        <motion.div variants={fadeInUp} className="flex items-center justify-center gap-3.5 px-3">
                             <div className="w-10 h-10 rounded-full bg-emerald-800/60 flex items-center justify-center shrink-0 text-emerald-300">
                                 <Award size={20} />
                             </div>
@@ -544,9 +599,8 @@ export default function Home({
                                 <div className="text-xl sm:text-2xl font-black leading-none">{cmsSettings?.stat_success || '95%'}</div>
                                 <div className="text-[11px] text-emerald-200 font-medium mt-1">Success Rate</div>
                             </div>
-                        </div>
-
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 </div>
             </section>
 
@@ -555,14 +609,20 @@ export default function Home({
             {/* ========================================================================= */}
             <section id="about" className="py-12 sm:py-16 bg-white border-b border-slate-100">
                 <div className="container mx-auto px-4 max-w-7xl">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                    <motion.div 
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-60px" }}
+                        variants={fadeInUp}
+                        className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+                    >
 
                         <div className="lg:col-span-5">
-                            <div className="relative rounded-[4px] overflow-hidden shadow-md border border-slate-200 aspect-[4/3]">
+                            <div className="relative rounded-[4px] overflow-hidden shadow-md border border-slate-200 aspect-[4/3] group">
                                 <img
                                     src={cmsSettings?.about_image || "/images/about.png"}
                                     alt="About Coaching Center"
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                                 />
                             </div>
                         </div>
@@ -612,7 +672,7 @@ export default function Home({
                             <div className="pt-2">
                                 <Link
                                     href={safeRoute('about-us', undefined, '/about-us')}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#047857] border border-[#047857] hover:bg-emerald-50 rounded-[4px] transition-colors"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#047857] border border-[#047857] hover:bg-emerald-50 rounded-[4px] transition-all duration-300 ease-out hover:shadow-xs"
                                 >
                                     <span>Learn More About Us</span>
                                     <ArrowRight size={13} />
@@ -620,7 +680,7 @@ export default function Home({
                             </div>
                         </div>
 
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
@@ -629,7 +689,13 @@ export default function Home({
             {/* ========================================================================= */}
             <section id="notice-board" className="py-14 bg-slate-50/50 border-b border-slate-200/80 scroll-mt-20" style={gridBgStyle}>
                 <div className="container mx-auto px-4 max-w-7xl">
-                    <div className="flex flex-col lg:flex-row gap-8 items-start">
+                    <motion.div 
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-60px" }}
+                        variants={fadeInUp}
+                        className="flex flex-col lg:flex-row gap-8 items-start"
+                    >
 
                         {/* Notice Board (Expanded to ~75% width) */}
                         <div className="flex-1 min-w-0 w-full space-y-4">
@@ -656,10 +722,10 @@ export default function Home({
                                     <div
                                         key={notice.id}
                                         onClick={() => setSelectedNotice(notice)}
-                                        className="flex gap-4 items-start p-4 hover:bg-slate-50/70 transition-colors group cursor-pointer"
+                                        className="flex gap-4 items-start p-4 hover:bg-slate-50/80 transition-all duration-300 ease-out group cursor-pointer"
                                     >
                                         {/* Calendar Date Card */}
-                                        <div className="flex flex-col items-center rounded-[4px] overflow-hidden border border-slate-200/90 bg-white shadow-2xs shrink-0 w-16 group-hover:border-[#009ca6] group-hover:shadow-xs transition-all mt-0.5">
+                                        <div className="flex flex-col items-center rounded-[4px] overflow-hidden border border-slate-200/90 bg-white shadow-2xs shrink-0 w-16 group-hover:border-[#009ca6] group-hover:shadow-xs transition-all duration-300 mt-0.5">
                                             <div className="w-full bg-[#009ca6] group-hover:bg-[#008790] text-white text-[11px] font-black uppercase tracking-wider text-center py-1 leading-none transition-colors">
                                                 {notice.month || (notice.date ? new Date(notice.date).toLocaleString('default', { month: 'short' }).toUpperCase() : 'JUL')}
                                             </div>
@@ -730,7 +796,7 @@ export default function Home({
                             </div>
                         </div>
 
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
@@ -738,8 +804,14 @@ export default function Home({
             {/* 5. EXPLORE OUR ACADEMIC BATCHES                                            */}
             {/* ========================================================================= */}
             <section id="batches" className="scroll-mt-20 py-14 sm:py-16 bg-slate-50/50 border-b border-slate-200/80" style={gridBgStyle}>
-                <span id="batches" className="sr-only" aria-hidden="true">batches & Batches</span>
-                <div className="container mx-auto px-4 max-w-7xl space-y-8">
+                <span id="batches" className="sr-only" aria-hidden="true">Academic Batches</span>
+                <motion.div 
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-60px" }}
+                    variants={fadeInUp}
+                    className="container mx-auto px-4 max-w-7xl space-y-8"
+                >
 
                     {/* Section Header */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 border-b border-slate-200/80 pb-6">
@@ -758,7 +830,7 @@ export default function Home({
                         {/* View All Batches Button in Section Header */}
                         <Link
                             href={safeRoute('batches.index', undefined, '/batches')}
-                            className="shrink-0 px-5 py-2.5 bg-[#047857] hover:bg-[#065f46] text-white text-xs sm:text-sm font-bold rounded-[4px] shadow-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer self-start md:self-auto"
+                            className="shrink-0 px-5 py-2.5 bg-[#047857] hover:bg-[#065f46] text-white text-xs sm:text-sm font-bold rounded-[4px] shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out inline-flex items-center gap-1.5 cursor-pointer self-start md:self-auto"
                         >
                             <span>View All Batches</span>
                             <ChevronRight size={14} />
@@ -770,14 +842,14 @@ export default function Home({
                         {academicBatches.slice(0, 4).map(batch => (
                             <div
                                 key={batch.id}
-                                className="bg-white rounded-[4px] overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-md flex flex-col sm:flex-row group transition-all"
+                                className="bg-white rounded-[4px] overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-lg hover:-translate-y-1 flex flex-col sm:flex-row group transition-all duration-300 ease-out"
                             >
                                 {/* Left Image with Category & Code Badges */}
                                 <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0 bg-slate-100">
                                     <img
                                         src={batch.image || '/images/batches/batch_physics.jpg'}
                                         alt={batch.display_title || batch.name}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                                         onError={(e) => { e.target.src = '/images/batches/batch_physics.jpg'; }}
                                     />
                                     <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs rounded-[4px] px-2.5 py-1 text-center shadow-xs border border-slate-200/90">
@@ -832,13 +904,13 @@ export default function Home({
                                     <div className="grid grid-cols-2 gap-2 pt-3 border-t border-slate-100 mt-2">
                                         <Link
                                             href={batch.details_url || safeRoute('batches.show', batch.id, `/batches/${batch.id}`)}
-                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-slate-700 bg-white hover:bg-emerald-50 hover:text-[#047857] border border-slate-300 hover:border-emerald-300 rounded-[4px] transition-colors block"
+                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-slate-700 bg-white hover:bg-emerald-50 hover:text-[#047857] border border-slate-300 hover:border-emerald-300 rounded-[4px] transition-all duration-300 ease-out block"
                                         >
                                             Details
                                         </Link>
                                         <Link
                                             href={batch.link || safeRoute('admissions', undefined, '/admissions')}
-                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-white bg-[#047857] hover:bg-[#065f46] rounded-[4px] transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
+                                            className="w-full py-2 px-3 text-center text-xs font-semibold text-white bg-[#047857] hover:bg-[#065f46] rounded-[4px] transition-all duration-300 ease-out flex items-center justify-center gap-1.5 shadow-2xs hover:shadow-xs cursor-pointer"
                                         >
                                             <span>Join</span>
                                             <ArrowRight size={13} />
@@ -851,7 +923,7 @@ export default function Home({
 
 
                     {/* Bottom Guidance Banner */}
-                    <div className="p-5 sm:p-6 bg-gradient-to-r from-[#064e3b] via-[#047857] to-[#065f46] rounded-[4px] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm border border-emerald-800/40">
+                    <div className="p-5 sm:p-6 bg-gradient-to-r from-[#064e3b] via-[#047857] to-[#065f46] rounded-[4px] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm border border-emerald-800/40 hover:shadow-md transition-all duration-300">
                         <div className="space-y-1 text-center sm:text-left">
                             <h4 className="text-base sm:text-lg font-bold tracking-tight">
                                 Want to join multiple subjects or need guidance?
@@ -862,21 +934,27 @@ export default function Home({
                         </div>
                         <Link
                             href={safeRoute('admissions', undefined, '/admissions')}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold rounded-[4px] shadow-sm transition-colors shrink-0 cursor-pointer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold rounded-[4px] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out shrink-0 cursor-pointer"
                         >
                             <span>Admission Instructions</span>
                             <ChevronRight size={14} />
                         </Link>
                     </div>
 
-                </div>
+                </motion.div>
             </section>
 
             {/* ========================================================================= */}
             {/* 6. UPCOMING EVENTS                                                        */}
             {/* ========================================================================= */}
             <section id="events" className="py-14 sm:py-16 bg-slate-50/50 border-b border-slate-200/80" style={gridBgStyle}>
-                <div className="container mx-auto px-4 max-w-7xl">
+                <motion.div 
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-60px" }}
+                    variants={fadeInUp}
+                    className="container mx-auto px-4 max-w-7xl"
+                >
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                         <div className="max-w-2xl">
                             <span className="inline-block px-3 py-1 bg-[#ffe4e6] text-[#e11d48] font-bold text-[10px] uppercase tracking-wider rounded-full mb-2">
@@ -891,7 +969,7 @@ export default function Home({
                         </div>
                         <Link
                             href={safeRoute('events', undefined, '/events')}
-                            className="shrink-0 px-5 py-2.5 bg-[#e11d48] hover:bg-[#be123c] text-white font-bold text-xs sm:text-sm rounded-[4px] shadow-xs transition-colors"
+                            className="shrink-0 px-5 py-2.5 bg-[#e11d48] hover:bg-[#be123c] text-white font-bold text-xs sm:text-sm rounded-[4px] shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out"
                         >
                             View All Events
                         </Link>
@@ -901,13 +979,13 @@ export default function Home({
                         {upcomingEventsList.map(event => (
                             <div
                                 key={event.id}
-                                className="bg-white rounded-[4px] overflow-hidden shadow-2xs hover:shadow-md border border-slate-200/90 flex flex-col sm:flex-row group transition-all"
+                                className="bg-white rounded-[4px] overflow-hidden shadow-2xs hover:shadow-lg hover:-translate-y-1 border border-slate-200/90 flex flex-col sm:flex-row group transition-all duration-300 ease-out"
                             >
                                 <div className="sm:w-2/5 relative h-48 sm:h-auto overflow-hidden shrink-0">
                                     <img
                                         src={event.image}
                                         alt={event.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                                     />
                                     <div className={`absolute top-3 left-3 bg-white/95 backdrop-blur-xs rounded-[4px] p-2 text-center shadow-md border-b-2 ${event.accent.border} min-w-[52px]`}>
                                         <span className={`block ${event.accent.text} font-bold text-[10px] uppercase tracking-wider leading-none mb-1`}>
@@ -954,14 +1032,20 @@ export default function Home({
                             </div>
                         ))}
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* ========================================================================= */}
             {/* 7. STUDENT SUCCESS STORIES                                                */}
             {/* ========================================================================= */}
             <section id="success-stories" className="py-14 sm:py-16 bg-white border-b border-slate-100">
-                <div className="container mx-auto px-4 max-w-7xl space-y-8">
+                <motion.div 
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-60px" }}
+                    variants={fadeInUp}
+                    className="container mx-auto px-4 max-w-7xl space-y-8"
+                >
                     <div className="text-center space-y-1.5">
                         <span className="inline-block px-3 py-0.5 rounded-full bg-emerald-50 text-[#047857] text-[11px] font-bold border border-emerald-200">
                             🏆 Student Success Stories
@@ -978,7 +1062,7 @@ export default function Home({
                         {successStories.map((story, idx) => (
                             <div
                                 key={story.id || idx}
-                                className="bg-white p-5 rounded-[4px] border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-all flex flex-col justify-between space-y-4 group relative"
+                                className="bg-white p-5 rounded-[4px] border border-slate-200/80 shadow-2xs hover:shadow-lg hover:-translate-y-1 hover:border-emerald-300 transition-all duration-300 ease-out flex flex-col justify-between space-y-4 group relative"
                             >
                                 <div className="flex items-center justify-between">
                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-[3px] text-[10px] font-bold">
@@ -1009,7 +1093,7 @@ export default function Home({
                     <div className="flex flex-col items-center justify-center gap-3 pt-3">
                         <Link
                             href={safeRoute('success-stories', undefined, '/success-stories')}
-                            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#047857] hover:bg-[#065f46] text-white text-xs sm:text-[13px] font-bold rounded-[4px] shadow-sm hover:shadow transition-all group cursor-pointer"
+                            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#047857] hover:bg-[#065f46] text-white text-xs sm:text-[13px] font-bold rounded-[4px] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out group cursor-pointer"
                         >
                             <span>View All Success Stories</span>
                             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -1026,14 +1110,20 @@ export default function Home({
                             </Link>
                         </p>
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* ========================================================================= */}
             {/* 8. COACHING LIFE & ACTIVITIES (BENTO GRID GALLERY)                         */}
             {/* ========================================================================= */}
             <section id="gallery" className="py-14 sm:py-16 bg-slate-50/50" style={gridBgStyle}>
-                <div className="container mx-auto px-4 max-w-7xl">
+                <motion.div 
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-60px" }}
+                    variants={fadeInUp}
+                    className="container mx-auto px-4 max-w-7xl"
+                >
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                         <div className="max-w-2xl">
                             <span className="inline-block px-3 py-1 bg-[#fef3c7] text-[#92400e] font-bold text-[10px] uppercase tracking-wider rounded-full mb-2">
@@ -1048,7 +1138,7 @@ export default function Home({
                         </div>
                         <Link
                             href={safeRoute('gallery', undefined, '/gallery')}
-                            className="shrink-0 px-5 py-2 border-2 border-[#009ca6] text-[#009ca6] hover:bg-[#009ca6] hover:text-white rounded-[4px] font-bold transition-all text-xs"
+                            className="shrink-0 px-5 py-2 border-2 border-[#009ca6] text-[#009ca6] hover:bg-[#009ca6] hover:text-white rounded-[4px] font-bold hover:shadow-xs transition-all duration-300 ease-out text-xs"
                         >
                             View Gallery
                         </Link>
@@ -1058,11 +1148,11 @@ export default function Home({
                     <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-3 md:gap-4 h-[440px] md:h-[480px] lg:h-[500px]">
 
                         {/* 1. Large Card Left: Model Test Exam in AC Classroom (2 cols, 2 rows) */}
-                        <div className="md:col-span-2 md:row-span-2 relative rounded-[4px] overflow-hidden group shadow-2xs">
+                        <div className="md:col-span-2 md:row-span-2 relative rounded-[4px] overflow-hidden group shadow-2xs hover:shadow-md transition-all duration-300">
                             <img
                                 src={galleryPhotos[0]?.image || '/images/ullash_classroom_model_test_01.jpg'}
                                 alt={galleryPhotos[0]?.title || 'Model Test Examination Session in AC Classroom'}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                             <div className="absolute bottom-5 left-5 right-5">
@@ -1076,11 +1166,11 @@ export default function Home({
                         </div>
 
                         {/* 2. Top Right Wide Card: Farewell Celebration (2 cols, 1 row) */}
-                        <div className="md:col-span-2 md:row-span-1 relative rounded-[4px] overflow-hidden group shadow-2xs">
+                        <div className="md:col-span-2 md:row-span-1 relative rounded-[4px] overflow-hidden group shadow-2xs hover:shadow-md transition-all duration-300">
                             <img
                                 src={galleryPhotos[1]?.image || '/images/ullash_farewell_gift_ceremony.jpg'}
                                 alt={galleryPhotos[1]?.title || 'HSC-2026 Batch Grand Farewell & Celebration'}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                             <div className="absolute bottom-4 left-4 right-4">
@@ -1094,11 +1184,11 @@ export default function Home({
                         </div>
 
                         {/* 3. Bottom Right Card 1: Merit Crest Award (1 col, 1 row) */}
-                        <div className="md:col-span-1 md:row-span-1 relative rounded-[4px] overflow-hidden group shadow-2xs">
+                        <div className="md:col-span-1 md:row-span-1 relative rounded-[4px] overflow-hidden group shadow-2xs hover:shadow-md transition-all duration-300">
                             <img
                                 src={galleryPhotos[2]?.image || '/images/ullash_award_crest_01.jpg'}
                                 alt={galleryPhotos[2]?.title || 'Merit Crest Award Presentation to Top Achievers'}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                             <div className="absolute bottom-3 left-3 right-3">
@@ -1112,11 +1202,11 @@ export default function Home({
                         </div>
 
                         {/* 4. Bottom Right Card 2: Faculty Mentorship (1 col, 1 row) */}
-                        <div className="md:col-span-1 md:row-span-1 relative rounded-[4px] overflow-hidden group shadow-2xs">
+                        <div className="md:col-span-1 md:row-span-1 relative rounded-[4px] overflow-hidden group shadow-2xs hover:shadow-md transition-all duration-300">
                             <img
                                 src={galleryPhotos[3]?.image || '/images/ullash_campus_mentorship.jpg'}
                                 alt={galleryPhotos[3]?.title || 'Faculty Mentorship & Guidance in Front of Campus'}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                             <div className="absolute bottom-3 left-3 right-3">
@@ -1130,14 +1220,20 @@ export default function Home({
                         </div>
 
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* ========================================================================= */}
             {/* 9. CONTACT US & CAMPUS COUNSELING SECTION                                  */}
             {/* ========================================================================= */}
             <section id="contact" className="scroll-mt-20 py-14 sm:py-16 bg-white border-t border-slate-200/80">
-                <div className="container mx-auto px-4 max-w-7xl space-y-10">
+                <motion.div 
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-60px" }}
+                    variants={fadeInUp}
+                    className="container mx-auto px-4 max-w-7xl space-y-10"
+                >
 
                     {/* Section Header */}
                     <div className="max-w-2xl text-left">
@@ -1157,7 +1253,7 @@ export default function Home({
                         <div className="lg:col-span-7 space-y-6">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {/* Card 1: Campus Address */}
-                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-2">
+                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out space-y-2">
                                     <div className="w-8 h-8 rounded-[4px] bg-emerald-100 text-[#047857] flex items-center justify-center">
                                         <MapPin size={16} />
                                     </div>
@@ -1170,7 +1266,7 @@ export default function Home({
                                 </div>
 
                                 {/* Card 2: Hotlines */}
-                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-2">
+                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out space-y-2">
                                     <div className="w-8 h-8 rounded-[4px] bg-emerald-100 text-[#047857] flex items-center justify-center">
                                         <Phone size={16} />
                                     </div>
@@ -1190,7 +1286,7 @@ export default function Home({
                                 </div>
 
                                 {/* Card 3: Email */}
-                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-2">
+                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out space-y-2">
                                     <div className="w-8 h-8 rounded-[4px] bg-teal-100 text-[#009ca6] flex items-center justify-center">
                                         <Mail size={16} />
                                     </div>
@@ -1203,7 +1299,7 @@ export default function Home({
                                 </div>
 
                                 {/* Card 4: Office Hours */}
-                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs space-y-2">
+                                <div className="p-4 bg-slate-50/70 rounded-[4px] border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out space-y-2">
                                     <div className="w-8 h-8 rounded-[4px] bg-amber-100 text-amber-700 flex items-center justify-center">
                                         <Clock size={16} />
                                     </div>
@@ -1217,7 +1313,7 @@ export default function Home({
                             </div>
 
                             {/* Counseling Guidance Banner */}
-                            <div className="p-5 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-white rounded-[4px] border border-emerald-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="p-5 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-white rounded-[4px] border border-emerald-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:shadow-xs transition-all duration-300">
                                 <div className="space-y-1">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#047857] block">Academic Counseling Desk</span>
                                     <p className="text-xs text-slate-700 leading-relaxed font-medium">
@@ -1230,7 +1326,7 @@ export default function Home({
                                             href={`https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, '')}`}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="px-3.5 py-2 bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold rounded-[3px] shadow-2xs flex items-center gap-1.5 transition-colors"
+                                            className="px-3.5 py-2 bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold rounded-[3px] shadow-2xs hover:shadow-xs flex items-center gap-1.5 transition-all duration-300"
                                         >
                                             <MessageSquare size={13} />
                                             <span>WhatsApp</span>
@@ -1238,7 +1334,7 @@ export default function Home({
                                     )}
                                     <Link
                                         href={safeRoute('admissions', undefined, '/admissions')}
-                                        className="px-4 py-2 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-bold rounded-[3px] shadow-2xs flex items-center gap-1.5 transition-colors"
+                                        className="px-4 py-2 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-bold rounded-[3px] shadow-2xs hover:shadow-xs flex items-center gap-1.5 transition-all duration-300"
                                     >
                                         <span>Admission</span>
                                         <ArrowRight size={13} />
@@ -1275,11 +1371,12 @@ export default function Home({
                                         <input
                                             type="text"
                                             required
-                                            value={inquiryForm.name}
-                                            onChange={(e) => setInquiryForm({ ...inquiryForm, name: e.target.value })}
+                                            value={inquiryData.name}
+                                            onChange={(e) => setInquiryData('name', e.target.value)}
                                             placeholder="Enter your name"
-                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857]"
+                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857] transition-all duration-200"
                                         />
+                                        {inquiryErrors?.name && <p className="text-[10.5px] text-red-600 mt-1">{inquiryErrors.name}</p>}
                                     </div>
 
                                     <div>
@@ -1289,11 +1386,12 @@ export default function Home({
                                         <input
                                             type="tel"
                                             required
-                                            value={inquiryForm.phone}
-                                            onChange={(e) => setInquiryForm({ ...inquiryForm, phone: e.target.value })}
+                                            value={inquiryData.phone}
+                                            onChange={(e) => setInquiryData('phone', e.target.value)}
                                             placeholder="+880 1712-000000"
-                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857]"
+                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857] transition-all duration-200"
                                         />
+                                        {inquiryErrors?.phone && <p className="text-[10.5px] text-red-600 mt-1">{inquiryErrors.phone}</p>}
                                     </div>
 
                                     <div>
@@ -1302,10 +1400,10 @@ export default function Home({
                                         </label>
                                         <input
                                             type="text"
-                                            value={inquiryForm.batch}
-                                            onChange={(e) => setInquiryForm({ ...inquiryForm, batch: e.target.value })}
+                                            value={inquiryData.batch}
+                                            onChange={(e) => setInquiryData('batch', e.target.value)}
                                             placeholder="e.g. HSC Physics, SSC Science"
-                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857]"
+                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857] transition-all duration-200"
                                         />
                                     </div>
 
@@ -1315,36 +1413,41 @@ export default function Home({
                                         </label>
                                         <textarea
                                             rows={2}
-                                            value={inquiryForm.message}
-                                            onChange={(e) => setInquiryForm({ ...inquiryForm, message: e.target.value })}
+                                            value={inquiryData.message}
+                                            onChange={(e) => setInquiryData('message', e.target.value)}
                                             placeholder="Inquire about batch schedules, fees, or routine..."
-                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857]"
+                                            className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-[3px] focus:ring-1 focus:ring-[#047857] focus:border-[#047857] transition-all duration-200"
                                         />
                                     </div>
 
                                     <button
                                         type="submit"
-                                        className="w-full py-2.5 px-4 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-bold rounded-[3px] shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                                        disabled={inquiryProcessing}
+                                        className="w-full py-2.5 px-4 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-bold rounded-[3px] shadow-xs hover:shadow-md transition-all duration-300 ease-out flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                                     >
                                         <Send size={13} />
-                                        <span>Submit Inquiry</span>
+                                        <span>{inquiryProcessing ? 'Submitting...' : 'Submit Inquiry'}</span>
                                     </button>
                                 </form>
                             )}
                         </div>
                     </div>
 
-                </div>
+                </motion.div>
             </section>
 
             {/* Notice Detail Modal */}
             {selectedNotice && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300"
                     onClick={() => setSelectedNotice(null)}
                 >
-                    <div
-                        className="bg-white rounded-[4px] border border-slate-200 shadow-2xl max-w-2xl w-full overflow-hidden transform transition-all scale-100"
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 12 }}
+                        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                        className="bg-white rounded-[4px] border border-slate-200 shadow-2xl max-w-2xl w-full overflow-hidden"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Modal Header */}
@@ -1436,7 +1539,7 @@ export default function Home({
                                 Close
                             </button>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             )}
         </div>

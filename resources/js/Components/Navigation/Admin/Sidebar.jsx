@@ -21,12 +21,14 @@ import {
     Calendar,
     Award,
     Image as ImageIcon,
+    MessageSquare,
 } from "lucide-react";
 
 export default function Sidebar({ isCollapsed }) {
     const { url, props } = usePage();
     const coachingMode = props?.settings?.coaching_mode || "single";
     const centerName = props?.settings?.center_name || "Ullash Coaching Center";
+    const pendingInquiriesCount = props?.pendingInquiriesCount || 0;
     const currentPath = url.split("?")[0];
 
     const getCleanPath = (fullUrlOrPath) => {
@@ -152,6 +154,13 @@ export default function Sidebar({ isCollapsed }) {
                     route: "admin.admissions.create"
                 },
                 {
+                    label: "Academic Inquiries",
+                    path: route('admin.inquiries.index'),
+                    icon: <MessageSquare />,
+                    route: "admin.inquiries.index",
+                    badge: pendingInquiriesCount > 0 ? pendingInquiriesCount : null,
+                },
+                {
                     label: "Student Management",
                     path: route('admin.students.index'),
                     icon: <Users />,
@@ -208,6 +217,7 @@ export default function Sidebar({ isCollapsed }) {
                         { label: "Upcoming Events", path: route('admin.events.index'), route: "admin.events.index" },
                         { label: "Photo Gallery", path: route('admin.galleries.index'), route: "admin.galleries.index" },
                         { label: "Success Stories & Stats", path: route('admin.testimonials.index'), route: "admin.testimonials.index" },
+                        { label: "Academic Inquiries", path: route('admin.inquiries.index'), route: "admin.inquiries.index" },
                         { label: "Footer & Contact CMS", path: route('admin.cms.footer-contact'), route: "admin.cms.footer-contact" },
                     ]
                 },
@@ -266,6 +276,16 @@ export default function Sidebar({ isCollapsed }) {
                         }`}>
                         {item.label}
                     </span>
+                )}
+
+                {!isCollapsed && item.badge && (
+                    <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-[#16a34a] border border-emerald-200 shrink-0 ml-1">
+                        {item.badge}
+                    </span>
+                )}
+
+                {isCollapsed && item.badge && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" />
                 )}
 
                 {!isCollapsed && item.children && (

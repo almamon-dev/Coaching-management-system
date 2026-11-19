@@ -36,7 +36,7 @@ export default function CreateAdmission({ courses = [], batches = [], feeTypes =
         batch_id: initialBatchId,
         admission_fee: 1000,
         discount: 0,
-        paid_amount: 1000,
+        paid_amount: 0,
         payment_method: 'Cash',
         remarks: '',
     });

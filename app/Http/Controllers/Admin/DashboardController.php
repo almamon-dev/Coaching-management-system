@@ -15,6 +15,7 @@ use App\Models\FeePayment;
 use App\Models\FeeInvoice;
 use App\Models\OperationalExpense;
 use App\Models\OperationalIncome;
+use App\Models\AcademicInquiry;
 
 class DashboardController extends Controller
 {
@@ -48,19 +49,57 @@ class DashboardController extends Controller
             ->orderBy('start_time', 'asc')
             ->get();
 
-        // Subject-wise Summary (for Single Teacher / Multi-Subject view)
+        // Subject-wise Summary (Latest 2 active subjects)
         $subjectSummary = Course::withCount(['batches', 'students'])
+            ->with(['batches' => function ($q) {
+                $q->where('status', 'active')->withCount('students')->latest('id');
+            }])
             ->where('status', 'active')
+            ->latest('id')
+            ->take(2)
             ->get()
-            ->map(fn($c) => [
-                'id' => $c->id,
-                'title' => $c->title,
-                'code' => $c->code,
-                'category' => $c->category,
-                'fee' => (float)$c->fee,
-                'batches_count' => $c->batches_count,
-                'students_count' => $c->students_count,
-            ]);
+            ->map(function ($c) {
+                $firstBatchWithImage = $c->batches->first(fn($b) => !empty($b->image));
+                $image = $firstBatchWithImage ? $firstBatchWithImage->image : null;
+
+                if (!$image) {
+                    $t = strtolower($c->title);
+                    if (str_contains($t, 'physics')) {
+                        $image = '/images/batches/batch_physics.jpg';
+                    } elseif (str_contains($t, 'higher math') || str_contains($t, 'math')) {
+                        $image = '/images/batches/batch_higher_math.jpg';
+                    } elseif (str_contains($t, 'chemistry')) {
+                        $image = '/images/batches/batch_chemistry.jpg';
+                    } elseif (str_contains($t, 'ict')) {
+                        $image = '/images/batches/batch_ict.jpg';
+                    } elseif (str_contains($t, 'class 9')) {
+                        $image = '/images/batches/batch_class9.jpg';
+                    } elseif (str_contains($t, 'class 10') || str_contains($t, 'ssc')) {
+                        $image = '/images/batches/batch_class10.jpg';
+                    } else {
+                        $image = '/images/batches/batch_revision.jpg';
+                    }
+                }
+
+                return [
+                    'id' => $c->id,
+                    'title' => $c->title,
+                    'code' => $c->code,
+                    'category' => $c->category,
+                    'fee' => (float)$c->fee,
+                    'image' => $image,
+                    'batches_count' => $c->batches_count,
+                    'students_count' => $c->students_count,
+                    'batches' => $c->batches->map(fn($b) => [
+                        'id' => $b->id,
+                        'name' => $b->name,
+                        'image' => $b->image,
+                        'class_days' => $b->class_days,
+                        'class_time' => $b->class_time,
+                        'students_count' => (int)$b->students_count,
+                    ])->values()->toArray(),
+                ];
+            });
 
         // Chart Data
         $batchDistribution = Batch::withCount('students')
@@ -94,12 +133,15 @@ class DashboardController extends Controller
             ];
         }
 
+        // Recent Academic Inquiries from Website
+        $recentInquiries = AcademicInquiry::latest()->take(5)->get();
+        $pendingInquiriesCount = AcademicInquiry::where('status', 'pending')->count();
+
         return Inertia::render('Admin/Dashboard/Index', [
             'stats' => [
                 'total_students' => $totalStudents,
                 'active_students' => $activeStudents,
                 'teachers_count' => $teachersCount,
-                'batches_count' => $batchesCount,
                 'batches_count' => $batchesCount,
                 'todays_classes' => $todaysClassesCount,
                 'todays_attendance' => $todaysAttendanceCount,
@@ -108,7 +150,9 @@ class DashboardController extends Controller
                 'monthly_income' => (float)$monthlyIncome,
                 'monthly_expense' => (float)$monthlyExpense,
                 'current_balance' => (float)$currentBalance,
+                'pending_inquiries' => $pendingInquiriesCount,
             ],
+            'recentInquiries' => $recentInquiries,
             'todaysClasses' => $todaysClasses,
             'subjectSummary' => $subjectSummary,
             'batchDistribution' => $batchDistribution,

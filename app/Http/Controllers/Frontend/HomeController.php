@@ -14,6 +14,9 @@ use App\Models\Testimonial;
 use App\Models\ImportantLink;
 use App\Models\Setting;
 use App\Models\Batch;
+use App\Models\StudyMaterial;
+use App\Models\AcademicInquiry;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class HomeController extends Controller
@@ -300,13 +303,23 @@ class HomeController extends Controller
     protected function formatBatchData($b)
     {
         $course = $b->course;
-        $cleanTitle = $course?->title ?: $b->name;
-        if (preg_match('/^Batch\s*\d*\s*:\s*(.+)$/i', $b->name, $m)) {
-            $cleanTitle = trim($m[1]);
-        } elseif (preg_match('/:\s*(HSC\s+[A-Za-z\s]+)/i', $b->name, $m)) {
-            $cleanTitle = trim($m[1]);
+        $courseTitle = trim(preg_replace('/([a-zA-Z0-9])\(/', '$1 (', (string)($course?->title ?? '')));
+        // Strip any embedded routine/times like (07:00 AM - 08:30 AM) from batch name
+        $cleanBatchName = trim(preg_replace('/\s*\(\d{1,2}:\d{2}\s*(?:AM|PM)[\s\S]*?\)/i', '', (string)$b->name));
+        $cleanBatchName = trim(preg_replace('/^Batch\s*\d*\s*:\s*/i', '', $cleanBatchName));
+        $cleanBatchName = trim($cleanBatchName, " -:,");
+
+        if ($courseTitle) {
+            if ($cleanBatchName && stripos($cleanBatchName, $courseTitle) === false && $cleanBatchName !== $courseTitle) {
+                $cleanTitle = $courseTitle . ' - ' . $cleanBatchName;
+            } else {
+                $cleanTitle = $cleanBatchName ?: $courseTitle;
+            }
+        } else {
+            $cleanTitle = $cleanBatchName ?: $b->name;
         }
-        if (!str_contains(strtolower($cleanTitle), 'batch') && !str_contains(strtolower($b->name), 'batch')) {
+
+        if (!str_contains(strtolower($cleanTitle), 'batch')) {
             $cleanTitle .= ' Batch';
         }
 
@@ -429,10 +442,48 @@ class HomeController extends Controller
             ->get()
             ->map(fn($ob) => $this->formatBatchData($ob));
 
+        $studyMaterials = StudyMaterial::with('subject')
+            ->where(function($q) use ($batch) {
+                $q->where('batch_id', $batch->id)
+                  ->orWhere('course_id', $batch->course_id)
+                  ->orWhereNull('batch_id');
+            })
+            ->latest()
+            ->take(6)
+            ->get();
+
         return Inertia::render('Frontend/Batches/Show', [
             'batch' => $formattedBatch,
             'otherBatches' => $otherBatches,
+            'studyMaterials' => $studyMaterials,
             'settings' => $settings,
         ]);
+    }
+
+    public function storeInquiry(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'phone' => 'required|string|max:25',
+            'email' => 'nullable|email|max:100',
+            'batch' => 'nullable|string|max:150',
+            'message' => 'nullable|string|max:2000',
+        ]);
+
+        $inquiryMessage = !empty($validated['message']) 
+            ? $validated['message'] 
+            : ('Inquiry regarding ' . (!empty($validated['batch']) ? $validated['batch'] : 'Academic Coaching programs'));
+
+        AcademicInquiry::create([
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'email' => $validated['email'] ?? null,
+            'batch_or_course' => $validated['batch'] ?? null,
+            'message' => $inquiryMessage,
+            'status' => 'pending',
+            'ip_address' => $request->ip(),
+        ]);
+
+        return redirect()->back()->with('success', 'Thank you! Your academic inquiry has been received. Our counseling team will contact you shortly.');
     }
 }

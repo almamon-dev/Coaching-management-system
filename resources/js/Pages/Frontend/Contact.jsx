@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage, useForm } from '@inertiajs/react';
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import {
     MapPin, Phone, Mail, Clock, MessageSquare,
@@ -21,15 +21,32 @@ export default function Contact({ settings = {} }) {
     const whatsappNumber = finalSettings.whatsapp_number;
     const cleanWhatsApp = whatsappNumber ? whatsappNumber.replace(/[^0-9]/g, '') : null;
 
-    const [form, setForm] = useState({ name: '', phone: '', email: '', batch: '', message: '' });
     const [sent, setSent] = useState(false);
+
+    const {
+        data: form,
+        setData: setForm,
+        post: postInquiry,
+        processing,
+        reset,
+        errors
+    } = useForm({
+        name: '',
+        phone: '',
+        email: '',
+        batch: '',
+        message: '',
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setSent(true);
-        setTimeout(() => {
-            setForm({ name: '', phone: '', email: '', batch: '', message: '' });
-        }, 5000);
+        postInquiry(route('academic-inquiry.store'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setSent(true);
+                reset();
+            },
+        });
     };
 
     return (
@@ -224,10 +241,11 @@ export default function Contact({ settings = {} }) {
 
                                     <button
                                         type="submit"
-                                        className="py-2.5 px-6 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-bold rounded-[3px] shadow-xs transition-colors inline-flex items-center gap-2 cursor-pointer"
+                                        disabled={processing}
+                                        className="py-2.5 px-6 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-bold rounded-[3px] shadow-xs transition-colors inline-flex items-center gap-2 cursor-pointer disabled:opacity-50"
                                     >
                                         <Send size={14} />
-                                        <span>Submit Academic Inquiry</span>
+                                        <span>{processing ? 'Submitting...' : 'Submit Academic Inquiry'}</span>
                                     </button>
                                 </form>
                             )}

@@ -59,6 +59,9 @@ Route::get('/contact-us', function () {
     return redirect()->route('contact');
 })->name('contact-us');
 
+// Academic Inquiries Submission (from Landing Page / Contact)
+Route::post('/academic-inquiry', [HomeController::class, 'storeInquiry'])->name('academic-inquiry.store');
+
 Route::get('/complaints/create', function () {
     return Inertia::render('Errors/ComingSoon');
 })->name('complaints.create');

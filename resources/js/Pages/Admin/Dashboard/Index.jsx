@@ -4,13 +4,13 @@ import { Head, Link, usePage, router } from '@inertiajs/react';
 import {
     Users, UserCheck, BookOpen, FolderKanban, Calendar, ClipboardCheck,
     Wallet, TrendingDown, TrendingUp, ArrowUpRight, Plus, Receipt, Layers,
-    Clock, CheckCircle, AlertCircle
+    Clock, CheckCircle, AlertCircle, MessageSquare
 } from 'lucide-react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Legend
 } from 'recharts';
 
-export default function Dashboard({ stats, todaysClasses = [], subjectSummary = [], batchDistribution = [], financialTrend = [] }) {
+export default function Dashboard({ stats, todaysClasses = [], subjectSummary = [], batchDistribution = [], financialTrend = [], recentInquiries = [] }) {
     const { settings } = usePage().props;
     const coachingMode = settings?.coaching_mode || 'single';
     const isMultiTeacher = coachingMode === 'multi';
@@ -156,7 +156,7 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
                 {/* Subjects & Batches */}
                 <div className="bg-white p-4 rounded-[4px] border border-slate-200/80 shadow-2xs hover:border-slate-300 transition-all">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-slate-500">batches & Batches</span>
+                        <span className="text-xs font-semibold text-slate-500">Subjects & Batches</span>
                         <div className="w-8 h-8 rounded-[4px] bg-emerald-50 text-[#16a34a] flex items-center justify-center">
                             <BookOpen size={16} />
                         </div>
@@ -254,13 +254,13 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
                 </div>
             </div>
 
-            {/* SUBJECT-WISE OVERVIEW (Organized by Subject -> Batches -> Students) */}
-            {subjectSummary.length > 0 && (
+            {/* SUBJECT-WISE OVERVIEW (Organized by Subject -> Batches -> Students with Images) */}
+            {subjectSummary && subjectSummary.length > 0 && (
                 <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs p-5 mb-6">
                     <div className="flex items-center justify-between mb-4">
                         <div>
                             <h3 className="text-sm font-bold text-slate-900">Subjects & Batch Breakdown</h3>
-                            <p className="text-xs text-slate-500">Summary of all subjects taught, active batches, and enrolled students.</p>
+                            <p className="text-xs text-slate-500">Summary of latest active subjects and batch breakdown.</p>
                         </div>
                         <Link
                             href={route('admin.batches.index')}
@@ -269,35 +269,104 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
                             Manage Subjects <ArrowUpRight size={13} />
                         </Link>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        {subjectSummary.map((sub) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {subjectSummary.slice(0, 2).map((sub) => (
                             <div
                                 key={sub.id}
-                                className="p-3.5 rounded-[4px] border border-slate-200/70 bg-slate-50/40 hover:bg-white hover:border-emerald-300 transition-all flex flex-col justify-between"
+                                className="rounded-[4px] border border-slate-200/90 bg-white hover:border-emerald-300 shadow-2xs hover:shadow-xs transition-all overflow-hidden flex flex-col group"
                             >
-                                <div>
-                                    <div className="flex items-center justify-between gap-2 mb-1.5">
-                                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-[3px]">
-                                            {sub.code}
-                                        </span>
-                                        {sub.category && (
-                                            <span className="text-[10px] font-semibold text-slate-500 bg-white border border-slate-200 px-1.5 py-0.5 rounded-[3px]">
+                                {/* Full-width Image Banner */}
+                                <div className="w-full h-48 sm:h-56 relative bg-slate-100 overflow-hidden shrink-0">
+                                    <img
+                                        src={sub.image || '/images/batches/batch_revision.jpg'}
+                                        alt={sub.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        onError={(e) => { e.currentTarget.src = '/images/batches/batch_revision.jpg'; }}
+                                    />
+                                    {/* Category Overlay Pill */}
+                                    {sub.category && (
+                                        <div className="absolute top-2.5 left-2.5 bg-white/95 backdrop-blur-xs rounded-[3px] px-2 py-0.5 shadow-xs border border-slate-200/80">
+                                            <span className="block text-[10px] font-bold text-[#047857] uppercase tracking-wider leading-none">
                                                 {sub.category}
                                             </span>
+                                        </div>
+                                    )}
+                                    {/* Subject Code Overlay Pill */}
+                                    {sub.code && (
+                                        <div className="absolute bottom-2.5 left-2.5 bg-[#047857]/95 backdrop-blur-xs rounded-[3px] px-2 py-0.5 text-center shadow-xs">
+                                            <span className="block font-mono text-[10px] text-white tracking-wider font-bold">
+                                                {sub.code}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {/* Tuition Fee Badge */}
+                                    <div className="absolute bottom-2.5 right-2.5 bg-slate-900/90 backdrop-blur-xs rounded-[3px] px-2.5 py-1 text-center shadow-xs">
+                                        <span className="block text-[11px] text-emerald-400 font-bold">
+                                            ৳ {Number(sub.fee).toLocaleString()} / mo
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Body Content */}
+                                <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 gap-3">
+                                    <div>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <h4 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-[#16a34a] transition-colors leading-snug">
+                                                {sub.title}
+                                            </h4>
+                                            <span className="shrink-0 text-[10.5px] font-bold px-2 py-0.5 rounded-[3px] bg-emerald-50 text-[#16a34a] border border-emerald-200">
+                                                {sub.batches_count} Active {sub.batches_count === 1 ? 'Batch' : 'Batches'}
+                                            </span>
+                                        </div>
+
+                                        {/* Active Batches List */}
+                                        {sub.batches && sub.batches.length > 0 ? (
+                                            <div className="mt-3 space-y-1.5">
+                                                {sub.batches.map((b) => (
+                                                    <div
+                                                        key={b.id}
+                                                        className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-[3px] bg-slate-50 border border-slate-200/80 text-xs"
+                                                    >
+                                                        <span className="font-semibold text-slate-800">
+                                                            {b.name}
+                                                        </span>
+                                                        <div className="flex items-center gap-3 text-[11px] text-slate-500 font-medium">
+                                                            <span className="flex items-center gap-1 text-slate-600">
+                                                                <Calendar size={12} className="text-[#16a34a]" />
+                                                                {b.class_days || 'Regular'}
+                                                            </span>
+                                                            <span className="flex items-center gap-1 text-slate-600">
+                                                                <Clock size={12} className="text-[#16a34a]" />
+                                                                {b.class_time || 'Schedule'}
+                                                            </span>
+                                                            <span className="font-bold text-slate-700 bg-white px-2 py-0.5 rounded-[2px] border border-slate-200">
+                                                                {b.students_count} Students
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-slate-400 italic mt-1.5">No active batches created yet</p>
                                         )}
                                     </div>
-                                    <h4 className="text-xs font-bold text-slate-900 line-clamp-1">{sub.title}</h4>
-                                </div>
-                                <div className="mt-3 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
-                                    <span className="text-slate-600 font-medium flex items-center gap-1">
-                                        <Layers size={12} className="text-[#16a34a]" />
-                                        <b>{sub.batches_count}</b> Batches
-                                    </span>
-                                    <span className="text-slate-600 font-medium flex items-center gap-1">
-                                        <Users size={12} className="text-blue-600" />
-                                        <b>{sub.students_count}</b> Students
-                                    </span>
-                                    <span className="font-bold text-emerald-700">৳{sub.fee.toLocaleString()}</span>
+
+                                    {/* Stats Footer */}
+                                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
+                                        <div className="flex items-center gap-4 text-slate-600">
+                                            <span className="font-medium flex items-center gap-1.5">
+                                                <Users size={14} className="text-blue-600" />
+                                                <span>Total Enrolled: <b className="text-slate-900">{sub.students_count}</b> Students</span>
+                                            </span>
+                                        </div>
+                                        <Link
+                                            href={route('admin.batches.index')}
+                                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-bold rounded-[3px] shadow-2xs transition-colors"
+                                        >
+                                            <span>Manage Batches</span>
+                                            <ArrowUpRight size={12} />
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -431,6 +500,91 @@ export default function Dashboard({ stats, todaysClasses = [], subjectSummary = 
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
+                </div>
+            </div>
+
+            {/* RECENT ACADEMIC INQUIRIES & ADMISSION LEADS */}
+            <div className="bg-white rounded-[4px] border border-slate-200/80 shadow-2xs overflow-hidden mb-6">
+                <div className="p-4 sm:p-5 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="p-1 bg-emerald-50 text-[#16a34a] rounded border border-emerald-200">
+                                <MessageSquare size={15} />
+                            </span>
+                            <h3 className="text-sm sm:text-base font-bold text-slate-900">Recent Academic Inquiries</h3>
+                            {stats?.pending_inquiries > 0 && (
+                                <span className="px-2 py-0.5 text-[10.5px] font-bold rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                    {stats.pending_inquiries} Pending Follow-up
+                                </span>
+                            )}
+                        </div>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                            Prospective student inquiries and batch questions submitted from the website landing page.
+                        </p>
+                    </div>
+                    <Link
+                        href={route('admin.inquiries.index')}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#16a34a] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-[3px] transition-all"
+                    >
+                        <span>View All Inquiries</span>
+                        <ArrowUpRight size={13} />
+                    </Link>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs sm:text-sm">
+                        <thead className="bg-slate-50/80 border-b border-slate-200 text-xs font-semibold text-slate-600">
+                            <tr>
+                                <th className="p-3.5 whitespace-nowrap">Student / Guardian</th>
+                                <th className="p-3.5 whitespace-nowrap">Contact Phone</th>
+                                <th className="p-3.5 whitespace-nowrap">Target Batch</th>
+                                <th className="p-3.5 min-w-[240px]">Inquiry Note</th>
+                                <th className="p-3.5 text-center whitespace-nowrap">Status</th>
+                                <th className="p-3.5 text-right whitespace-nowrap">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {recentInquiries && recentInquiries.length > 0 ? (
+                                recentInquiries.map((inq) => (
+                                    <tr key={inq.id} className="hover:bg-slate-50/60 transition-colors">
+                                        <td className="p-3.5 font-bold text-slate-900 whitespace-nowrap">{inq.name}</td>
+                                        <td className="p-3.5 font-mono font-semibold text-slate-800 whitespace-nowrap">
+                                            <a href={`tel:${inq.phone}`} className="hover:text-emerald-700 hover:underline">{inq.phone}</a>
+                                        </td>
+                                        <td className="p-3.5 whitespace-nowrap">
+                                            <span className="px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-[#047857] border border-emerald-200/80 rounded-[3px]">
+                                                {inq.batch_or_course || 'General'}
+                                            </span>
+                                        </td>
+                                        <td className="p-3.5 text-slate-600 text-xs line-clamp-1">{inq.message}</td>
+                                        <td className="p-3.5 text-center whitespace-nowrap">
+                                            <span className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-bold capitalize border ${
+                                                inq.status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                                inq.status === 'contacted' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                                inq.status === 'enrolled' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                'bg-slate-100 text-slate-600 border-slate-200'
+                                            }`}>
+                                                {inq.status}
+                                            </span>
+                                        </td>
+                                        <td className="p-3.5 text-right whitespace-nowrap">
+                                            <Link
+                                                href={route('admin.inquiries.index')}
+                                                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-slate-700 hover:text-emerald-700 bg-slate-100 hover:bg-emerald-50 rounded-[3px] transition-colors"
+                                            >
+                                                Manage
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={6} className="p-8 text-center text-slate-400">
+                                        No recent academic inquiries received yet.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

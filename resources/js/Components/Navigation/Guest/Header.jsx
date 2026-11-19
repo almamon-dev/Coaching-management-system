@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import {
     GraduationCap, ClipboardCheck, Bell, Phone,
-    ChevronDown, Menu, X, ArrowRight, User
+    Menu, X, User
 } from 'lucide-react';
 import SchoolLogo from '@/Components/SchoolLogo';
 
@@ -10,7 +10,6 @@ export default function Header() {
     const { url, props } = usePage();
     const { auth, settings } = props;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [batchesDropdownOpen, setbatchesDropdownOpen] = useState(false);
 
     const currentPath = url ? url.split('?')[0].split('#')[0] : '/';
     const isHomeActive = currentPath === '/';
@@ -20,18 +19,11 @@ export default function Header() {
     const isSuccessStoriesActive = currentPath.startsWith('/success-stories');
     const isAboutActive = currentPath.startsWith('/about-us') || currentPath.startsWith('/about');
     const isContactActive = currentPath.startsWith('/contact');
-    const isbatchesActive = currentPath.startsWith('/batches') || currentPath.startsWith('/faculties') || currentPath.startsWith('/batches') || currentPath.startsWith('/class-details');
+    const isbatchesActive = currentPath.startsWith('/batches') || currentPath.startsWith('/faculties') || currentPath.startsWith('/class-details');
     const isAdmissionActive = currentPath === '/admissions';
     const isStudentActive = currentPath.startsWith('/user') || currentPath.startsWith('/student');
 
     const hotline = settings?.phone || "+880 1712-345678";
-
-    const batchesList = [
-        { name: 'All Academic Batches', href: '/batches' },
-        { name: 'College Academic Program (HSC 1st & 2nd Paper)', href: '/batches' },
-        { name: 'SSC Preparation Program (Class 9 - 10)', href: '/batches' },
-        { name: 'Foundation Science Program (Class 9)', href: '/batches' },
-    ];
 
     return (
         <header className="sticky top-0 z-50 bg-white font-inter print:hidden shadow-xs">
@@ -93,39 +85,15 @@ export default function Header() {
                             Home
                         </Link>
 
-                        {/* batches Dropdown */}
-                        <div
-                            className="relative"
-                            onMouseEnter={() => setbatchesDropdownOpen(true)}
-                            onMouseLeave={() => setbatchesDropdownOpen(false)}
+                        <Link
+                            href="/batches"
+                            className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full transition-colors ${isbatchesActive
+                                    ? 'bg-orange-50 text-[#ea580c]'
+                                    : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
+                                }`}
                         >
-                            <button
-                                type="button"
-                                className={`px-3.5 py-1.5 text-[13.5px] font-bold rounded-full flex items-center gap-1 transition-colors cursor-pointer ${isbatchesActive
-                                        ? 'bg-orange-50 text-[#ea580c]'
-                                        : 'text-slate-700 hover:text-[#047857] hover:bg-slate-50'
-                                    }`}
-                            >
-                                <span>batches & Classes</span>
-                                <ChevronDown size={14} className={`transition-transform ${batchesDropdownOpen ? 'rotate-180 text-[#047857]' : 'text-slate-400'}`} />
-                            </button>
-
-                            {batchesDropdownOpen && (
-                                <div className="absolute left-0 top-full mt-1 w-72 bg-white rounded-[4px] shadow-xl border border-slate-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-1">
-                                    {batchesList.map((c, idx) => (
-                                        <a
-                                            key={idx}
-                                            href={c.href}
-                                            onClick={() => setbatchesDropdownOpen(false)}
-                                            className="flex items-center justify-between px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 hover:text-[#047857] font-semibold transition-colors"
-                                        >
-                                            <span>{c.name}</span>
-                                            <ArrowRight size={12} className="text-slate-300" />
-                                        </a>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                            Batches
+                        </Link>
 
                         <Link
                             href={route('notices.index')}
@@ -230,14 +198,14 @@ export default function Header() {
                         >
                             Home
                         </Link>
-                        <a
-                            href="/#batches"
+                        <Link
+                            href="/batches"
                             onClick={() => setMobileMenuOpen(false)}
                             className={`px-3 py-2 text-sm font-semibold rounded transition-colors ${isbatchesActive ? 'text-[#ea580c] bg-orange-50' : 'text-slate-700 hover:bg-slate-50'
                                 }`}
                         >
-                            batches & Programs
-                        </a>
+                            Batches
+                        </Link>
                         <Link
                             href={route('notices.index')}
                             onClick={() => setMobileMenuOpen(false)}

@@ -302,7 +302,7 @@ export default function NoticeShow({ notice = {}, recentNotices = [], settings =
                                 <div className="flex flex-col py-1.5">
                                     {[
                                         { title: 'Notice Board', url: route('notices.index') },
-                                        { title: 'Academic batches & Programs', url: '/#batches' },
+                                        { title: 'Academic Batches & Programs', url: '/#batches' },
                                         { title: 'Admission Instructions', url: route('admissions') },
                                         { title: 'Campus Events & Seminars', url: route('events') },
                                         { title: 'Student Success Stories', url: route('success-stories') },

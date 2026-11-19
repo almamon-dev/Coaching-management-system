@@ -129,8 +129,10 @@ class AdmissionController extends Controller
         }
 
         // Create Admission Fee Invoice
-        $feeAmount = (float)$validated['admission_fee'];
+        $admissionFee = (float)$validated['admission_fee'];
         $discount = (float)($validated['discount'] ?? 0);
+        $totalMonthlyFee = (float)$selectedBatches->sum(fn($b) => (float)($b->course?->fee ?? 0));
+        $feeAmount = $admissionFee > 0 ? $admissionFee : $totalMonthlyFee;
         $netAmount = max(0, $feeAmount - $discount);
         $paidAmount = (float)$validated['paid_amount'];
         $dueAmount = max(0, $netAmount - $paidAmount);
@@ -140,14 +142,14 @@ class AdmissionController extends Controller
         $invoice = FeeInvoice::create([
             'invoice_no' => 'INV-' . date('Ymd') . '-' . rand(1000, 9999),
             'student_id' => $student->id,
-            'title' => 'Admission & Enrolled Subjects Fee (' . $courseNames . ')',
+            'title' => 'Admission & Enrolled Subjects Fee (' . ($courseNames ?: 'General') . ')',
             'amount' => $feeAmount,
             'discount' => $discount,
             'net_amount' => $netAmount,
             'paid_amount' => $paidAmount,
             'due_amount' => $dueAmount,
             'due_date' => date('Y-m-d'),
-            'status' => $dueAmount == 0 ? 'paid' : ($paidAmount > 0 ? 'partial' : 'unpaid'),
+            'status' => ($dueAmount == 0 && $paidAmount > 0) ? 'paid' : ($paidAmount > 0 ? 'partial' : 'unpaid'),
         ]);
 
         // Record Fee Payment & Generate Receipt

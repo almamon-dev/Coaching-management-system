@@ -5,10 +5,10 @@ import {
     Calendar, Clock, MapPin, Users, Video, BookOpen, 
     GraduationCap, ArrowRight, ArrowLeft, Check, Coins, 
     ChevronRight, Phone, Mail, Award, CheckCircle2, ShieldCheck, 
-    Sparkles, HelpCircle
+    Sparkles, HelpCircle, FileArchive, FileText, Download, Play, ExternalLink
 } from 'lucide-react';
 
-export default function BatchShow({ batch = {}, otherBatches = [], settings = {} }) {
+export default function BatchShow({ batch = {}, otherBatches = [], studyMaterials = [], settings = {} }) {
     const { settings: globalSettings } = usePage().props;
     const centerName = settings?.center_name || globalSettings?.center_name || "Ullash Coaching Center";
     const phone = settings?.phone || globalSettings?.phone || "+880 1711-000000";
@@ -229,6 +229,84 @@ export default function BatchShow({ batch = {}, otherBatches = [], settings = {}
                                     </div>
                                 )}
                             </div>
+
+                            {/* Batch Study Materials & Digital Resources */}
+                            {studyMaterials && studyMaterials.length > 0 && (
+                                <div className="bg-white rounded-[4px] border border-slate-200/90 shadow-2xs p-6 space-y-4">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                                        <div>
+                                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                                <BookOpen size={16} className="text-[#009ca6]" />
+                                                <span>Batch Study Materials & Resources</span>
+                                            </h3>
+                                            <p className="text-xs text-slate-500 mt-0.5">
+                                                Official lecture notes, formula sheets, sample videos & revision packs provided for this batch.
+                                            </p>
+                                        </div>
+                                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-[3px] bg-teal-50 text-[#009ca6] border border-teal-100 shrink-0">
+                                            {studyMaterials.length} Resources
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {studyMaterials.map((mat) => {
+                                            const isVideo = (mat.file_type || '').toUpperCase() === 'VIDEO';
+                                            const isZip = ['ZIP', 'RAR', '7Z'].includes((mat.file_type || '').toUpperCase());
+                                            const isPdf = (mat.file_type || '').toUpperCase() === 'PDF';
+                                            const targetUrl = mat.file_path || mat.link_url || '#';
+
+                                            return (
+                                                <div
+                                                    key={mat.id}
+                                                    className="p-3.5 rounded-[4px] border border-slate-200/90 bg-slate-50/60 hover:bg-white hover:border-teal-300 transition-all flex flex-col justify-between gap-3 group"
+                                                >
+                                                    <div>
+                                                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                                                            <span className={`text-[9.5px] font-bold px-2 py-0.5 rounded-full border ${
+                                                                isVideo ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                                                                isZip ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                                                                isPdf ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                                                'bg-teal-50 text-teal-700 border-teal-200'
+                                                            }`}>
+                                                                {mat.file_type || 'Resource'}
+                                                            </span>
+                                                            {mat.subject?.name && (
+                                                                <span className="text-[10px] text-slate-400 font-semibold truncate">
+                                                                    {mat.subject.name}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <h4 className="text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#009ca6] transition-colors leading-snug">
+                                                            {mat.title}
+                                                        </h4>
+                                                        {mat.description && (
+                                                            <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                                                                {mat.description}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                                                        <span className="text-[10.5px] text-slate-400">
+                                                            {mat.created_at ? new Date(mat.created_at).toLocaleDateString('en-GB') : 'Available'}
+                                                        </span>
+                                                        <a
+                                                            href={targetUrl}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#009ca6] hover:text-[#065f46] transition-colors"
+                                                        >
+                                                            {isVideo ? <Play size={12} /> : isZip ? <FileArchive size={12} /> : <Download size={12} />}
+                                                            <span>{isVideo ? 'Watch Video' : isZip ? 'Download ZIP' : 'Download File'}</span>
+                                                            <ExternalLink size={10} className="text-slate-300" />
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Batch Features & Academic Facilities */}
                             <div className="bg-white rounded-[4px] border border-slate-200/90 shadow-2xs p-6 space-y-4">

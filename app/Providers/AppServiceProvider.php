@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Admin\Logistics\LogisticsRepositoryInterface;
 use App\Repositories\Admin\Logistics\EloquentLogisticsRepository;
@@ -23,6 +24,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (
+            request()->header('x-forwarded-proto') === 'https' ||
+            request()->server('HTTPS') === 'on' ||
+            request()->isSecure() ||
+            str_starts_with(config('app.url'), 'https://') ||
+            app()->environment('production')
+        ) {
+            URL::forceScheme('https');
+        }
+
         Gate::before(function ($user, $ability) {
             return $user->hasRole('Super Admin') ? true : null;
         });
